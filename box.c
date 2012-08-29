@@ -23,7 +23,8 @@ extern"C"{
 #include<seccomp.h>
 #include<stdio.h>
 extern int main(int,char*[]);
-int mymain(int argc,char *argv[]){
+extern int _start(int,char*[]);
+int _start(int argc,char *argv[]){
 	int ret;
 #define add(x,...) &&!(ret=seccomp_rule_add_exact(ctx,SCMP_ACT_ALLOW,SCMP_SYS(x),__VA_ARGS__))
 	scmp_filter_ctx ctx;
@@ -44,14 +45,10 @@ int mymain(int argc,char *argv[]){
 		add(write,0)
 		add(set_thread_area,0)
 
-		&&(ret=seccomp_load(ctx))>=0){
-			printf("success!\n");
-			fork();
-			printf("echo...\n");
-	}
+		&&(ret=seccomp_load(ctx))>=0)
+			return main(argc,argv);
 	seccomp_release(ctx);
-	if(ret<0)
-		printf("error %d\n",ret);
-	return main(argc,argv);
+	fprintf(stderr,"error %d\n",ret);
+	return-ret;
 }
 }

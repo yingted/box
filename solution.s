@@ -1,6 +1,24 @@
 	.file	"solution.cpp"
 	.local	_ZStL8__ioinit
 	.comm	_ZStL8__ioinit,1,1
+	.text
+	.globl	_Z4niamv
+	.type	_Z4niamv, @function
+_Z4niamv:
+.LFB966:
+	.cfi_startproc
+	pushl	%ebp
+	.cfi_def_cfa_offset 8
+	.cfi_offset 5, -8
+	movl	%esp, %ebp
+	.cfi_def_cfa_register 5
+	popl	%ebp
+	.cfi_def_cfa 4, 4
+	.cfi_restore 5
+	ret
+	.cfi_endproc
+.LFE966:
+	.size	_Z4niamv, .-_Z4niamv
 	.section	.rodata
 .LC0:
 	.string	"Hello, World!"
@@ -10,7 +28,7 @@
 	.globl	main
 	.type	main, @function
 main:
-.LFB966:
+.LFB967:
 	.cfi_startproc
 	pushl	%ebp
 	.cfi_def_cfa_offset 8
@@ -51,11 +69,11 @@ main:
 	.cfi_def_cfa 4, 4
 	ret
 	.cfi_endproc
-.LFE966:
+.LFE967:
 	.size	main, .-main
 	.type	_Z41__static_initialization_and_destruction_0ii, @function
 _Z41__static_initialization_and_destruction_0ii:
-.LFB975:
+.LFB976:
 	.cfi_startproc
 	pushl	%ebp
 	.cfi_def_cfa_offset 8
@@ -64,9 +82,9 @@ _Z41__static_initialization_and_destruction_0ii:
 	.cfi_def_cfa_register 5
 	subl	$24, %esp
 	cmpl	$1, 8(%ebp)
-	jne	.L2
+	jne	.L3
 	cmpl	$65535, 12(%ebp)
-	jne	.L2
+	jne	.L3
 	movl	$_ZStL8__ioinit, (%esp)
 	call	_ZNSt8ios_base4InitC1Ev
 	movl	$_ZNSt8ios_base4InitD1Ev, %eax
@@ -74,17 +92,17 @@ _Z41__static_initialization_and_destruction_0ii:
 	movl	$_ZStL8__ioinit, 4(%esp)
 	movl	%eax, (%esp)
 	call	__cxa_atexit
-.L2:
+.L3:
 	leave
 	.cfi_restore 5
 	.cfi_def_cfa 4, 4
 	ret
 	.cfi_endproc
-.LFE975:
+.LFE976:
 	.size	_Z41__static_initialization_and_destruction_0ii, .-_Z41__static_initialization_and_destruction_0ii
-	.type	_GLOBAL__sub_I_main, @function
-_GLOBAL__sub_I_main:
-.LFB976:
+	.type	_GLOBAL__sub_I__Z4niamv, @function
+_GLOBAL__sub_I__Z4niamv:
+.LFB977:
 	.cfi_startproc
 	pushl	%ebp
 	.cfi_def_cfa_offset 8
@@ -100,11 +118,11 @@ _GLOBAL__sub_I_main:
 	.cfi_def_cfa 4, 4
 	ret
 	.cfi_endproc
-.LFE976:
-	.size	_GLOBAL__sub_I_main, .-_GLOBAL__sub_I_main
+.LFE977:
+	.size	_GLOBAL__sub_I__Z4niamv, .-_GLOBAL__sub_I__Z4niamv
 	.section	.ctors,"aw",@progbits
 	.align 4
-	.long	_GLOBAL__sub_I_main
+	.long	_GLOBAL__sub_I__Z4niamv
 	.weakref	_ZL20__gthrw_pthread_oncePiPFvvE,pthread_once
 	.weakref	_ZL27__gthrw_pthread_getspecificj,pthread_getspecific
 	.weakref	_ZL27__gthrw_pthread_setspecificjPKv,pthread_setspecific
