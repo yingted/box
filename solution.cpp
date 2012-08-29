@@ -4,6 +4,7 @@
 using namespace std;
 //extern "C"int niam(){}
 int main(){
+	return 0;
 	//cin.peek();
 	//cout.put('\n').flush();
 	int x;
