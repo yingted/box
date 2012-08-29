@@ -2,8 +2,7 @@
 //#include<unistd.h>
 //#include<sys/prctl.h>
 using namespace std;
-extern "C"
-int niam(){}
+//extern "C"int niam(){}
 int main(){
 	//cin.peek();
 	//cout.put('\n').flush();

@@ -46,6 +46,7 @@ int _start(int argc,char *argv[]){
 		add(set_thread_area,0)
 
 		&&(ret=seccomp_load(ctx))>=0)
+			fprintf(stderr,"it works!\n");
 			return main(argc,argv);
 	seccomp_release(ctx);
 	fprintf(stderr,"error %d\n",ret);
