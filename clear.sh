@@ -1,3 +1,3 @@
 #!/bin/sh
 cd rootfs
-umount bin lib tmp usr
+umount bin data lib tmp usr

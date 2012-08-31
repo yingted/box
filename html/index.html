@@ -1,0 +1,173 @@
+<!doctype html public>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<script src="LAB.min.js" type="text/javascript"></script>
+		<script src="ace/ace.js" type="text/javascript" charset="utf-8">//this is a full minified build; feel free to greasemonkey it up</script>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+		<title>judge</title>
+		<style type="text/css" media="screen">
+			body{
+				overflow:hidden;
+				margin:0;
+			}
+			#navbar{
+				position:relative;
+				float:left;
+				height:100%;
+				width:25em;
+			}
+			#editor{ 
+				position:relative;
+				margin:0;
+				height:100%;
+			}
+			#ed-opts{
+				position:absolute;
+				bottom:0;
+			}
+			fieldset{
+				width:23em;
+				margin-left:auto;
+				margin-right:auto;
+			}
+			#statement{
+				white-space:pre-wrap;
+				word-wrap:break-word;
+			}
+		</style>
+	</head>
+	<body>
+		<form id="navbar">
+			<fieldset>
+				<legend>submit code</legend>
+				<label for="infile">input file</label>
+				<select id="infile"></select>
+				<input id="run" type="submit" />
+				<br>
+				<div id="problem" />
+			</fieldset>
+			<fieldset id="ed-opts">
+				<legend>code viewer</legend>
+				<label for="theme">theme:</label>
+				<select id="theme"></select>
+				<br>
+				<label for="wrap">wrap:</label>
+				<select id="wrap">
+					<option value="80">80 chars</option>
+					<option value="off">off</option>
+					<option value="free">free</option>
+				</select>
+				<br>
+				<label for="binding">keybindings:</label>
+				<select id="binding">
+					<option value="ace">ace</option>
+					<option value="vim">vim</option>
+					<option value="emacs">emacs</option>
+				</select>
+			</fieldset>
+		</form>
+		<pre id="editor">#include&lt;iostream&gt;
+using namespace std;
+int main(int argc,char*argv[]){
+	//this is *not* http://ideone.com/, please don't spam submit
+	return 0;
+}</pre>
+		<script>
+			var editor=ace.edit("editor"),session=editor.getSession(),themes=[["bright",["chrome","clouds","crimson_editor","dawn","dreamweaver","eclipse","github","solarized_light","textmate","tomorrow"]],["dark",["clouds_midnight","cobalt","idle_fingers","kr_theme","merbivore","merbivore_soft","mono_industrial","monokai","pastel_on_dark","solarized_dark","tomorrow_night","tomorrow_night_blue","tomorrow_night_bright","tomorrow_night_eighties","twilight","vibrant_ink"]]],problem=$("#problem"),run=$("#run");
+			session.setMode("ace/mode/c_cpp");
+			function fileUrl(file){
+				return"http://"+location.hostname+":8000"+file;
+			}
+			function getText(x,s){
+				return s+": "+x.status+" "+x.statusText
+			}
+			function get(url,succ,err){
+				if(!(url in get)){
+					get[url]=[[succ],[err]];
+					$.get(fileUrl(url),function(){
+						var args=arguments,ths=this;
+						$.each(get[url][0],function(i,e){
+							e.apply(ths,args);
+						});
+						get[url]=args;
+					}).error(function(){
+						var args=arguments,ths=this;
+						$.each(get[url][1],function(i,e){
+							e.apply(ths,args);
+						});
+						delete get[url];
+					});
+				}else if(get[url]instanceof Array){
+					get[url][0].push(succ);
+					get[url][1].push(err);
+				}else succ.apply(this,get[url]);
+			}
+			$.ajax(fileUrl("/")).done(function(e){
+				$("#infile").append($(e.split("\n")).map(function(i,e)$("<option>").attr("value",e).text(e)[0])).change(function(){
+					problem.html("<em>loading…</em>");
+					get(this.value.replace(/\/[^/]*$/,"/problem.txt"),function(e){
+						problem.html("<h2>problem statement</h2>").append($("<pre id=\"statement\">").text(e));
+					},function(x,s){
+						problem.empty().append($("<strong>").text(getText(x,s)));
+					});
+				}).change();
+				$("#navbar").submit(function(e){
+					e.preventDefault();
+					run.prop("disabled",true);
+					var file=$("#infile").val();
+					if(!file)
+						return;
+					$.post(fileUrl("/submit?input="+encodeURIComponent(file)),session.getValue()).error(function(x,s){
+						alert(getText(x,s));
+					}).complete(function(){
+						run.prop("disabled",false);
+					});
+				});
+			})
+			var bind="ace";
+			$("#binding").change(function(){
+				bind=this.value;
+				if(bind=="ace")
+					editor.setKeyboardHandler(null);
+				else
+					$LAB.script("ace/keybinding-"+bind+".js").wait(function(){
+				editor.setKeyboardHandler(bind=="ace"?null:require("ace/keyboard/"+bind).handler)
+			});
+			}).change();
+			$("#theme").append($(themes).map(function(i,e){return $("<optgroup>").attr("label",e[0]).append($(e[1]).map(function(i,e){return $("<option>").attr("value",e).text(e)[0]}))[0]}))
+				.change(function(e){editor.setTheme("ace/theme/"+e.target.value)}).change()
+			$.each("select-whole-line highlight-active-line show-invisibles display-indent-guides show-gutter show-print-margin highlight-selected-word h-scroll-bar-always-visible animated-scroll use-soft-tabs behaviours-enabled fade-fold-widgets".split(" "),function(i,e){
+				var f="set"+e.replace(/(?:-|^)([a-z])/g,function(_,e){return e.toUpperCase()}),g=
+					e=="select-whole-line"?{setSelectWholeLine:function(e){editor.setSelectionStyle(e?"line":"text")},getSelectWholeLine:function(){return editor.getSelectionStyle()=="line"}}:
+					f in editor?editor:
+					f in session?session:
+					editor.renderer;
+				$("<input type=\"checkbox\">").attr("id",e).change(function(e){g[f](e.target.checked)}).prop("checked",g["g"+f.substring(1)]()).change().after($("<label>").attr("for",e).text(e.replace(/-/g," "))).before("<br>").appendTo("#ed-opts");
+			});
+			$("fieldset>legend").click(function(){
+				if(this.parentNode.children.length>2){
+					$(this).parent().wrapInner("<div>");
+					$(this).appendTo($(this).parent().parent());
+				}
+				$(this).parent().find("div").toggle();
+			}).last().click();
+			$("#wrap").change(function(e){
+				switch(e.target.value){
+					case"off":
+						session.setUseWrapMode(false);
+						break;
+					case"80":
+						session.setUseWrapMode(true);
+						session.setWrapLimitRange(80,80);
+						break;
+					case"free":
+						session.setUseWrapMode(true);
+						session.setWrapLimitRange(null,null);
+						break; 
+				}
+			}).change();
+		</script>
+	</body>
+</html>

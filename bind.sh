@@ -1,8 +1,9 @@
 #!/bin/sh
 cd rootfs
+bindm(){ mount -o "$3" --bind "$1" "$2"; mount -o "ro,remount,bind,$3" "$2"; }
 for x in bin lib usr
 do
-	mount -o ro --bind /$x $x
-	mount -o ro,remount,bind $x
+	bindm "/$x" "$x"
 done
-mount -t tmpfs tmpfs tmp -o rw,nosuid,seclabel,size=128m,nr_inodes=7
+bindm /home/ted/Documents/csclub data noexec
+mount -t tmpfs tmpfs tmp -o rw,nosuid,seclabel,size=128m,nr_inodes=8
