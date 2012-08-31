@@ -1,6 +1,12 @@
 #!/bin/sh
-#usage: $0 test file-blocks wall-secs cpu-secs memory-kb vsize-kb
+#usage: $0 test_path file_blocks wall_secs cpu_secs memory_kb vsize_kb
 set -e
+test_path="$1";
+file_blocks="${2:-1}"
+wall_secs="${3:-2}"
+cpu_secs="${4:-1}"
+memory_kb="${5:-$[256*1024]}"
+vsize_kb="${6:-$[320*1024]}"
 exec 2>&1
 cd /tmp
 deps="`cpp -MM solution.cpp | cut -d\  -f3-`";
@@ -16,8 +22,10 @@ rm solution.o
 strip solution
 (
 	set +e
-	ulimit -d1024 -f${2:-1} -i5 -m${5:-$[256*1024]} -n5 -q0 -t${4:-1} -v${6:-$[320*1024]} -x0
-	exec &>out
-	LD_LIBRARY_PATH=/build time timeout ${3:-1} ./solution <"/data$1" &>&3
+	ulimit -d1024 -f"$file_blocks" -i5 -m"$memory_kb" -n5 -q0 -t"$cpu_secs" -v"$vsize_kb" -x0
+	LD_LIBRARY_PATH=/build time -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" timeout "$wall_secs" ./solution <"/data$test_path" >stdout 2>score
 	echo $?
-) 3>&1 | /build/score "/data${1/input/output}" /dev/stdin >score
+)
+/build/score "/data$(sed 's/\(.*\)\binput\b/\1output/' <<< "$test_path")" stdout >>score
+rm solution stdout
+exec find tmp -mindepth 1 ! -name score -delete &>/dev/null

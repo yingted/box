@@ -9,10 +9,14 @@ while :
 do
 	while next
 	do
-		inotifywait -qe modify -e delete html/code html/code/* > /dev/null
+		mkdir -p html/code
+		find html/code -maxdepth 1 -type d -exec inotifywait -qe modify -e delete -e delete_self -t1 {} + > /dev/null
 	done
+	sudo find rootfs/tmp -mindepth 1 -delete
 	cp "$file/solution.cpp" rootfs/tmp
-	sudo lxc-execute -n box -- /build/drop 99 /build/compile.sh "$(cat "$file/in")"
-	#sudo chroot --userspec=99:99 rootfs /build/compile.sh "$(cat "$file/in")"
+	sudo lxc-execute -n box -- /build/drop 99 /build/compile.sh "$(cat "$file/in")" > "$file/out"
+	#sudo chroot --userspec=99:99 rootfs /build/compile.sh "$(cat "$file/in")" > "$file/out"
 	rm rootfs/tmp/solution.cpp
+	mv rootfs/tmp/score "$file"
+	sudo find rootfs/tmp -mindepth 1 -delete
 done
