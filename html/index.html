@@ -5,7 +5,8 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 		<script src="LAB.min.js" type="text/javascript"></script>
 		<script src="ace/ace.js" type="text/javascript" charset="utf-8">//this is a full minified build; feel free to greasemonkey it up</script>
-		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+		<!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>-->
+		<script src="jquery-1.8.0.min.js"></script>
 		<title>judge</title>
 		<style type="text/css" media="screen">
 			body{
@@ -17,23 +18,73 @@
 				float:left;
 				height:100%;
 				width:25em;
+				overflow-y:scroll;
 			}
 			#editor{ 
 				position:relative;
 				margin:0;
 				height:100%;
 			}
-			#ed-opts{
-				position:absolute;
-				bottom:0;
-			}
 			fieldset{
-				width:23em;
+				width:22em;
 				margin-left:auto;
 				margin-right:auto;
 			}
+			legend>span:hover{
+				text-decoration:underline;
+			}
+			legend>:nth-child(2){
+				position:absolute;
+				right:1em;
+			}
 			#statement{
 				white-space:pre-wrap;
+				word-wrap:break-word;
+			}
+			.small{
+				font-size:8pt;
+				font-style:italic;
+				opacity:0.7;
+				filter:alpha(opacity=70);/*msie*/
+				zoom:1;
+			}
+			#templates{
+				display:none;
+			}
+			.bar-tot{
+				position:relative;
+			}
+			.bar-good,.bar-ws,.bar-bad{
+				float:left;
+			}
+			.bar-good{
+				text-align:left;
+				background-color:#3f3;
+			}
+			.bar-ws{
+				text-align:center;
+				background-color:#cc3;
+			}
+			.bar-bad{
+				text-align:right;
+				background-color:#f33;
+			}
+			.bar-eof{
+				text-align:center;
+				float:right;
+				background-color:#f00;
+			}
+			.entry{
+				border-bottom:solid 1px #666;
+			}
+			.entry>:first-child{
+				float:left;
+				width:1em;
+			}
+			#out{
+				background-color:#eee;
+				border-top:solid 1px #666;
+				font-size:10pt;
 				word-wrap:break-word;
 			}
 		</style>
@@ -41,15 +92,28 @@
 	<body>
 		<form id="navbar">
 			<fieldset>
-				<legend>submit code</legend>
-				<label for="infile">input file</label>
+				<legend>
+					<span>submit code</span>
+					<input id="run" type="submit"></div>
+				</legend>
+				<label for="infile">input file:</label>
 				<select id="infile"></select>
-				<input id="run" type="submit" />
-				<br>
-				<div id="problem" />
+				<hr>
+				<div id="problem">
+					<span class="small">problem.txt will be here</span>
+				</div>
+			</fieldset>
+			<fieldset id="log">
+				<legend>
+					<span>log</span>
+					<button id="clear">clear</button>
+				</legend>
+				<div id="out"></div>
 			</fieldset>
 			<fieldset id="ed-opts">
-				<legend>code viewer</legend>
+				<legend>
+					<span>code viewer</span>
+				</legend>
 				<label for="theme">theme:</label>
 				<select id="theme"></select>
 				<br>
@@ -67,6 +131,18 @@
 					<option value="emacs">emacs</option>
 				</select>
 			</fieldset>
+			<span class="small">
+				uses
+				<a href="http://ace.ajax.org/"><abbr title="Ajax.org Cloud9 Editor">Ace</abbr></a> (custom build),
+				<a href="http://gcc.gnu.org/"><abbr title="GNU Compiler Collection">GCC</abbr></a> 4.6.3,
+				<a href="https://github.com/rvoicilas/inotify-tools/wiki/">inotify-tools</a>,
+				<a href="http://jquery.com/">jQuery</a>,
+				<a href="http://labjs.com/"><abbr title="Loading And Blocking JavaScript">LABjs</abbr></a>,
+				<a href="http://sourceforge.net/projects/libseccomp/">libseccomp</a> (custom),
+				<a href="http://lxc.sourceforge.net/"><abbr title="Linux Containers">lxc</abbr></a>,
+				<a href="http://www.python.org/">python</a>,
+				and more.
+			</span>
 		</form>
 		<pre id="editor">#include&lt;iostream&gt;
 using namespace std;
@@ -74,10 +150,43 @@ int main(int argc,char*argv[]){
 	//this is *not* http://ideone.com/, please don't spam submit
 	return 0;
 }</pre>
-		<script>
-			var editor=ace.edit("editor"),session=editor.getSession(),themes=[["bright",["chrome","clouds","crimson_editor","dawn","dreamweaver","eclipse","github","solarized_light","textmate","tomorrow"]],["dark",["clouds_midnight","cobalt","idle_fingers","kr_theme","merbivore","merbivore_soft","mono_industrial","monokai","pastel_on_dark","solarized_dark","tomorrow_night","tomorrow_night_blue","tomorrow_night_bright","tomorrow_night_eighties","twilight","vibrant_ink"]]],problem=$("#problem"),run=$("#run");
+		<div id="templates">
+			<div id="bar" class="bar-tot">
+				<div class="bar-good"></div>
+				<div class="bar-ws"></div>
+				<div class="bar-bad"></div>
+				<div class="bar-eof"></div>
+			</div>
+			<a href="http://linux.die.net/man/1/time" id="timef" class="small">wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O</a>
+		</div>
+		<script type="text/javascript">//screw modules/separation/good practice; start loading ace
+			var editor=ace.edit("editor"),session=editor.getSession(),themes=[["bright",["chrome","clouds","crimson_editor","dawn","dreamweaver","eclipse","github","solarized_light","textmate","tomorrow"]],["dark",["clouds_midnight","cobalt","idle_fingers","kr_theme","merbivore","merbivore_soft","mono_industrial","monokai","pastel_on_dark","solarized_dark","tomorrow_night","tomorrow_night_blue","tomorrow_night_bright","tomorrow_night_eighties","twilight","vibrant_ink"]]],problem=$("#problem"),run=$("#run"),defconfig={wait_mins:1,file_blocks:1,wall_secs:2,cpu_secs:4,memory_kb:256*1024,vsize_kb:320*1024},out=$("#out");
 			session.setMode("ace/mode/c_cpp");
-			function fileUrl(file){
+			function clog(x,css,ch,tag){//start logging utils
+				for(var a=$("<div class=\"entry\">").append(
+						$("<div>").append($(tag).css(css).text(ch))
+					),i=0;i<x.length;++i)
+					a.append("&nbsp;").append(x[i]instanceof $?x[i]:x[i]+"");
+				a.eq(1).remove();
+				out.append(a);
+			}
+			function info(){
+				console.info.apply(console,arguments);
+				clog(arguments,{backgroundColor:"#33f",color:"#fff"},"i","<strong>");
+			}
+			function warn(){
+				console.warn.apply(console,arguments);
+				clog(arguments,{backgroundColor:"#ff0"},"!","<strong>");
+			}
+			function err(){
+				console.error.apply(console,arguments);
+				clog(arguments,{backgroundColor:"#f33",color:"#fff"},"✖","<span>");//xX✖✗✘
+			}
+			function dbg(){
+				console.log.apply(console,arguments);
+				clog(arguments,{backgroundColor:"#333",color:"#6f6"},">","<span>");//or \xa0
+			}
+			function fileUrl(file){//start xhr utils
 				return"http://"+location.hostname+":8000"+file;
 			}
 			function getText(x,s){
@@ -104,8 +213,64 @@ int main(int argc,char*argv[]){
 					get[url][1].push(err);
 				}else succ.apply(this,get[url]);
 			}
-			$.ajax(fileUrl("/")).done(function(e){
-				$("#infile").append($(e.split("\n")).map(function(i,e)$("<option>").attr("value",e).text(e)[0])).change(function(){
+			function retry(reconnect,msg){
+				return function(x){
+					if(x.status==404)
+						alert(msg);
+					else
+						setTimeout(reconnect,10000);
+				};
+			}
+			function pct(r){//stupid formatting
+				return((r*1e8|0)/1e6).toFixed(6)+"%";
+			}
+			function link(url,text){
+				return $("<a>").attr("href",url).text(text==undefined?url:text);
+			}
+			function submit(e){
+				if(e.preventDefault)
+					e.preventDefault();
+				run.prop("disabled",true);
+				var file=$("#infile").val();
+				if(!file)
+					return;
+				$.post(fileUrl("/submit?input="+encodeURIComponent(file)),session.getValue(),function(x){
+					var url=fileUrl("/code/"+x),score=url+"/score";
+					(function connect(){
+						$.ajax(score).done(function(x){
+							(function connect(){
+								$.ajax(url+"/out",function(x){
+									log("output",x);//TODO implement
+								}).error(retry(connect,"cancelled by admin"));
+							})();
+							if(x.length){
+								x=x.split("\n");
+								var sizes=x[1].split(" ").map(Number),bar=$("#bar").clone().removeAttr("id"),den=sizes[0]+(sizes[3]^=1);
+								if(sizes[1])
+									bar.find(".bar-good").text(sizes[1]).width(pct(sizes[1]/den));
+								if(sizes[2])
+									bar.find(".bar-ws").text(sizes[2]).width(pct(sizes[2]/den));
+								if(sizes[4]=sizes[0]-sizes[1]+sizes[2])
+									bar.find(".bar-bad").text(sizes[4]).width(pct(sizes[4]/den));
+								if(sizes[3])
+									bar.find(".bar-eof").text("!").width(pct(sizes[3]/den));//prepare to scale it up
+								info(sizes[0]+" lines, "+(100*sizes[1]/sizes[0]).toFixed(2)+"% correct"+(sizes[2]?", "+(100*sizes[2]/sizes[0]).toFixed(2)+"% whitespace error":"")+(sizes[3]?", no EOF":""),bar);
+								dbg("run completed",x[0],$("#timef").clone().removeAttr("id"));
+								dbg("ran",link(url+"/solution.cpp","this program"),"on "+file+",",link(url+"/in","path here"));
+							}else
+								warn("code was not executed");
+						}).error(retry(connect,"cancelled by admin"));
+					})();
+				}).error(function(x,s){
+					alert(getText(x,s));
+				}).complete(function(){
+					run.prop("disabled",false);
+				});
+			}
+			$.ajax(fileUrl("/")).done(function(e){//start async'ly loading problem data
+				$("#infile").append($(e.split("\n")).map(function(i,e){
+					return $("<option>").attr("value",e).text(e)[0];
+				})).change(function(){
 					problem.html("<em>loading…</em>");
 					get(this.value.replace(/\/[^/]*$/,"/problem.txt"),function(e){
 						problem.html("<h2>problem statement</h2>").append($("<pre id=\"statement\">").text(e));
@@ -113,31 +278,27 @@ int main(int argc,char*argv[]){
 						problem.empty().append($("<strong>").text(getText(x,s)));
 					});
 				}).change();
-				$("#navbar").submit(function(e){
-					e.preventDefault();
-					run.prop("disabled",true);
-					var file=$("#infile").val();
-					if(!file)
-						return;
-					$.post(fileUrl("/submit?input="+encodeURIComponent(file)),session.getValue()).error(function(x,s){
-						alert(getText(x,s));
-					}).complete(function(){
-						run.prop("disabled",false);
-					});
-				});
-			})
-			var bind="ace";
+				$("#navbar").submit(submit);
+			});
+			var bind="ace",HashHandler=require("ace/keyboard/hash_handler").HashHandler,acehandler=new HashHandler(),submitcmd={name:"submitCode",exec:submit,bindKey:"ctrl-s"};//start customizing ace, binding events, etc.
+			acehandler.addCommand(submitcmd);
 			$("#binding").change(function(){
 				bind=this.value;
 				if(bind=="ace")
-					editor.setKeyboardHandler(null);
+					editor.setKeyboardHandler(acehandler);
 				else
 					$LAB.script("ace/keybinding-"+bind+".js").wait(function(){
-				editor.setKeyboardHandler(bind=="ace"?null:require("ace/keyboard/"+bind).handler)
-			});
+						if(bind=="ace")
+							editor.setKeyboardHandler(acehandler);
+						else{
+							var handler=require("ace/keyboard/"+bind).handler;
+							handler.addCommand(submitcmd);
+							editor.setKeyboardHandler(handler)
+						}
+					});
 			}).change();
 			$("#theme").append($(themes).map(function(i,e){return $("<optgroup>").attr("label",e[0]).append($(e[1]).map(function(i,e){return $("<option>").attr("value",e).text(e)[0]}))[0]}))
-				.change(function(e){editor.setTheme("ace/theme/"+e.target.value)}).change()
+				.change(function(e){editor.setTheme("ace/theme/"+e.target.value)}).val("textmate");
 			$.each("select-whole-line highlight-active-line show-invisibles display-indent-guides show-gutter show-print-margin highlight-selected-word h-scroll-bar-always-visible animated-scroll use-soft-tabs behaviours-enabled fade-fold-widgets".split(" "),function(i,e){
 				var f="set"+e.replace(/(?:-|^)([a-z])/g,function(_,e){return e.toUpperCase()}),g=
 					e=="select-whole-line"?{setSelectWholeLine:function(e){editor.setSelectionStyle(e?"line":"text")},getSelectWholeLine:function(){return editor.getSelectionStyle()=="line"}}:
@@ -146,12 +307,13 @@ int main(int argc,char*argv[]){
 					editor.renderer;
 				$("<input type=\"checkbox\">").attr("id",e).change(function(e){g[f](e.target.checked)}).prop("checked",g["g"+f.substring(1)]()).change().after($("<label>").attr("for",e).text(e.replace(/-/g," "))).before("<br>").appendTo("#ed-opts");
 			});
-			$("fieldset>legend").click(function(){
-				if(this.parentNode.children.length>2){
-					$(this).parent().wrapInner("<div>");
-					$(this).appendTo($(this).parent().parent());
+			$("fieldset>legend>:first-child").click(function(){
+				var ths=this.parentNode;
+				if(ths.parentNode.children.length!=2){
+					$(ths).parent().wrapInner("<div>");
+					$(ths).appendTo($(ths).parent().parent());
 				}
-				$(this).parent().find("div").toggle();
+				$(ths).parent().find("div").toggle();
 			}).last().click();
 			$("#wrap").change(function(e){
 				switch(e.target.value){
@@ -168,6 +330,11 @@ int main(int argc,char*argv[]){
 						break; 
 				}
 			}).change();
+			$("#clear").click(function(e){
+				e.preventDefault();
+				out.empty();
+			});
 		</script>
 	</body>
-</html>
+</html><!-- vim:ts=2 sw=2
+-->

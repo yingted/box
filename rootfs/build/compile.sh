@@ -7,6 +7,10 @@ wall_secs="${3:-2}"
 cpu_secs="${4:-1}"
 memory_kb="${5:-$[256*1024]}"
 vsize_kb="${6:-$[320*1024]}"
+conf="/data${test_path%/*}/config"
+[ -e "$conf" ] && . "$conf"
+tconf="/data$(sed 's/\(.*\)\binput\b/\1config/' <<< "$test_path")"
+[ -e "$tconf" ] && . "$tconf"
 exec 2>&1
 cd /tmp
 deps="`cpp -MM solution.cpp | cut -d\  -f3-`";
@@ -23,7 +27,7 @@ strip solution
 (
 	set +e
 	ulimit -d1024 -f"$file_blocks" -i5 -m"$memory_kb" -n5 -q0 -t"$cpu_secs" -v"$vsize_kb" -x0
-	LD_LIBRARY_PATH=/build time -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" timeout "$wall_secs" ./solution <"/data$test_path" >stdout 2>score
+	LD_LIBRARY_PATH=/build time -o score -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" timeout "$wall_secs" ./solution <"/data$test_path" >stdout 2>/dev/null
 	echo $?
 )
 /build/score "/data$(sed 's/\(.*\)\binput\b/\1output/' <<< "$test_path")" stdout >>score
