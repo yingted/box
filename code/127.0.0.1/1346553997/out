@@ -1,0 +1,4 @@
+solution.cpp: In function ‘int main(int, char**)’:
+solution.cpp:5:9: error: expected identifier before numeric constant
+solution.cpp:5:2: error: named return values are no longer supported
+solution.cpp:6:1: error: expected ‘{’ at end of input

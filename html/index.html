@@ -1,12 +1,19 @@
 <!doctype html public>
 <html lang="en">
 	<head>
-		<meta charset="UTF-8">
+		<meta charset="UTF-8"><!--XXX-->
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<script type="text/javascript">//yay cookies!
+			for(var starttime=new Date().getTime()/*msie*/,cks=document.cookie.split("; "),i=0;i<cks.length;++i)
+				cks[i]=cks[i].substring(cks[i].indexOf("=")+1);
+			var chash={"$":"$",n:"\n",s:";"},oldcode=cks.join("").replace(/\$./g,function(s){
+				return chash[s[1]];
+			});
+		</script>
 		<script src="LAB.min.js" type="text/javascript"></script>
-		<script src="ace/ace.js" type="text/javascript" charset="utf-8">//this is a full minified build; feel free to greasemonkey it up</script>
-		<!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>-->
-		<script src="jquery-1.8.0.min.js"></script>
+		<script src="ace/ace.js" type="text/javascript" charset="utf-8"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+		<!--<script src="jquery-1.8.0.min.js"></script>-->
 		<title>judge</title>
 		<style type="text/css" media="screen">
 			body{
@@ -76,6 +83,7 @@
 			}
 			.entry{
 				border-bottom:solid 1px #666;
+				position:relative;
 			}
 			.entry>:first-child{
 				float:left;
@@ -85,16 +93,59 @@
 				background-color:#eee;
 				border-top:solid 1px #666;
 				font-size:10pt;
+				white-space:pre-wrap;
 				word-wrap:break-word;
 			}
+			.ts{
+				position:absolute;
+				right:0;
+				top:0;
+				font-family:monospace;
+				color:#707;
+				opacity:0.3;
+				filter:alpha(opacity=30);/*msie*/
+				zoom:1;
+			}
+			.ts-ctrl:hover,.entry:hover>.ts-ctrl,tr:hover>.td-last>.ts-ctrl{
+				display:none;
+			}
+			.ts:hover{
+				opacity:1;
+				filter:alpha(opacity=100);/*msie*/
+				background-color:#eee;
+				border:dashed 1px #999;
+				margin:-1px;
+			}
+			.ann-error,.ann-warning,.ann-info{
+				position:absolute;
+				z-index:5;
+				border-radius:2px;
+				box-shadow:0 0 3px 0 white;
+			}
+			.ann-error{
+				background:none repeat scroll 0 0 #f33;
+			}
+			.ann-warning{
+				background:none repeat scroll 0 0 #ff0;
+			}
+			.ann-info{
+				background:none repeat scroll 0 0 #33f;
+			}
+			#hist{
+				font-size:10pt;
+			}
+			.td-last{
+				position:absolute;
+			}
 		</style>
+		<base target='_blank' />
 	</head>
 	<body>
 		<form id="navbar">
 			<fieldset>
 				<legend>
 					<span>submit code</span>
-					<input id="run" type="submit"></div>
+					<input id="run" type="submit" value="submit (ctrl-s)" />
 				</legend>
 				<label for="infile">input file:</label>
 				<select id="infile"></select>
@@ -103,7 +154,26 @@
 					<span class="small">problem.txt will be here</span>
 				</div>
 			</fieldset>
-			<fieldset id="log">
+			<fieldset>
+				<legend>
+					<span>history</span>
+					<button id="rlhist">reload</button>
+				</legend>
+				<table width="100%">
+					<tbody id="hist">
+						<tr>
+							<th>input</th>
+							<th>(load)</th>
+							<th>code</th>
+							<th>(load)</th>
+							<th>output</th>
+							<th>score</th>
+							<th>(load)</th>
+						</tr>
+					</tbody>
+				</table>
+			</fieldset>
+			<fieldset>
 				<legend>
 					<span>log</span>
 					<button id="clear">clear</button>
@@ -112,7 +182,7 @@
 			</fieldset>
 			<fieldset id="ed-opts">
 				<legend>
-					<span>code viewer</span>
+					<span class="prehide">code viewer</span>
 				</legend>
 				<label for="theme">theme:</label>
 				<select id="theme"></select>
@@ -128,7 +198,7 @@
 				<select id="binding">
 					<option value="ace">ace</option>
 					<option value="vim">vim</option>
-					<option value="emacs">emacs</option>
+					<option value="emacs">emacs (also binds ctrl-s)</option>
 				</select>
 			</fieldset>
 			<span class="small">
@@ -160,15 +230,86 @@ int main(int argc,char*argv[]){
 			<a href="http://linux.die.net/man/1/time" id="timef" class="small">wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O</a>
 		</div>
 		<script type="text/javascript">//screw modules/separation/good practice; start loading ace
-			var editor=ace.edit("editor"),session=editor.getSession(),themes=[["bright",["chrome","clouds","crimson_editor","dawn","dreamweaver","eclipse","github","solarized_light","textmate","tomorrow"]],["dark",["clouds_midnight","cobalt","idle_fingers","kr_theme","merbivore","merbivore_soft","mono_industrial","monokai","pastel_on_dark","solarized_dark","tomorrow_night","tomorrow_night_blue","tomorrow_night_bright","tomorrow_night_eighties","twilight","vibrant_ink"]]],problem=$("#problem"),run=$("#run"),defconfig={wait_mins:1,file_blocks:1,wall_secs:2,cpu_secs:4,memory_kb:256*1024,vsize_kb:320*1024},out=$("#out");
+			if($.browser.msie||!console)
+				console={log:function(){},info:function(){},warn:function(){},error:function(){}};
+			$("legend,#templates>*").contents().filter(function(){
+				return this.nodeType==3;//Node.TEXT_NODE
+			}).remove();
+			var editor=ace.edit("editor"),session=editor.getSession(),themes=[["bright",["chrome","clouds","crimson_editor","dawn","dreamweaver","eclipse","github","solarized_light","textmate","tomorrow"]],["dark",["clouds_midnight","cobalt","idle_fingers","kr_theme","merbivore","merbivore_soft","mono_industrial","monokai","pastel_on_dark","solarized_dark","tomorrow_night","tomorrow_night_blue","tomorrow_night_bright","tomorrow_night_eighties","twilight","vibrant_ink"]]],problem=$("#problem"),run=$("#run"),defconfig={wait_mins:1,file_blocks:1,wall_secs:2,cpu_secs:4,memory_kb:256*1024,vsize_kb:320*1024},out=$("#out"),sacrifice=$("<span>"),anns={},PlaceHolder=require("ace/placeholder").PlaceHolder,phs=[];
 			session.setMode("ace/mode/c_cpp");
+			session.addEventListener("change",function(){
+				tryannotate();
+			});
+			function tryannotate(ann){
+				if(!(ann=anns[session.getValue()]||ann))
+					return;
+				$.map(phs,function(e){
+					e.detach();
+				});
+				session.setAnnotations(ann=$.extend(true,[],ann));
+				phs=$.map(ann,function(e){
+						var ph=new PlaceHolder(session,1,e,[],"ann-"+e.type);
+						ph.pos.addEventListener("change",function(f){
+							e.row=f.value.row;
+							e.column=f.value.column;//doesn't matter
+						});
+						return ph;
+				});
+			}
+			var expire="=;expires="+new Date(0).toGMTString(),keep=";Max-Age=999999",ckmaxlen,ckmax;
+			setTimeout(function getckmaxlen(){
+				dbg("deferred tasks for cookie support…");
+				$.map(document.cookie.split("; "),function(e){
+					document.cookie=e.substring(0,e.indexOf("="))+expire;
+				});
+				dbg("cleared cookies");
+				function ckcanset(s){
+					document.cookie=s+keep;
+					return document.cookie==s;
+				}
+				for(var yes="",no="a";ckcanset(no);no+=(yes=no));
+				while(yes.length+1<no.length){
+					var mid=no.substring(0,yes.length+no.length>>1);
+					if(ckcanset(mid))
+						yes=mid;
+					else
+						no=mid;
+				}
+				ckmaxlen=yes.length||1<<15;//screwed anyways
+				document.cookie="_";
+				for(var i=0;document.cookie[0]=="_";document.cookie=i++ +"=1");
+				dbg("cookie max len:",yes.length?ckmaxlen:"unknown","; max cookies:",ckmax=i);
+				while(i)
+					document.cookie=--i+expire;
+			},5000);
+			$(window).unload(function(){
+				var buf=session.getValue().replace(/\$/g,"$$").replace(/\n/g,"$n").replace(/;/g,"$s"),chrs="`1234567890-~!@#$%^&*()_+qwertyuiop[]\\QWERTYUIOP{}|asdfghjkl;'ASDFGHJKL:\"zxcvbnm,./ZXCVBNM<>?",rad=chrs.length;
+				for(var i=0,n=0,id;i<buf.length&&n<ckmax;document.cookie=id+"="+buf.substring(i,i+=ckmaxlen-id.length)+keep)
+					for(var id="",j=i;j;j=j/rad|0)
+						id+=j%rad;
+			});
+			function ts(s){
+				return rehover($("<span class=\"ts\">")).text(s).attr("title","hold z to hide");
+			}
+			function htmlify(x){
+				return sacrifice.text(x).html();
+			}
+			function asnprintfn0nd(n,d){
+				for(var s=d+"";s.length<n;s="0"+s);
+				return s;
+			}
 			function clog(x,css,ch,tag){//start logging utils
-				for(var a=$("<div class=\"entry\">").append(
+				for(var now=new Date(),a=$("<div class=\"entry\">").append(
 						$("<div>").append($(tag).css(css).text(ch))
 					),i=0;i<x.length;++i)
-					a.append("&nbsp;").append(x[i]instanceof $?x[i]:x[i]+"");
+					a.append("&nbsp;").append(x[i]instanceof $?x[i]:htmlify(x[i]+""));
 				a.eq(1).remove();
-				out.append(a);
+				out.append(a.append(ts(
+						now.getHours()
+						+":"+asnprintfn0nd(2,now.getMinutes())
+						+":"+asnprintfn0nd(2,now.getSeconds())
+						+"."+asnprintfn0nd(3,now.getMilliseconds())
+					)));
 			}
 			function info(){
 				console.info.apply(console,arguments);
@@ -213,10 +354,15 @@ int main(int argc,char*argv[]){
 					get[url][1].push(err);
 				}else succ.apply(this,get[url]);
 			}
+			function erf(msg){
+				return function(){
+					err("error:",msg);
+				}
+			}
 			function retry(reconnect,msg){
 				return function(x){
 					if(x.status==404)
-						alert(msg);
+						err(msg);
 					else
 						setTimeout(reconnect,10000);
 				};
@@ -225,49 +371,73 @@ int main(int argc,char*argv[]){
 				return((r*1e8|0)/1e6).toFixed(6)+"%";
 			}
 			function link(url,text){
-				return $("<a>").attr("href",url).text(text==undefined?url:text);
+				text=$("<a>").text(text==undefined?url:text);
+				if(typeof url=="function")
+					text.attr("href","#").click(function(e){
+						e.preventDefault();
+						url.apply(this,arguments);
+					});
+				else
+					text.attr("href",url);
+				return text;
+			}
+			function onscore(x){
+				if(x.length){
+					x=x.split("\n");
+					var sizes=x[1].split(" ").map(Number),bar=$("#bar").clone().removeAttr("id").append("&nbsp;"),den=sizes[0]+(sizes[3]^=1);
+					if(sizes[1])
+						bar.find(".bar-good").text(sizes[1]).width(pct(sizes[1]/den));
+					if(sizes[2])
+						bar.find(".bar-ws").text(sizes[2]).width(pct(sizes[2]/den));
+					if(sizes[4]=sizes[0]-sizes[1]+sizes[2])
+						bar.find(".bar-bad").text(sizes[4]).width(pct(sizes[4]/den));
+					if(sizes[3])
+						bar.find(".bar-eof").text("!").width(pct(sizes[3]/den));//prepare to scale it up
+					info(sizes[0]+" lines, "+(100*sizes[1]/sizes[0]).toFixed(2)+"% correct"+(sizes[2]?", "+(100*sizes[2]/sizes[0]).toFixed(2)+"% whitespace error":"")+(sizes[3]?", no EOF":""),bar);
+					dbg("run completed",x[0],$("#timef").clone().removeAttr("id"));
+					dbg("ran",link(url+"/solution.cpp","this program"),"on "+file+",",link(url+"/in","path here"));
+				}else
+					warn("code was not executed");
 			}
 			function submit(e){
 				if(e.preventDefault)
 					e.preventDefault();
 				run.prop("disabled",true);
-				var file=$("#infile").val();
+				info("submitting…");
+				var file=$("#infile").val(),code=session.getValue();
 				if(!file)
 					return;
-				$.post(fileUrl("/submit?input="+encodeURIComponent(file)),session.getValue(),function(x){
+				if(anns.hasOwnProperty(code)){
+					err("double-submission blocked; add a comment and try again if you meant to do this");
+					return;
+				}
+				$.post(fileUrl("/submit?input="+encodeURIComponent(file)),code,function(x){
+					info("upload successful");
 					var url=fileUrl("/code/"+x),score=url+"/score";
 					(function connect(){
 						$.ajax(score).done(function(x){
 							(function connect(){
-								$.ajax(url+"/out",function(x){
-									log("output",x);//TODO implement
+								$.ajax(url+"/out").done(function(x){
+									var abbr=/^(?:[^\n]{0,40}\n?){0,10}/.exec(x)[0],gcchash={"error: ":"error","warning: ":"warning","note: ":"info"};
+									dbg(abbr.length==x.length?x:abbr+"…");
+									dbg(link(url+"/out","output"));
+									for(var ann=[],re=/^solution\.cpp:(\d+):(\d+): (\w+: )?([^\n]*)/mg,m;m=re.exec(x);)
+										ann.push({type:gcchash[m[3]]||"note",row:m[1]-1,column:m[2]-1,text:m[4]});
+									anns[code]=ann;
+									tryannotate();//will not dig edit history
 								}).error(retry(connect,"cancelled by admin"));
 							})();
-							if(x.length){
-								x=x.split("\n");
-								var sizes=x[1].split(" ").map(Number),bar=$("#bar").clone().removeAttr("id"),den=sizes[0]+(sizes[3]^=1);
-								if(sizes[1])
-									bar.find(".bar-good").text(sizes[1]).width(pct(sizes[1]/den));
-								if(sizes[2])
-									bar.find(".bar-ws").text(sizes[2]).width(pct(sizes[2]/den));
-								if(sizes[4]=sizes[0]-sizes[1]+sizes[2])
-									bar.find(".bar-bad").text(sizes[4]).width(pct(sizes[4]/den));
-								if(sizes[3])
-									bar.find(".bar-eof").text("!").width(pct(sizes[3]/den));//prepare to scale it up
-								info(sizes[0]+" lines, "+(100*sizes[1]/sizes[0]).toFixed(2)+"% correct"+(sizes[2]?", "+(100*sizes[2]/sizes[0]).toFixed(2)+"% whitespace error":"")+(sizes[3]?", no EOF":""),bar);
-								dbg("run completed",x[0],$("#timef").clone().removeAttr("id"));
-								dbg("ran",link(url+"/solution.cpp","this program"),"on "+file+",",link(url+"/in","path here"));
-							}else
-								warn("code was not executed");
+							onscore(x);
 						}).error(retry(connect,"cancelled by admin"));
 					})();
 				}).error(function(x,s){
-					alert(getText(x,s));
+					err(getText(x,s));
 				}).complete(function(){
 					run.prop("disabled",false);
 				});
 			}
 			$.ajax(fileUrl("/")).done(function(e){//start async'ly loading problem data
+				dbg("got problem list");
 				$("#infile").append($(e.split("\n")).map(function(i,e){
 					return $("<option>").attr("value",e).text(e)[0];
 				})).change(function(){
@@ -279,9 +449,67 @@ int main(int argc,char*argv[]){
 					});
 				}).change();
 				$("#navbar").submit(submit);
-			});
-			var bind="ace",HashHandler=require("ace/keyboard/hash_handler").HashHandler,acehandler=new HashHandler(),submitcmd={name:"submitCode",exec:submit,bindKey:"ctrl-s"};//start customizing ace, binding events, etc.
-			acehandler.addCommand(submitcmd);
+			}).error(erf("loading problem list"));
+			function loadhist(){
+				$.ajax(fileUrl("/code")).done(function(x){
+					var a=x.split("\n"),hist=$("#hist"),base="/code/"+a.shift()+"/";
+					hist.find("tr:gt(0)").remove();
+					$.map(a,function(t){
+						e=base+t;
+						t=(t=new Date(1000*t)).getHours()
+							+":"+asnprintfn0nd(2,t.getMinutes())
+							+":"+asnprintfn0nd(2,t.getSeconds());
+						var tr=hist[0].insertRow(-1);
+						link(e+"/in","link").appendTo(tr.insertCell(-1));
+						link(function(){
+							dbg("loading input from",t);
+							get(e+"/in",function(val){
+								dbg("loaded input from",t);
+								$("#infile").val(val).change();
+							});
+						},"load").appendTo(tr.insertCell(-1));
+						link(e+"/solution.cpp","link").appendTo(tr.insertCell(-1));
+						link(function(){
+							dbg("loading code and output from",t);
+							var vl,evt=function(){
+								dbg("loaded output from",t);
+								onout(vl);
+							};
+							get(e+"/solution.cpp",function(val){
+								dbg("loaded code from",t);
+								session.setValue(val);
+								vl=vl?evt():true;
+							});
+							get(e+"/out",function(val){
+								vl=vl?evt():val;
+							});
+						},"load").appendTo(tr.insertCell(-1));
+						link(e+"/out","link").appendTo(tr.insertCell(-1));
+						link(e+"/score","link").appendTo(tr.insertCell(-1));
+						link(function(){
+							dbg("loading score from",t);
+							get(e+"/score",function(val){
+								dbg("loaded score from",t);
+								onscore(val);
+							});
+						},"load").appendTo(tr.insertCell(-1));
+						ts(t).appendTo(tr.insertCell(-1)).parent().addClass("td-last");
+					});
+				}).error(erf("loading history"));
+			}
+			loadhist();
+			$("#rlhist").click(loadhist);
+			var bind="ace",HashHandler=require("ace/keyboard/hash_handler").HashHandler,acehandler=new HashHandler(),custcmds={
+					loadOldCode:{exec:loadcode,bindKey:"ctrl-1"},
+					reannotateCode:{exec:function(){
+						tryannotate([]);
+					},bindKey:"ctrl-2"},
+					resetAnnotateCache:{exec:function(){
+						anns={};
+						tryannotate([]);
+					},bindKey:"ctrl-3"},
+				};//start customizing ace, binding events, etc.
+			acehandler.addCommands(custcmds);
 			$("#binding").change(function(){
 				bind=this.value;
 				if(bind=="ace")
@@ -292,29 +520,36 @@ int main(int argc,char*argv[]){
 							editor.setKeyboardHandler(acehandler);
 						else{
 							var handler=require("ace/keyboard/"+bind).handler;
-							handler.addCommand(submitcmd);
+							handler.addCommands(custcmds);
 							editor.setKeyboardHandler(handler)
 						}
 					});
 			}).change();
+			$(document).keypress(function(e){
+				if(e.which==115&&e.ctrlKey&&!e.shiftKey&&!e.altKey&&!e.metaKey)
+					submit(e);
+			});
+			info("added ace bindings: ace ctrl-1→",link(loadcode,"load code from cookies"),"; ace ctrl-2→",link(custcmds.reannotateCode.exec,"re-annotate"),"; ace ctrl-3→",link(custcmds.resetAnnotateCache.exec,"reset annotations cache"));
 			$("#theme").append($(themes).map(function(i,e){return $("<optgroup>").attr("label",e[0]).append($(e[1]).map(function(i,e){return $("<option>").attr("value",e).text(e)[0]}))[0]}))
 				.change(function(e){editor.setTheme("ace/theme/"+e.target.value)}).val("textmate");
 			$.each("select-whole-line highlight-active-line show-invisibles display-indent-guides show-gutter show-print-margin highlight-selected-word h-scroll-bar-always-visible animated-scroll use-soft-tabs behaviours-enabled fade-fold-widgets".split(" "),function(i,e){
 				var f="set"+e.replace(/(?:-|^)([a-z])/g,function(_,e){return e.toUpperCase()}),g=
-					e=="select-whole-line"?{setSelectWholeLine:function(e){editor.setSelectionStyle(e?"line":"text")},getSelectWholeLine:function(){return editor.getSelectionStyle()=="line"}}:
+					e=="select-whole-line"?{setSelectWholeLine:function(e){editor.setSelectionStyle(e?"line":"text")},getSelectWholeLine:function(){
+						return editor.getSelectionStyle()=="line";
+					}}:
 					f in editor?editor:
 					f in session?session:
 					editor.renderer;
 				$("<input type=\"checkbox\">").attr("id",e).change(function(e){g[f](e.target.checked)}).prop("checked",g["g"+f.substring(1)]()).change().after($("<label>").attr("for",e).text(e.replace(/-/g," "))).before("<br>").appendTo("#ed-opts");
 			});
-			$("fieldset>legend>:first-child").click(function(){
+			$("legend>:first-child").click(function(){
 				var ths=this.parentNode;
 				if(ths.parentNode.children.length!=2){
 					$(ths).parent().wrapInner("<div>");
 					$(ths).appendTo($(ths).parent().parent());
 				}
 				$(ths).parent().find("div").toggle();
-			}).last().click();
+			}).filter(".prehide").click();
 			$("#wrap").change(function(e){
 				switch(e.target.value){
 					case"off":
@@ -334,6 +569,31 @@ int main(int argc,char*argv[]){
 				e.preventDefault();
 				out.empty();
 			});
+			function loadcode(){
+				editor.setValue(oldcode);
+			}
+			if(oldcode&&oldcode!=session.getValue())
+				info("don't rely on this, but:",link(loadcode,"reload code (ace ctrl-1)"));
+			var ctrl=false;
+			function rehover(jq){
+				if(ctrl)
+					jq.find(".ts").addClass("ts-ctrl");
+				else
+					jq.find(".ts-ctrl").removeClass("ts-ctrl");
+				return jq;
+			}
+			$(document).keydown(function(e){
+				if(e.charCode==122){//z b/c of chrome
+					ctrl=true;
+					rehover($(document));
+				}
+			}).keyup(function(e){
+				if(e.charCode==122){
+					ctrl=false;
+					rehover($(document));
+				}
+			});
+			dbg("loaded in",Date.now()-starttime,"ms");
 		</script>
 	</body>
 </html><!-- vim:ts=2 sw=2

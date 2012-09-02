@@ -18,6 +18,7 @@ do
 	sudo lxc-execute -n box -- /build/drop 99 /build/compile.sh "$(cat "$file/in")" > "$file/out"
 	#sudo chroot --userspec=99:99 rootfs /build/compile.sh "$(cat "$file/in")" > "$file/out"
 	rm rootfs/tmp/solution.cpp
-	cp rootfs/tmp/score "$file/score.part" 2> /dev/null && mv "$file/score.part" "$file/score" || { >> "$file/score"; rm "$file/score.part"; }
+	cp rootfs/tmp/score "$file/score.part" 2> /dev/null && mv "$file/score.part" "$file/score" || { >> "$file/score"; rm -f "$file/score.part"; }
 	sudo find rootfs/tmp -mindepth 1 -delete
+	tail -1 "$file/score"
 done

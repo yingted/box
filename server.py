@@ -6,6 +6,7 @@ from subprocess import check_output,call
 from os.path import normpath,exists
 from urlparse import urlparse,parse_qs
 from subprocess import Popen,PIPE
+from os import listdir
 import re
 CT_PLAIN=("Content-type","text/plain;charset=UTF-8")
 binputb=re.compile("\\binput\\b")
@@ -14,13 +15,16 @@ slashall=re.compile("/[^/]*$")
 stuff=("-e","modify","-e","move","-e","create","-e","delete","-e","unmount","-e","close")
 def problem(x):
 	return slashall.sub("/problem.txt",x)
-def update():
+def update(nodelay=False):
 	global flist
+	nodelay=nodelay or call(("inotifywait","-qo/dev/null","-rt30","rootfs/data")+stuff)==2
 	files=sorted([x[11:]for x in check_output(("find","rootfs/data","-name","*input*","-print0")).split("\0")if binputb.search(x)and not bdosb.search(x)],reverse=True)
 	flist=("\n".join(files),sorted(set(map(problem,files))),{},files)
 	print"found %d files"%len(files)
-	Timer(int(not call(("inotifywait","-qo/dev/null","-rt30","rootfs/data")+stuff)),update).start()#wait 1 sec for modification, ratelimit
-update()
+	t=Timer(int(not nodelay),update)
+	t.setDaemon(True)
+	t.start()#wait 1 sec for modification, ratelimit
+update(True)
 def read(path):
 	h=flist[2]
 	if path not in h:
@@ -62,10 +66,12 @@ def handler(env,respond):
 			return err("404 Not Found")
 		rc,msg=Popen(("./nq.sh",user,infile),stdin=PIPE,stdout=PIPE).communicate(env["wsgi.input"].read(inlen))[0].split("\n")
 		return good(msg)
+	elif path=="/code":
+		return good('\n'.join([user]+([x for x in listdir("code/"+user)if x!="lock"]if exists("code/"+user)else[])))
 	elif path.startswith("/code/")and path[6:].startswith(user+"/"):
-		path=path[1:]
 		if path!=normpath(path):
 			return err("400 Bad Request")
+		path=path[1:]
 		req=path[6+len(user):].split("/")
 		if len(req)!=2:
 			return err("400 Bad Request")
