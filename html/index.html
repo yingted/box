@@ -1,12 +1,12 @@
 <!doctype html public>
 <html lang="en">
 	<head>
-		<meta charset="UTF-8"><!--XXX-->
+		<meta charset="UTF-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 		<script type="text/javascript">//yay cookies!
 			for(var starttime=new Date().getTime()/*msie*/,cks=document.cookie.split("; "),i=0;i<cks.length;++i)
 				cks[i]=cks[i].substring(cks[i].indexOf("=")+1);
-			var chash={"$":"$",n:"\n",s:";"},oldcode=cks.join("").replace(/\$./g,function(s){
+			var chash={"$":"$",n:"\n",c:";",s:" ",t:"\t"},oldcode=cks.join("").replace(/\$./g,function(s){
 				return chash[s[1]];
 			});
 		</script>
@@ -39,6 +39,8 @@
 			}
 			legend>span:hover{
 				text-decoration:underline;
+				-moz-user-select:none;
+				-webkit-user-select:none;
 			}
 			legend>:nth-child(2){
 				position:absolute;
@@ -48,7 +50,7 @@
 				white-space:pre-wrap;
 				word-wrap:break-word;
 			}
-			.small{
+			small{
 				font-size:8pt;
 				font-style:italic;
 				opacity:0.7;
@@ -62,6 +64,7 @@
 				position:relative;
 			}
 			.bar-good,.bar-ws,.bar-bad{
+				position:absolute;
 				float:left;
 			}
 			.bar-good{
@@ -95,18 +98,26 @@
 				font-size:10pt;
 				white-space:pre-wrap;
 				word-wrap:break-word;
+				max-height:20em;
 			}
-			.ts{
+			.mh{/*contract for mh*/
+				overflow-y:auto;
+			}
+			.mh-ex{
+				max-height:none!important;
+			}
+			.ts{/*TODO make msie work*/
 				position:absolute;
-				right:0;
+				right:1px;
 				top:0;
 				font-family:monospace;
 				color:#707;
+				white-space:nowrap;/*maybe just add \xa0?*/
 				opacity:0.3;
 				filter:alpha(opacity=30);/*msie*/
 				zoom:1;
 			}
-			.ts-ctrl:hover,.entry:hover>.ts-ctrl,tr:hover>.td-last>.ts-ctrl{
+			.ts-hh:hover,.entry:hover>.ts-hh,tr:hover>.td-last>.ts-hh{
 				display:none;
 			}
 			.ts:hover{
@@ -134,10 +145,30 @@
 			#hist{
 				font-size:10pt;
 			}
+			#histsc{
+				max-height:5em;
+				overflow-y:auto;
+			}
 			.td-last{
 				position:absolute;
 			}
+			hr{
+				height:1px;
+				border:0;
+				margin:0;
+				padding:0;
+				margin-top:3px;
+				color:#666;
+				background-color:#666;
+			}
 		</style>
+		<!--[if IE]>
+			<style>
+				html,body{
+					height:100%;
+				}
+			</style>
+		<![endif]-->
 		<base target='_blank' />
 	</head>
 	<body>
@@ -151,7 +182,7 @@
 				<select id="infile"></select>
 				<hr>
 				<div id="problem">
-					<span class="small">problem.txt will be here</span>
+					<small>problem.txt will be here</small>
 				</div>
 			</fieldset>
 			<fieldset>
@@ -159,26 +190,28 @@
 					<span>history</span>
 					<button id="rlhist">reload</button>
 				</legend>
-				<table width="100%">
-					<tbody id="hist">
-						<tr>
-							<th>input</th>
-							<th>(load)</th>
-							<th>code</th>
-							<th>(load)</th>
-							<th>output</th>
-							<th>score</th>
-							<th>(load)</th>
-						</tr>
-					</tbody>
-				</table>
+				<!--<div id="histsc" class="mh">-->
+					<table width="100%">
+						<tbody id="hist">
+							<tr>
+								<th>input</th>
+								<th>(load)</th>
+								<th>code</th>
+								<th>(load)</th>
+								<th>output</th>
+								<th>score</th>
+								<th>(load)</th>
+							</tr>
+						</tbody>
+					</table>
+				<!--</div>-->
 			</fieldset>
 			<fieldset>
 				<legend>
 					<span>log</span>
 					<button id="clear">clear</button>
 				</legend>
-				<div id="out"></div>
+				<div id="out" class="mh"></div>
 			</fieldset>
 			<fieldset id="ed-opts">
 				<legend>
@@ -200,8 +233,12 @@
 					<option value="vim">vim</option>
 					<option value="emacs">emacs (also binds ctrl-s)</option>
 				</select>
+				<br><!--stupid whitespace-->
+				<input id="expand" type="checkbox" /><label for="expand">expand (log)</label>
+				<br>
+				<input id="scroll" type="checkbox" /><label for="scroll">autoscroll (log)</label>
 			</fieldset>
-			<span class="small">
+			<small>
 				uses
 				<a href="http://ace.ajax.org/"><abbr title="Ajax.org Cloud9 Editor">Ace</abbr></a> (custom build),
 				<a href="http://gcc.gnu.org/"><abbr title="GNU Compiler Collection">GCC</abbr></a> 4.6.3,
@@ -212,7 +249,7 @@
 				<a href="http://lxc.sourceforge.net/"><abbr title="Linux Containers">lxc</abbr></a>,
 				<a href="http://www.python.org/">python</a>,
 				and more.
-			</span>
+			</small>
 		</form>
 		<pre id="editor">#include&lt;iostream&gt;
 using namespace std;
@@ -227,7 +264,9 @@ int main(int argc,char*argv[]){
 				<div class="bar-bad"></div>
 				<div class="bar-eof"></div>
 			</div>
-			<a href="http://linux.die.net/man/1/time" id="timef" class="small">wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O</a>
+			<small>
+				<a href="http://linux.die.net/man/1/time" id="timef">wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O</a>
+			</small>
 		</div>
 		<script type="text/javascript">//screw modules/separation/good practice; start loading ace
 			if($.browser.msie||!console)
@@ -235,7 +274,14 @@ int main(int argc,char*argv[]){
 			$("legend,#templates>*").contents().filter(function(){
 				return this.nodeType==3;//Node.TEXT_NODE
 			}).remove();
-			var editor=ace.edit("editor"),session=editor.getSession(),themes=[["bright",["chrome","clouds","crimson_editor","dawn","dreamweaver","eclipse","github","solarized_light","textmate","tomorrow"]],["dark",["clouds_midnight","cobalt","idle_fingers","kr_theme","merbivore","merbivore_soft","mono_industrial","monokai","pastel_on_dark","solarized_dark","tomorrow_night","tomorrow_night_blue","tomorrow_night_bright","tomorrow_night_eighties","twilight","vibrant_ink"]]],problem=$("#problem"),run=$("#run"),defconfig={wait_mins:1,file_blocks:1,wall_secs:2,cpu_secs:4,memory_kb:256*1024,vsize_kb:320*1024},out=$("#out"),sacrifice=$("<span>"),anns={},PlaceHolder=require("ace/placeholder").PlaceHolder,phs=[];
+			var editor=ace.edit("editor"),session=editor.getSession(),themes=[["bright",["chrome","clouds","crimson_editor","dawn","dreamweaver","eclipse","github","solarized_light","textmate","tomorrow"]],["dark",["clouds_midnight","cobalt","idle_fingers","kr_theme","merbivore","merbivore_soft","mono_industrial","monokai","pastel_on_dark","solarized_dark","tomorrow_night","tomorrow_night_blue","tomorrow_night_bright","tomorrow_night_eighties","twilight","vibrant_ink"]]],problem=$("#problem"),run=$("#run"),defconfig={wait_mins:1,file_blocks:1,wall_secs:2,cpu_secs:4,memory_kb:256*1024,vsize_kb:320*1024},out=$("#out"),sacrifice=$("<span>"),anns={},PlaceHolder=require("ace/placeholder").PlaceHolder,phs=[],rescroll;
+			if($.browser.msie){
+				warn("msie: ymmv");
+				session.setValue(session.getValue().replace(/\r/g,""));
+				$("legend>span").on("selectstart",false);
+				$.support.cors=true;
+				(function(F,i,r,e,b,u,g,L,I,T,E){if(F.getElementById(b))return;E=F[i+'NS']&&F.documentElement.namespaceURI;E=E?F[i+'NS'](E,'script'):F[i]('script');E[r]('id',b);E[r]('src',I+g+T);E[r](b,u);(F[e]('head')[0]||F[e]('body')[0]).appendChild(E);E=new Image;E[r]('src',I+L);})(document,'createElement','setAttribute','getElementsByTagName','FirebugLite','4','firebug-lite-debug.js','releases/lite/debug/skin/xp/sprite.png','https://getfirebug.com/','#startOpened');//XXX
+			}
 			session.setMode("ace/mode/c_cpp");
 			session.addEventListener("change",function(){
 				tryannotate();
@@ -245,6 +291,10 @@ int main(int argc,char*argv[]){
 					return;
 				$.map(phs,function(e){
 					e.detach();
+				});
+				$.each(session.getMarkers(),function(id,e){
+					if(!e.clazz.lastIndexOf("ann-",0))
+						session.removeMarker(id);
 				});
 				session.setAnnotations(ann=$.extend(true,[],ann));
 				phs=$.map(ann,function(e){
@@ -258,11 +308,10 @@ int main(int argc,char*argv[]){
 			}
 			var expire="=;expires="+new Date(0).toGMTString(),keep=";Max-Age=999999",ckmaxlen,ckmax;
 			setTimeout(function getckmaxlen(){
-				dbg("deferred tasks for cookie support…");
+				dbg("deferred: cookies…");
 				$.map(document.cookie.split("; "),function(e){
 					document.cookie=e.substring(0,e.indexOf("="))+expire;
 				});
-				dbg("cleared cookies");
 				function ckcanset(s){
 					document.cookie=s+keep;
 					return document.cookie==s;
@@ -276,14 +325,13 @@ int main(int argc,char*argv[]){
 						no=mid;
 				}
 				ckmaxlen=yes.length||1<<15;//screwed anyways
-				document.cookie="_";
+				document.cookie="_";//be safe; don't use ";"
 				for(var i=0;document.cookie[0]=="_";document.cookie=i++ +"=1");
-				dbg("cookie max len:",yes.length?ckmaxlen:"unknown","; max cookies:",ckmax=i);
-				while(i)
-					document.cookie=--i+expire;
-			},5000);
+				for(ckmax=i;i;document.cookie=--i+expire);
+				dbg("cookie max len:",yes.length?ckmaxlen:"unknown","; max cookies:",ckmax,"; cookies cleared");
+			},200);//XXX
 			$(window).unload(function(){
-				var buf=session.getValue().replace(/\$/g,"$$").replace(/\n/g,"$n").replace(/;/g,"$s"),chrs="`1234567890-~!@#$%^&*()_+qwertyuiop[]\\QWERTYUIOP{}|asdfghjkl;'ASDFGHJKL:\"zxcvbnm,./ZXCVBNM<>?",rad=chrs.length;
+				var buf=session.getValue().replace(/\$/g,"$$").replace(/\n/g,"$n").replace(/;/g,"$c").replace(/ /g,"$s").replace(/\t/g,"$t"),chrs="`1234567890-~!@#$%^&*()_+qwertyuiop[]\\QWERTYUIOP{}|asdfghjkl;'ASDFGHJKL:\"zxcvbnm,./ZXCVBNM<>?",rad=chrs.length;//TODO safe char detection
 				for(var i=0,n=0,id;i<buf.length&&n<ckmax;document.cookie=id+"="+buf.substring(i,i+=ckmaxlen-id.length)+keep)
 					for(var id="",j=i;j;j=j/rad|0)
 						id+=j%rad;
@@ -292,7 +340,8 @@ int main(int argc,char*argv[]){
 				return rehover($("<span class=\"ts\">")).text(s).attr("title","hold z to hide");
 			}
 			function htmlify(x){
-				return sacrifice.text(x).html();
+				x=sacrifice.text(x).html();
+				return $.browser.msie?x.replace(/\r/g,""):x;
 			}
 			function asnprintfn0nd(n,d){
 				for(var s=d+"";s.length<n;s="0"+s);
@@ -310,6 +359,8 @@ int main(int argc,char*argv[]){
 						+":"+asnprintfn0nd(2,now.getSeconds())
 						+"."+asnprintfn0nd(3,now.getMilliseconds())
 					)));
+				if(rescroll)//try to align last with top border
+					out.scrollTop(out.children().last().offset().top);
 			}
 			function info(){
 				console.info.apply(console,arguments);
@@ -328,7 +379,7 @@ int main(int argc,char*argv[]){
 				clog(arguments,{backgroundColor:"#333",color:"#6f6"},">","<span>");//or \xa0
 			}
 			function fileUrl(file){//start xhr utils
-				return"http://"+location.hostname+":8000"+file;
+				return"/box"+file;
 			}
 			function getText(x,s){
 				return s+": "+x.status+" "+x.statusText
@@ -339,13 +390,13 @@ int main(int argc,char*argv[]){
 					$.get(fileUrl(url),function(){
 						var args=arguments,ths=this;
 						$.each(get[url][0],function(i,e){
-							e.apply(ths,args);
+							e&&e.apply(ths,args);
 						});
 						get[url]=args;
 					}).error(function(){
 						var args=arguments,ths=this;
 						$.each(get[url][1],function(i,e){
-							e.apply(ths,args);
+							e&&e.apply(ths,args);
 						});
 						delete get[url];
 					});
@@ -367,9 +418,6 @@ int main(int argc,char*argv[]){
 						setTimeout(reconnect,10000);
 				};
 			}
-			function pct(r){//stupid formatting
-				return((r*1e8|0)/1e6).toFixed(6)+"%";
-			}
 			function link(url,text){
 				text=$("<a>").text(text==undefined?url:text);
 				if(typeof url=="function")
@@ -381,23 +429,47 @@ int main(int argc,char*argv[]){
 					text.attr("href",url);
 				return text;
 			}
-			function onscore(x){
+			function onscore(x,url,file){
 				if(x.length){
 					x=x.split("\n");
-					var sizes=x[1].split(" ").map(Number),bar=$("#bar").clone().removeAttr("id").append("&nbsp;"),den=sizes[0]+(sizes[3]^=1);
-					if(sizes[1])
-						bar.find(".bar-good").text(sizes[1]).width(pct(sizes[1]/den));
-					if(sizes[2])
-						bar.find(".bar-ws").text(sizes[2]).width(pct(sizes[2]/den));
-					if(sizes[4]=sizes[0]-sizes[1]+sizes[2])
-						bar.find(".bar-bad").text(sizes[4]).width(pct(sizes[4]/den));
-					if(sizes[3])
-						bar.find(".bar-eof").text("!").width(pct(sizes[3]/den));//prepare to scale it up
+					var sizes=x[1].split(" ").map(Number),bar=$("#bar").clone().removeAttr("id").append("&nbsp;"),den=sizes[0]+(sizes[3]^=1),last=0;
+					function add(cl,sz,txt){
+						if(sz=sizes[sz]){
+							bar.find(".bar-"+cl).text(txt||sz).css({
+								left:last*100/den+"%",
+								width:sz*100/den+"%",
+							});
+							last+=sz;
+						}
+					}
+					sizes[4]=sizes[0]-sizes[1]-sizes[2];
+					add("good",1);
+					add("ws",2);
+					add("bad",4);
+					add("eof",3,"!");
 					info(sizes[0]+" lines, "+(100*sizes[1]/sizes[0]).toFixed(2)+"% correct"+(sizes[2]?", "+(100*sizes[2]/sizes[0]).toFixed(2)+"% whitespace error":"")+(sizes[3]?", no EOF":""),bar);
 					dbg("run completed",x[0],$("#timef").clone().removeAttr("id"));
-					dbg("ran",link(url+"/solution.cpp","this program"),"on "+file+",",link(url+"/in","path here"));
+					dbg("ran",link(fileUrl(url+"/solution.cpp"),"this program"),file?"on "+file+",":"on the input referenced",link(fileUrl(url+"/in"),file?"path here":"here"));
 				}else
 					warn("code was not executed");
+			}
+			function onout(x,code){
+				var rc,abbr=/^(?:[^\n]{0,40}\n?){0,10}/.exec(x=x.replace(/^\d+\n$/m,function(s){
+					rc=+s;
+					return"";
+				}))[0],gcchash={"error: ":"error","warning: ":"warning","note: ":"info"},rchash={
+					"0":"normal exit",
+					"137":"resource exceeded",
+					"159":"system disallowed action",
+				};
+				dbg(abbr.length==x.length?x:abbr+"…");
+				dbg(link(this.url,"output"));
+				for(var ann=[],re=/^solution\.cpp:(\d+):(\d+): (\w+: )?([^\n]*)/mg,m;m=re.exec(x);)
+					ann.push({type:gcchash[m[3]]||"note",row:m[1]-1,column:m[2]-1,text:m[4]});
+				if(rc!==undefined)
+					dbg("program exited",rc+(rchash.hasOwnProperty(rc)?" ("+rchash[rc]+")":""));
+				anns[code]=ann;
+				tryannotate();//will not dig edit history
 			}
 			function submit(e){
 				if(e.preventDefault)
@@ -417,17 +489,11 @@ int main(int argc,char*argv[]){
 					(function connect(){
 						$.ajax(score).done(function(x){
 							(function connect(){
-								$.ajax(url+"/out").done(function(x){
-									var abbr=/^(?:[^\n]{0,40}\n?){0,10}/.exec(x)[0],gcchash={"error: ":"error","warning: ":"warning","note: ":"info"};
-									dbg(abbr.length==x.length?x:abbr+"…");
-									dbg(link(url+"/out","output"));
-									for(var ann=[],re=/^solution\.cpp:(\d+):(\d+): (\w+: )?([^\n]*)/mg,m;m=re.exec(x);)
-										ann.push({type:gcchash[m[3]]||"note",row:m[1]-1,column:m[2]-1,text:m[4]});
-									anns[code]=ann;
-									tryannotate();//will not dig edit history
-								}).error(retry(connect,"cancelled by admin"));
+								 $.ajax(url+"/out").done(function(x){
+									 onout.call(this,x,code);
+								 }).error(retry(connect,"cancelled by admin"));
 							})();
-							onscore(x);
+							onscore(x,url,file);
 						}).error(retry(connect,"cancelled by admin"));
 					})();
 				}).error(function(x,s){
@@ -454,13 +520,16 @@ int main(int argc,char*argv[]){
 				$.ajax(fileUrl("/code")).done(function(x){
 					var a=x.split("\n"),hist=$("#hist"),base="/code/"+a.shift()+"/";
 					hist.find("tr:gt(0)").remove();
-					$.map(a,function(t){
-						e=base+t;
-						t=(t=new Date(1000*t)).getHours()
+					$.map($(a).sort(function(a,b){
+						return b-a;//newest first
+					}),function(t){
+						var e=base+t,fe=fileUrl(e);
+						t=(t=new Date(1000*t)).toDateString().substring(4,11)//"%3m %02d "
+							+asnprintfn0nd(2,t.getHours())
 							+":"+asnprintfn0nd(2,t.getMinutes())
 							+":"+asnprintfn0nd(2,t.getSeconds());
 						var tr=hist[0].insertRow(-1);
-						link(e+"/in","link").appendTo(tr.insertCell(-1));
+						link(fe+"/in","link").appendTo(tr.insertCell(-1));
 						link(function(){
 							dbg("loading input from",t);
 							get(e+"/in",function(val){
@@ -468,29 +537,30 @@ int main(int argc,char*argv[]){
 								$("#infile").val(val).change();
 							});
 						},"load").appendTo(tr.insertCell(-1));
-						link(e+"/solution.cpp","link").appendTo(tr.insertCell(-1));
+						link(fe+"/solution.cpp","link").appendTo(tr.insertCell(-1));
 						link(function(){
 							dbg("loading code and output from",t);
-							var vl,evt=function(){
+							var vl,code,evt=function(val){
 								dbg("loaded output from",t);
-								onout(vl);
+								onout.call({url:fe+"/out"},val,code);
 							};
 							get(e+"/solution.cpp",function(val){
 								dbg("loaded code from",t);
 								session.setValue(val);
-								vl=vl?evt():true;
+								code=val;
+								vl=vl?evt(vl):true;
 							});
 							get(e+"/out",function(val){
-								vl=vl?evt():val;
+								vl=vl?evt(val):val;
 							});
 						},"load").appendTo(tr.insertCell(-1));
-						link(e+"/out","link").appendTo(tr.insertCell(-1));
-						link(e+"/score","link").appendTo(tr.insertCell(-1));
+						link(fe+"/out","link").appendTo(tr.insertCell(-1));
+						link(fe+"/score","link").appendTo(tr.insertCell(-1));
 						link(function(){
 							dbg("loading score from",t);
 							get(e+"/score",function(val){
 								dbg("loaded score from",t);
-								onscore(val);
+								onscore(val,e);
 							});
 						},"load").appendTo(tr.insertCell(-1));
 						ts(t).appendTo(tr.insertCell(-1)).parent().addClass("td-last");
@@ -525,30 +595,42 @@ int main(int argc,char*argv[]){
 						}
 					});
 			}).change();
-			$(document).keypress(function(e){
-				if(e.which==115&&e.ctrlKey&&!e.shiftKey&&!e.altKey&&!e.metaKey)
-					submit(e);
-			});
 			info("added ace bindings: ace ctrl-1→",link(loadcode,"load code from cookies"),"; ace ctrl-2→",link(custcmds.reannotateCode.exec,"re-annotate"),"; ace ctrl-3→",link(custcmds.resetAnnotateCache.exec,"reset annotations cache"));
 			$("#theme").append($(themes).map(function(i,e){return $("<optgroup>").attr("label",e[0]).append($(e[1]).map(function(i,e){return $("<option>").attr("value",e).text(e)[0]}))[0]}))
 				.change(function(e){editor.setTheme("ace/theme/"+e.target.value)}).val("textmate");
 			$.each("select-whole-line highlight-active-line show-invisibles display-indent-guides show-gutter show-print-margin highlight-selected-word h-scroll-bar-always-visible animated-scroll use-soft-tabs behaviours-enabled fade-fold-widgets".split(" "),function(i,e){
-				var f="set"+e.replace(/(?:-|^)([a-z])/g,function(_,e){return e.toUpperCase()}),g=
-					e=="select-whole-line"?{setSelectWholeLine:function(e){editor.setSelectionStyle(e?"line":"text")},getSelectWholeLine:function(){
+				var f="set"+e.replace(/(?:-|^)([a-z])/g,function(_,e){
+					return e.toUpperCase();
+				}),g=e=="select-whole-line"?{
+					setSelectWholeLine:function(e){
+						editor.setSelectionStyle(e?"line":"text");
+					},getSelectWholeLine:function(){
 						return editor.getSelectionStyle()=="line";
-					}}:
+					}
+				}:
 					f in editor?editor:
 					f in session?session:
 					editor.renderer;
-				$("<input type=\"checkbox\">").attr("id",e).change(function(e){g[f](e.target.checked)}).prop("checked",g["g"+f.substring(1)]()).change().after($("<label>").attr("for",e).text(e.replace(/-/g," "))).before("<br>").appendTo("#ed-opts");
+				$("<input type=\"checkbox\">").attr("id",e).change(function(e){
+					g[f](e.target.checked);
+				}).prop("checked",g["g"+f.substring(1)]()).change().after($("<label>").attr("for",e).text(e.replace(/-/g," "))).before("<br>").appendTo("#ed-opts");
 			});
+			$("#expand").change(function(){
+				if(this.checked)
+					$(".mh").addClass("mh-ex");
+				else
+					$(".mh-ex").removeClass("mh-ex");
+			}).change();
+			$("#scroll").change(function(){
+				rescroll=this.checked;
+			}).change();
 			$("legend>:first-child").click(function(){
-				var ths=this.parentNode;
-				if(ths.parentNode.children.length!=2){
-					$(ths).parent().wrapInner("<div>");
-					$(ths).appendTo($(ths).parent().parent());
+				var ths=$(this).parent();
+				if(ths[0].parentNode.children.length!=2){
+					ths.parent().wrapInner("<div>");
+					ths.prependTo(ths.parent().parent());
 				}
-				$(ths).parent().find("div").toggle();
+				ths.siblings().toggle();
 			}).filter(".prehide").click();
 			$("#wrap").change(function(e){
 				switch(e.target.value){
@@ -574,22 +656,27 @@ int main(int argc,char*argv[]){
 			}
 			if(oldcode&&oldcode!=session.getValue())
 				info("don't rely on this, but:",link(loadcode,"reload code (ace ctrl-1)"));
-			var ctrl=false;
+			var hhkey=false;
 			function rehover(jq){
-				if(ctrl)
-					jq.find(".ts").addClass("ts-ctrl");
+				if(hhkey)
+					jq.find(".ts").addClass("ts-hh");
 				else
-					jq.find(".ts-ctrl").removeClass("ts-ctrl");
+					jq.find(".ts-hh").removeClass("ts-hh");
 				return jq;
 			}
 			$(document).keydown(function(e){
-				if(e.charCode==122){//z b/c of chrome
-					ctrl=true;
-					rehover($(document));
+				switch(e.which){
+					case 90://z b/c of chrome
+						hhkey=true;
+						rehover($(document));
+						break;
+					case 83:
+						if(e.ctrlKey&&!e.shiftKey&&!e.altKey&&!e.metaKey)
+							submit(e);
 				}
 			}).keyup(function(e){
-				if(e.charCode==122){
-					ctrl=false;
+				if(e.which==90){
+					hhkey=false;
 					rehover($(document));
 				}
 			});

@@ -1,0 +1,6 @@
+code
+rootfs/bin
+rootfs/data
+rootfs/lib
+rootfs/tmp
+rootfs/usr

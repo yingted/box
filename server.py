@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from wsgiref.simple_server import make_server,demo_app
+from wsgiref.simple_server import make_server#,demo_app
 from cgi import FieldStorage
 from threading import Timer
 from subprocess import check_output,call
@@ -32,11 +32,13 @@ def read(path):
 		h[path]=f.read()
 		f.close()
 	return h[path]
-def handler(env,respond):
+def application(env,respond):
 	base=[]
 	if"HTTP_ORIGIN"in env:
 		host=env["HTTP_ORIGIN"]
-		if host in("http://localhost","http://localhost:8080"):
+		def stripport(host):
+			return host[0:host.rindex(":")]if ":"in host else host
+		if stripport(host).endswith(stripport(env.get("HTTP_HOST",""))):
 			base=[("Access-Control-Allow-Origin",host)]
 	rc="200 OK"
 	def good(msg):
@@ -86,4 +88,4 @@ def handler(env,respond):
 			return good(read(path))
 	return err("404 Not Found")
 if __name__=="__main__":
-	make_server("",8000,handler).serve_forever()
+	make_server("",8000,application).serve_forever()
