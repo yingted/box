@@ -1,7 +1,7 @@
 #!/usr/bin/python
 from wsgiref.simple_server import make_server#,demo_app
 from cgi import FieldStorage
-from threading import Timer
+from threading import Timer,Event
 from subprocess import check_output,call
 from os.path import normpath,exists
 from urlparse import urlparse,parse_qs
@@ -12,19 +12,21 @@ CT_PLAIN=("Content-type","text/plain;charset=UTF-8")
 binputb=re.compile("\\binput\\b")
 bdosb=re.compile("\\bdos\\b")
 slashall=re.compile("/[^/]*$")
-stuff=("-e","modify","-e","move","-e","create","-e","delete","-e","unmount","-e","close")
+stuff=("-e","modify","-e","move","-e","create","-e","delete","-e","unmount","-e","close_write")
 def problem(x):
 	return slashall.sub("/problem.txt",x)
-def update(nodelay=False):
+def update(path,cb,nodelay=False):
+	nodelay=nodelay or call(("inotifywait","-qo/dev/null","-rt30",path)+stuff)==2
+	cb()
+	t=Timer(int(not nodelay),update,(path,cb))
+	t.setDaemon(True)
+	t.start()#wait 1 sec for modification, ratelimit
+def flistcb():
 	global flist
-	nodelay=nodelay or call(("inotifywait","-qo/dev/null","-rt30","rootfs/data")+stuff)==2
 	files=sorted([x[11:]for x in check_output(("find","rootfs/data","-name","*input*","-print0")).split("\0")if binputb.search(x)and not bdosb.search(x)],reverse=True)
 	flist=("\n".join(files),sorted(set(map(problem,files))),{},files)
 	print"found %d files"%len(files)
-	t=Timer(int(not nodelay),update)
-	t.setDaemon(True)
-	t.start()#wait 1 sec for modification, ratelimit
-update(True)
+update("rootfs/data",flistcb,True)
 def read(path):
 	h=flist[2]
 	if path not in h:
@@ -32,6 +34,30 @@ def read(path):
 		h[path]=f.read()
 		f.close()
 	return h[path]
+scores=None
+scoreupdate=Event()
+def scorescb():
+	global scores,scoreupdate
+	old=scores
+	ip_in_score_time_s=dict([((p[1],read("/".join(p[:3])+"/in").rstrip("\n")),(s,int(p[2])))for(s,p)in sorted([(map(int,read(x).split("\n")[-2].split(" ")),x.split("/"))for x in check_output(("find","code","-mindepth","3","-name","score","-type","f","-print0")).split("\0")[:-1]])]).items()
+	ip_in_score_time_s.sort(key=lambda e:e[0][0])#for compare
+	ip_in_score_time_s.sort(key=lambda e:e[1][1])
+	ip_in_score_time_s.sort(key=lambda e:e[1][0],reverse=True)
+	ip_in_score_time_s.sort(key=lambda e:e[0][1],reverse=True)
+	last=line=None
+	scores=[]
+	for((ip,inp),(s,t))in ip_in_score_time_s:
+		if inp!=last:
+			last=inp
+			scores.append("\n"+inp)
+		scores.append("\t")
+		scores.append((ip," ".join(map(str,s))+" "+str(t)))
+	scores[0]=scores[0][1:]
+	if scores!=old:
+		print"updated %d scores"%len(ip_in_score_time_s)
+		scoreupdate.set()
+		scoreupdate.clear()
+update("code",scorescb,True)
 def application(env,respond):
 	base=[]
 	if"HTTP_ORIGIN"in env:
@@ -86,6 +112,11 @@ def application(env,respond):
 			return good(read(path))
 		if exists(path):
 			return good(read(path))
+	elif path=="/scores":
+		t=float(parse_qs(env.get("QUERY_STRING","")).get("timeout",[0])[0])
+		if t:#optimize
+			scoreupdate.wait(None if t<0 else t)
+		return good("".join([x if type(x)==str else x[1]if user!=x[0]else"*"+x[1]for x in scores]))
 	return err("404 Not Found")
 if __name__=="__main__":
 	make_server("",8000,application).serve_forever()

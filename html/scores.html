@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+	<meta charset="UTF-8">
+	<head>
+		<title>scores</title>
+		<style>
+			table{/*lol stupid borders*/
+				border-width:1px 0 0 1px;
+				border-spacing:0;
+				border-collapse:collapse;
+				border-style:solid;
+			}
+			td,th{
+				margin:0;
+				padding:4px;
+				border-width:0 1px 1px 0;
+				border-style:solid;
+				border-color:#000;
+			}
+			tr{
+				display:none;
+			}
+			#head{
+				display:table-row!important;
+			}
+			.good{
+				background-color:#0f0;
+			}
+			.ok{
+				background-color:#ff0;
+			}
+			.dumb{
+				color:#777;
+			}
+			.me{
+				text-decoration:underline;
+			}
+		</style>
+	</head>
+	<body>
+		<fieldset>
+			<legend>filters</legend>
+			<label for="input">input file:</label>
+			<select id="input">
+				<option>(all)</option>
+			</select>
+			<label for="score">score:</label>
+			<select id="class">
+				<option>(all)</option>
+				<option>perfect</option>
+				<option>almost perfect</option>
+				<option>really bad</option>
+				<option>other</option>
+			</select>
+			<label for="ip">ip:</label>
+			<select id="ip">
+				<option>(all)</option>
+				<option>me</option>
+				<option>other</option>
+			</select>
+			<button id="scroll">scroll down</button><!--<a href="#table">why the gap?</a>-->
+		</fieldset>
+		<table>
+			<tbody id="scores">
+				<tr id="head">
+					<th>input file</th>
+					<th>total</th>
+					<th>correct</th>
+					<th>whitespace</th>
+					<th>incorrect</th>
+					<th>output truncated</th>
+					<th>when</th>
+				</tr>
+			</tbody>
+		</table>
+		<script type="text/javascript" defer async>
+			function $(id){
+				return document.getElementById(id);
+			}
+			var url="/box/scores",xhr=[
+				function(){return new XMLHttpRequest()},
+				function(){return new ActiveXObject("Msxml2.XMLHTTP")},
+				function(){return new ActiveXObject("Msxml3.XMLHTTP")},
+				function(){return new ActiveXObject("Microsoft.XMLHTTP")},
+			],input=$("input"),scores=$("scores"),infiles=input.getElementsByTagName("option"),rows=scores.children,tc="textContent"in scores?"textContent":"innerText",cls=$("class"),ip=$("ip");
+      function asnprintfn0nd(n,d){
+        for(var s=d+"";s.length<n;s="0"+s);
+        return s;
+      }
+			(function poll(){
+				for(var x;!x&&xhr.length;)
+					try{
+						x=xhr[0]();
+					}catch(e){
+						xhr.shift();
+					}
+				x.open("GET",url,true);
+				x.onreadystatechange=function(){
+					if(x.readyState==4){
+						x.onreadystatechange=new Function;//msie
+						switch(x.status/200|0){
+							case 1:
+								while(infiles.length>1)
+									input.removeChild(input.lastChild);
+								(input.onchange=function(){
+									while(rows.length>1)
+										scores.removeChild(scores.lastChild);
+									for(var fil=this.value,a=(x.responseText||"").split("\n"),i=0;a[i];++i){
+										for(var b=a[i].split("\t"),c=b.shift(),d,j=0;d=b[j];++j){
+											if(this.selectedIndex&&c!=fil)
+												continue;
+											var tr=scores.insertRow(-1),cl;
+											if(d[0]=="*"){
+												d=d.substring(1);
+												cl="me ";
+											}else
+												cl="notme ";
+											d=d.split(" ");//.map(Number)//msie
+											cl+=
+												d[0]==d[1]?"good":
+												d[0]-d[1]==d[2]?"ok":
+												!+d[1]&&!+d[2]?"dumb":"other";
+											tr.insertCell(-1)[tc]=c;
+											tr.insertCell(-1)[tc]=d[0];
+											tr.insertCell(-1)[tc]=d[1];
+											tr.insertCell(-1)[tc]=d[2];
+											tr.insertCell(-1)[tc]=d[0]-d[1]-d[2];
+											tr.insertCell(-1)[tc]=!+d[3];
+											tr.insertCell(-1)[tc]=
+												(d=new Date(1000*d[4])).toDateString().substring(4,11)
+												+asnprintfn0nd(2,d.getHours())
+												+":"+asnprintfn0nd(2,d.getMinutes())
+												+":"+asnprintfn0nd(2,d.getSeconds());
+											tr.className=cl;
+										}
+										if(fil===undefined){
+											var opt=document.createElement("option");
+											opt.value=c;
+											opt[tc]=c;
+											input.appendChild(opt);
+										}
+									}
+								})();
+							case 2:
+								setTimeout(poll,10000);
+						}
+					}
+				}
+				x.send();
+				url="/box/scores?timeout=30";
+			})();
+			var head=document.getElementsByTagName("head")[0],style=document.createElement("style"),tc2;
+			style.type="text/css";
+			head.appendChild(style);
+			if(style.styleSheet){
+				style=style.styleSheet.cssText;
+				tc2="cssText";
+			}else{
+				style.appendChild(style=document.createTextNode(""));
+				tc2="textContent";
+			}
+			(cls.onchange=ip.onchange=function(){
+				style[tc2]=("tr"
+					+["",".good",".ok",".bad",".other"][cls.selectedIndex]
+					+["",".me",".notme"][ip.selectedIndex])+"{display:table-row!important;}";
+			}).call(cls);
+			$("scroll").onclick=function(){
+				for(var l=0,t=0,o=scores;o.offsetParent;o=o.offsetParent){//hate this stuff
+					l+=o.offsetLeft;
+					t+=o.offsetTop;
+				}
+				scrollTo(l,t);//in case of stupid window sizes
+			}
+		</script>
+	</body>
+</html><!-- vim:ts=2 sw=2
+-->
