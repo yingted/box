@@ -481,6 +481,7 @@ int main(int argc,char*argv[]){
 					return;
 				if(anns.hasOwnProperty(code)){
 					err("double-submission blocked; add a comment and try again if you meant to do this");
+					run.prop("disabled",false);
 					return;
 				}
 				$.post(fileUrl("/submit?input="+encodeURIComponent(file)),code,function(x){
