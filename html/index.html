@@ -1,4 +1,4 @@
-<!doctype html public>
+<!DOCTYPE html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8">
@@ -16,6 +16,9 @@
 		<!--<script src="jquery-1.8.0.min.js"></script>-->
 		<title>judge</title>
 		<style type="text/css" media="screen">
+			html,body{
+				height:100%;
+			}
 			body{
 				overflow:hidden;
 				margin:0;
@@ -161,12 +164,12 @@
 				color:#666;
 				background-color:#666;
 			}
+			table{
+				width:100%;
+			}
 		</style>
 		<!--[if IE]>
-			<style>
-				html,body{
-					height:100%;
-				}
+			<style>/*XXX try to port stuff out of here*/
 			</style>
 		<![endif]-->
 		<base target='_blank' />
@@ -191,7 +194,7 @@
 					<button id="rlhist">reload</button>
 				</legend>
 				<!--<div id="histsc" class="mh">-->
-					<table width="100%">
+					<table>
 						<tbody id="hist">
 							<tr>
 								<th>input</th>
@@ -236,7 +239,7 @@
 				<br><!--stupid whitespace-->
 				<input id="expand" type="checkbox" /><label for="expand">expand (log)</label>
 				<br>
-				<input id="scroll" type="checkbox" /><label for="scroll">autoscroll (log)</label>
+				<input id="scroll" type="checkbox" checked/><label for="scroll">autoscroll (log)</label>
 			</fieldset>
 			<small>
 				uses
