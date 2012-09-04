@@ -165,9 +165,16 @@
 			table{
 				width:100%;
 			}
+			.hide{
+				display:none;
+			}
 		</style>
 		<!--[if IE]>
 			<style>/*XXX try to port stuff out of here*/
+				.nc2{
+					position:absolute;
+					right:1em;
+				}
 			</style>
 		<![endif]-->
 		<base target='_blank' />
@@ -241,12 +248,12 @@
 					<option value="vim">vim</option>
 					<option value="emacs">emacs (also binds ctrl-s)</option>
 				</select>
+				<br>
+				<input id="dev" type="checkbox" /><label for="dev">advanced</label>
 				<br class="dev"><!--stupid whitespace-->
 				<input id="expand" type="checkbox" class="dev" /><label for="expand" class="dev">expand (log)</label>
 				<br class="dev">
 				<input id="scroll" type="checkbox" class="dev" checked/><label for="scroll" class="dev">autoscroll (log)</label>
-				<br>
-				<input id="dev" type="checkbox" /><label for="dev">advanced</label>
 			</fieldset>
 			<small>
 				uses
@@ -290,6 +297,7 @@ int main(int argc,char*argv[]){
 				warn("msie: ymmv");
 				session.setValue(session.getValue().replace(/\r/g,""));
 				$("legend>span").on("selectstart",false);
+				$("legend>:nth-child(2)").addClass("nc2");
 				$.support.cors=true;//may not be needed
 			}
 			session.setMode("ace/mode/c_cpp");
@@ -536,12 +544,6 @@ int main(int argc,char*argv[]){
 			$("#cc").click(function(){
 				cache={};
 			});
-			$("#dev").change(function(){
-				if(this.checked)
-					$(".dev").show();
-				else
-					$(".dev").hide();
-			}).change();
 			function loadhist(){
 				$.ajax(fileUrl("/code")).done(function(x){
 					var a=x.split("\n"),hist=$("#hist"),base="/code/"+a.shift()+"/";
@@ -639,13 +641,19 @@ int main(int argc,char*argv[]){
 					editor.renderer;
 				$("<input type=\"checkbox\">").attr("id",e).change(function(e){
 					g[f](e.target.checked);
-				}).prop("checked",g["g"+f.substring(1)]()).change().after($("<label>").attr("for",e).text(e.replace(/-/g," "))).before("<br>").appendTo("#ed-opts");
+				}).prop("checked",g["g"+f.substring(1)]()).change().after($("<label>").attr("for",e).text(e.replace(/-/g," "))).before("<br>").appendTo("#ed-opts").addClass("dev");
 			});
 			$("#expand").change(function(){
 				if(this.checked)
 					$(".mh").addClass("mh-ex");
 				else
 					$(".mh-ex").removeClass("mh-ex");
+			}).change();
+			$("#dev").change(function(){
+				if(this.checked)
+					$(".dev").removeClass("hide");
+				else
+					$(".dev").addClass("hide");
 			}).change();
 			$("#scroll").change(function(){
 				rescroll=this.checked;
