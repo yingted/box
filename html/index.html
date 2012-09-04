@@ -12,7 +12,6 @@
 		</script>
 		<script src="ace/ace.js" type="text/javascript" charset="utf-8"></script>
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
-		<!--<script src="jquery-1.8.0.min.js"></script>-->
 		<script src="LAB.min.js" type="text/javascript"></script>
 		<title>judge</title>
 		<style type="text/css" media="screen">
@@ -178,7 +177,11 @@
 			<fieldset>
 				<legend>
 					<span>submit code</span>
-					<input id="run" type="submit" value="submit (ctrl-s)" />
+					<span>
+						<button id="rlin" class="dev">reload</button>
+						<button id="cc" class="dev">0 js cache</button>
+						<input id="run" type="submit" value="submit (ctrl-s)" />
+					</span>
 				</legend>
 				<label for="infile">input file:</label>
 				<select id="infile"></select>
@@ -190,7 +193,7 @@
 			<fieldset>
 				<legend>
 					<span>history</span>
-					<button id="rlhist">reload</button>
+					<button id="rlhist" class="dev">reload</button>
 				</legend>
 				<!--<div id="histsc" class="mh">-->
 					<small>
@@ -214,7 +217,7 @@
 			<fieldset>
 				<legend>
 					<span>log</span>
-					<button id="clear">clear</button>
+					<button id="clear" class="dev">clear</button>
 				</legend>
 				<div id="out" class="mh"></div>
 			</fieldset>
@@ -224,24 +227,26 @@
 				</legend>
 				<label for="theme">theme:</label>
 				<select id="theme"></select>
-				<br>
-				<label for="wrap">wrap:</label>
-				<select id="wrap">
+				<br class="dev">
+				<label for="wrap" class="dev">wrap:</label>
+				<select id="wrap" class="dev">
 					<option value="80">80 chars</option>
 					<option value="off">off</option>
 					<option value="free">free</option>
 				</select>
-				<br>
-				<label for="binding">keybindings:</label>
-				<select id="binding">
+				<br class="dev">
+				<label for="binding" class="dev">keybindings:</label>
+				<select id="binding" class="dev">
 					<option value="ace">ace</option>
 					<option value="vim">vim</option>
 					<option value="emacs">emacs (also binds ctrl-s)</option>
 				</select>
-				<br><!--stupid whitespace-->
-				<input id="expand" type="checkbox" /><label for="expand">expand (log)</label>
+				<br class="dev"><!--stupid whitespace-->
+				<input id="expand" type="checkbox" class="dev" /><label for="expand" class="dev">expand (log)</label>
+				<br class="dev">
+				<input id="scroll" type="checkbox" class="dev" checked/><label for="scroll" class="dev">autoscroll (log)</label>
 				<br>
-				<input id="scroll" type="checkbox" checked/><label for="scroll">autoscroll (log)</label>
+				<input id="dev" type="checkbox" /><label for="dev">advanced</label>
 			</fieldset>
 			<small>
 				uses
@@ -252,8 +257,9 @@
 				<a href="http://labjs.com/"><abbr title="Loading And Blocking JavaScript">LABjs</abbr></a>,
 				<a href="http://sourceforge.net/projects/libseccomp/">libseccomp</a> (custom),
 				<a href="http://lxc.sourceforge.net/"><abbr title="Linux Containers">lxc</abbr></a>,
+				<a href="http://code.google.com/p/modwsgi/">mod_wsgi</a>,
 				<a href="http://www.python.org/">python</a>,
-				and more.
+				and more.<!--and unfortunately, selinux-->
 			</small>
 		</form>
 		<pre id="editor">#include&lt;iostream&gt;
@@ -279,7 +285,7 @@ int main(int argc,char*argv[]){
 			$("legend,#templates>*").contents().filter(function(){
 				return this.nodeType==3;//Node.TEXT_NODE
 			}).remove();
-			var editor=ace.edit("editor"),session=editor.getSession(),themes=[["bright",["chrome","clouds","crimson_editor","dawn","dreamweaver","eclipse","github","solarized_light","textmate","tomorrow"]],["dark",["clouds_midnight","cobalt","idle_fingers","kr_theme","merbivore","merbivore_soft","mono_industrial","monokai","pastel_on_dark","solarized_dark","tomorrow_night","tomorrow_night_blue","tomorrow_night_bright","tomorrow_night_eighties","twilight","vibrant_ink"]]],problem=$("#problem"),run=$("#run"),defconfig={wait_mins:1,file_blocks:1,wall_secs:2,cpu_secs:4,memory_kb:256*1024,vsize_kb:320*1024},out=$("#out"),sacrifice=$("<span>"),anns={},PlaceHolder=require("ace/placeholder").PlaceHolder,phs=[],rescroll;//TODO: defconfig
+			var editor=ace.edit("editor"),session=editor.getSession(),themes=[["bright",["chrome","clouds","crimson_editor","dawn","dreamweaver","eclipse","github","solarized_light","textmate","tomorrow"]],["dark",["clouds_midnight","cobalt","idle_fingers","kr_theme","merbivore","merbivore_soft","mono_industrial","monokai","pastel_on_dark","solarized_dark","tomorrow_night","tomorrow_night_blue","tomorrow_night_bright","tomorrow_night_eighties","twilight","vibrant_ink"]]],problem=$("#problem"),run=$("#run"),defconfig={wait_mins:1,file_blocks:1,wall_secs:2,cpu_secs:4,memory_kb:256*1024,vsize_kb:320*1024},out=$("#out"),sacrifice=$("<span>"),anns={},PlaceHolder=require("ace/placeholder").PlaceHolder,phs=[],rescroll,cache={};//TODO: defconfig
 			if($.browser.msie){
 				warn("msie: ymmv");
 				session.setValue(session.getValue().replace(/\r/g,""));
@@ -390,25 +396,26 @@ int main(int argc,char*argv[]){
 				return s+": "+x.status+" "+x.statusText
 			}
 			function get(url,succ,err){
-				if(!(url in get)){
-					get[url]=[[succ],[err]];
+				if(!(url in cache)){
+					var cu=cache[url]=[[succ],[err]];
 					$.get(fileUrl(url),function(){
 						var args=arguments,ths=this;
-						$.each(get[url][0],function(i,e){
+						$.each(cu[0],function(i,e){
 							e&&e.apply(ths,args);
 						});
-						get[url]=args;
+						cu=args;
 					}).error(function(){
 						var args=arguments,ths=this;
-						$.each(get[url][1],function(i,e){
+						$.each(cu[1],function(i,e){
 							e&&e.apply(ths,args);
 						});
-						delete get[url];
+						if(cu===cache[url])
+							delete cache[url];
 					});
-				}else if(get[url]instanceof Array){
-					get[url][0].push(succ);
-					get[url][1].push(err);
-				}else succ.apply(this,get[url]);
+				}else if(cache[url]instanceof Array){
+					cache[url][0].push(succ);
+					cache[url][1].push(err);
+				}else succ.apply(this,cache[url]);
 			}
 			function erf(msg){
 				return function(){
@@ -508,20 +515,33 @@ int main(int argc,char*argv[]){
 					run.prop("disabled",false);
 				});
 			}
-			$.ajax(fileUrl("/")).done(function(e){//start async'ly loading problem data
-				dbg("got problem list");
-				$("#infile").append($(e.split("\n")).map(function(i,e){
-					return $("<option>").attr("value",e).text(e)[0];
-				})).change(function(){
-					problem.html("<em>loading…</em>");
-					get(this.value.replace(/\/[^/]*$/,"/problem.txt"),function(e){
-						problem.html("<h2>problem statement</h2>").append($("<pre id=\"statement\">").text(e));
-					},function(x,s){
-						problem.empty().append($("<strong>").text(getText(x,s)));
-					});
-				}).change();
-				$("#navbar").submit(submit);
-			}).error(erf("loading problem list"));
+			function loadlist(){
+				$.ajax(fileUrl("/")).done(function(e){//start async'ly loading problem data
+					dbg("got problem list");
+					$("#infile").empty().append($(e.split("\n")).map(function(i,e){
+						return $("<option>").attr("value",e).text(e)[0];
+					})).change(function(){
+						problem.html("<em>loading…</em>");
+						get(this.value.replace(/\/[^/]*$/,"/problem.txt"),function(e){
+							problem.html("<h2>problem statement</h2>").append($("<pre id=\"statement\">").text(e));
+						},function(x,s){
+							problem.empty().append($("<strong>").text(getText(x,s)));
+						});
+					}).change();
+					$("#navbar").submit(submit);
+				}).error(erf("loading problem list"));
+			}
+			loadlist();
+			$("#rlin").click(loadlist);
+			$("#cc").click(function(){
+				cache={};
+			});
+			$("#dev").change(function(){
+				if(this.checked)
+					$(".dev").show();
+				else
+					$(".dev").hide();
+			}).change();
 			function loadhist(){
 				$.ajax(fileUrl("/code")).done(function(x){
 					var a=x.split("\n"),hist=$("#hist"),base="/code/"+a.shift()+"/";
