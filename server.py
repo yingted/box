@@ -23,7 +23,7 @@ def update(path,cb,nodelay=False):
 	t.start()#wait 1 sec for modification, ratelimit
 def flistcb():
 	global flist
-	files=sorted([x[11:]for x in check_output(("find","rootfs/data","-type","f","-name","*input*","-perm","-4","-print0")).split("\0")if binputb.search(x)and not bdosb.search(x)],reverse=True)
+	files=sorted([x[11:]for x in check_output(("find","-L","rootfs/data","-type","f","-name","*input*","-perm","-4","-print0")).split("\0")if binputb.search(x)and not bdosb.search(x)],reverse=True)
 	flist=("\n".join(files),sorted(set(map(problem,files))),{},files)
 	print"found %d files"%len(files)
 update("rootfs/data",flistcb,True)
@@ -39,7 +39,13 @@ scoreupdate=Event()
 def scorescb():
 	global scores,scoreupdate
 	old=scores
-	ip_in_score_time_s=dict([((p[1],read("/".join(p[:3])+"/in").rstrip("\n")),(s,int(p[2])))for(s,p)in sorted([(map(int,read(x).split("\n")[-2].split(" ")),x.split("/"))for x in check_output(("find","code","-mindepth","3","-name","score","-type","f","-print0")).split("\0")[:-1]])]).items()
+	score_sub_s=[]
+	for x in check_output(("find","code","-mindepth","3","-name","score","-type","f","-print0")).split("\0")[:-1]:
+		try:
+			score_sub_s.append((map(int,read(x).split("\n")[-2].split(" ")),x.split("/")))
+		except:
+			pass
+	ip_in_score_time_s=dict([((p[1],read("/".join(p[:3])+"/in").rstrip("\n")),(s,int(p[2])))for(s,p)in sorted(score_sub_s)]).items()
 	ip_in_score_time_s.sort(key=lambda e:e[0][0])#for compare
 	ip_in_score_time_s.sort(key=lambda e:e[1][1])
 	ip_in_score_time_s.sort(key=lambda e:e[1][0],reverse=True)
@@ -52,7 +58,8 @@ def scorescb():
 			scores.append("\n"+inp)
 		scores.append("\t")
 		scores.append((ip," ".join(map(str,s))+" "+str(t)))
-	scores[0]=scores[0][1:]
+	if scores:
+		scores[0]=scores[0][1:]
 	if scores!=old:
 		print"updated %d scores"%len(ip_in_score_time_s)
 		scoreupdate.set()

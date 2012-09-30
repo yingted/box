@@ -411,7 +411,7 @@ int main(int argc,char*argv[]){
 						$.each(cu[0],function(i,e){
 							e&&e.apply(ths,args);
 						});
-						cu=args;
+						cache[url]=args;
 					}).error(function(){
 						var args=arguments,ths=this;
 						$.each(cu[1],function(i,e){

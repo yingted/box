@@ -3,12 +3,12 @@
 #include<string>
 #include<algorithm>
 using namespace std;
-inline bool bp(char x,char y){
+const inline bool bp(char x,char y){
 	return(x==' '||x=='\t')&&
 		(y==' '||y=='\t');
 }
-static string es("");
-string&clean(string&s){
+const static string es("");
+const string&clean(string&s){
 	ssize_t st=s.find_first_not_of(" \t");
 	if(st==string::npos)
 		return es;

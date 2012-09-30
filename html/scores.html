@@ -161,7 +161,7 @@
 			style.type="text/css";
 			head.appendChild(style);
 			if(style.styleSheet){
-				style=style.styleSheet.cssText;
+				style=style.styleSheet;
 				tc2="cssText";
 			}else{
 				style.appendChild(style=document.createTextNode(""));
