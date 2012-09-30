@@ -1,0 +1,2 @@
+solution.cpp: In function ‘int main(int, char**)’:
+solution.cpp:7:19: error: expected ‘;’ before ‘}’ token

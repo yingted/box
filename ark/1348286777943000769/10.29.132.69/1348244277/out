@@ -1,0 +1,6 @@
+solution.cpp: In function ‘int main(int, char**)’:
+solution.cpp:5:9: error: expected primary-expression before ‘;’ token
+solution.cpp:5:9: error: expected ‘)’ before ‘;’ token
+solution.cpp:5:10: error: expected primary-expression before ‘)’ token
+solution.cpp:5:10: error: expected ‘;’ before ‘)’ token
+solution.cpp:4:12: warning: unused variable ‘d’ [-Wunused-variable]

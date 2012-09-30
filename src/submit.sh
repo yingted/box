@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 host=localhost
 root=box
 input=/test/input.txt
@@ -16,10 +16,12 @@ do
 		q)
 			exec 2>/dev/null;;
 		?)
-			echo "$0 [-h(elp)] [-s(erver) server=$host] [-r(oot) root=$box] [-f(ile) file=$(readlink -f /dev/stdin)] [-i(nput) input=$input] [-q(uiet)]"
+			echo "$0 [-h(elp)] [-s(erver) server=$host] [-r(oot) (root=)$box] [-f(ile) (file=)$(readlink -f /dev/stdin)] [-i(nput) (input=)$input] [-q(uiet)] filelist-replace"
 			exit;;
 	esac
 done
+shift $((OPTIND-1))
+[ "$#" -gt 0 ] && exec < <(cat "$@")
 prefix="$host/$root"
 id="$(curl -sf "http://$prefix/submit?input=$(js -e 'print(encodeURIComponent(readline()))' <<< "$input")" --data-binary "@-")"
 case "$?" in

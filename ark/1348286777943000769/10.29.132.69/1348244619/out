@@ -1,0 +1,2 @@
+solution.cpp: In function ‘int main(int, char**)’:
+solution.cpp:18:14: error: no match for ‘operator*=’ in ‘d *= d’
