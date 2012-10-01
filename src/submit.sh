@@ -2,26 +2,38 @@
 host=localhost
 root=box
 input=/test/input.txt
-while getopts "hs:r:f:i:q" opt
+files=()
+catfile(){
+	files[${#files[@]}]="$1";
+}
+while [ "$#" -gt 0 ]
 do
-	case $opt in
-		s)
-			host="$OPTARG";;
-		r)
-			root="$OPTARG";;
-		f)
-			exec < "$OPTARG";;
-		i)
-			input="$OPTARG";;
-		q)
-			exec 2>/dev/null;;
-		?)
-			echo "$0 [-h(elp)] [-s(erver) server=$host] [-r(oot) (root=)$box] [-f(ile) (file=)$(readlink -f /dev/stdin)] [-i(nput) (input=)$input] [-q(uiet)] filelist-replace"
-			exit;;
-	esac
+	while getopts "hs:r:f:i:lq" opt
+	do
+		case $opt in
+			s)
+				host="$OPTARG";;
+			r)
+				root="$OPTARG";;
+			f)
+				catfile "$OPTARG";;
+			i)
+				input="$OPTARG";;
+			l)
+				curl -sf "http://$host/$root/" && echo
+				exit $?;;
+			q)
+				exec 2>/dev/null;;
+			?)
+				echo "$0 [-h(elp)] [-s(erver) server=$host] [-r(oot) (root=)$box] [-f(ile) (file=)$(readlink -f /dev/stdin)] [-i(nput) (input=)$input] [-l(ist and quit)] [-q(uiet)] [file [...]]"
+				exit;;
+		esac
+	done
+	shift $((OPTIND-1))
+	OPTIND=1
+	[ "$#" -gt 0 ] && catfile "$1" && shift
 done
-shift $((OPTIND-1))
-[ "$#" -gt 0 ] && exec < <(cat "$@")
+exec < <(cat "${files[@]}")
 prefix="$host/$root"
 id="$(curl -sf "http://$prefix/submit?input=$(js -e 'print(encodeURIComponent(readline()))' <<< "$input")" --data-binary "@-")"
 case "$?" in
