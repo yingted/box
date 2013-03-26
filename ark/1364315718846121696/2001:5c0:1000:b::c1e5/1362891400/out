@@ -1,0 +1,2 @@
+solution.cpp: In function ‘int main(int, char**)’:
+solution.cpp:5:18: error: ‘printf’ was not declared in this scope

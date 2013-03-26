@@ -1,0 +1,10 @@
+solution.cpp: In function ‘int main(int, char**)’:
+solution.cpp:4:10: error: no match for ‘operator>>’ in ‘std::cout >> "av"’
+solution.cpp:4:10: note: candidates are:
+/usr/lib/gcc/i686-redhat-linux/4.6.3/../../../../include/c++/4.6.3/bits/basic_string.tcc:998:5: note: template<class _CharT, class _Traits, class _Alloc> std::basic_istream<_CharT, _Traits>& std::operator>>(std::basic_istream<_CharT, _Traits>&, std::basic_string<_CharT, _Traits, _Alloc>&)
+/usr/lib/gcc/i686-redhat-linux/4.6.3/../../../../include/c++/4.6.3/bits/istream.tcc:957:5: note: template<class _CharT2, class _Traits2> std::basic_istream<_CharT, _Traits>& std::operator>>(std::basic_istream<_CharT, _Traits>&, _CharT2*)
+/usr/lib/gcc/i686-redhat-linux/4.6.3/../../../../include/c++/4.6.3/bits/istream.tcc:925:5: note: template<class _CharT, class _Traits> std::basic_istream<_CharT, _Traits>& std::operator>>(std::basic_istream<_CharT, _Traits>&, _CharT&)
+/usr/lib/gcc/i686-redhat-linux/4.6.3/../../../../include/c++/4.6.3/istream:709:5: note: template<class _Traits> std::basic_istream<char, _Traits>& std::operator>>(std::basic_istream<char, _Traits>&, unsigned char&)
+/usr/lib/gcc/i686-redhat-linux/4.6.3/../../../../include/c++/4.6.3/istream:714:5: note: template<class _Traits> std::basic_istream<char, _Traits>& std::operator>>(std::basic_istream<char, _Traits>&, signed char&)
+/usr/lib/gcc/i686-redhat-linux/4.6.3/../../../../include/c++/4.6.3/istream:756:5: note: template<class _Traits> std::basic_istream<char, _Traits>& std::operator>>(std::basic_istream<char, _Traits>&, unsigned char*)
+/usr/lib/gcc/i686-redhat-linux/4.6.3/../../../../include/c++/4.6.3/istream:761:5: note: template<class _Traits> std::basic_istream<char, _Traits>& std::operator>>(std::basic_istream<char, _Traits>&, signed char*)
