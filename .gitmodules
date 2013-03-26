@@ -1,3 +1,6 @@
 [submodule "src/libseccomp-libseccomp"]
 	path = src/libseccomp-libseccomp
 	url = git://git.code.sf.net/p/libseccomp/libseccomp
+[submodule "OpenTuring"]
+	path = OpenTuring
+	url = git://github.com/Open-Turing-Project/OpenTuring.git
