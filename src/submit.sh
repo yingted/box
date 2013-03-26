@@ -10,7 +10,7 @@ while [ "$#" -gt 0 ]
 do
 	while getopts "hs:r:f:i:lq" opt
 	do
-		case $opt in
+		case "$opt" in
 			s)
 				host="$OPTARG";;
 			r)
