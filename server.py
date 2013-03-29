@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 from wsgiref.simple_server import make_server#,demo_app
 from cgi import FieldStorage
 from threading import Timer,Event
