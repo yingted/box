@@ -5,8 +5,8 @@ export CFLAGS
 INSTALL=sudo install -o0
 all:drop score tprolog box.o
 	$(INSTALL) -sm555 drop score tprolog ../rootfs/build
-	$(INSTALL) -m555 compile.sh ../rootfs/build
 	objcopy --redefine-sym main=_start --redefine-sym _start=__start ../rootfs/usr/lib/crt1.o crt1.o
+	$(INSTALL) -m555 run.sh ../rootfs/build
 	$(INSTALL) -m444 crt1.o box.o ../rootfs/build
 	rm crt1.o
 	#$(INSTALL) -m555 -T /usr/lib/libseccomp.so.0 ../rootfs/build/libseccomp.so.0
