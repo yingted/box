@@ -1,9 +1,10 @@
 #*
 .*
 code
-rootfs/*
+rootfs
 server.pyc
 config
 devs.sh
 fstab
 rootfs.*
+OpenTuring
