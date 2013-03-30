@@ -9,7 +9,8 @@ all:drop score tprolog box.o
 	$(INSTALL) -m555 run.sh ../rootfs/build
 	$(INSTALL) -m444 crt1.o box.o ../rootfs/build
 	rm crt1.o
-	#$(INSTALL) -m555 -T /usr/lib/libseccomp.so.0 ../rootfs/build/libseccomp.so.0
+	$(INSTALL) -m555 -T libseccomp/lib/libseccomp.so.0.0.0 ../rootfs/build/libseccomp.so.0
+	chcon -vt httpd_unconfined_script_exec_t ../{server.py,nq.sh}
 clean:
 	rm -f drop score tprolog box.o crt1.o
 	make -C libseccomp-libseccomp clean
@@ -20,11 +21,11 @@ drop:drop.c
 score:score.cpp
 	g++ score.cpp -o score $(CFLAGS)
 	strip score
-box.o:box.c #libseccomp
+box.o:box.c libseccomp
 	g++ box.c -c -lseccomp -L. $(CFLAGS)
-#libseccomp:
-#	mkdir -p libseccomp
-#	cd libseccomp-libseccomp && ./configure --prefix=`readlink -m ../libseccomp` --libdir=`readlink -m ../libseccomp/lib` && make && make install
+libseccomp:
+	mkdir -p libseccomp
+	[ -x /usr/lib/libseccomp.so.0 ] && mkdir libseccomp/lib && cp /usr/lib/libseccomp.so.0 libseccomp/lib/libseccomp.so.0.0.0 || (cd libseccomp-libseccomp && ./configure --prefix=`readlink -m ../libseccomp` --libdir=`readlink -m ../libseccomp/lib` && make && make install)
 tprolog:
 	make -C ../OpenTuring/turing/src ../bin/tprolog
 	cp ../OpenTuring/turing/bin/tprolog .
