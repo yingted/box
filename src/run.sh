@@ -47,14 +47,14 @@ compile_py3() {
 python3 -SOO solution.py3
 EOF
 }
-fname=`ls -1 solution.*|head -1)`
+fname=`ls -1 solution.*|head -1`
 lang=${fname##*.}
 compile_$lang
 chmod +x solution
 (
     set +e
     ulimit -d1024 -f"$file_blocks" -i10 -m"$memory_kb" -n10 -q0 -t"$cpu_secs" -v"$vsize_kb" -x0
-    time -o score -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" timeout "$wall_secs" taskset 0x00000001 ./solution <"/data$test_path" >stdout 2>/dev/null
+    time -o score -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" timeout "$wall_secs" taskset 1 ./solution <"/data$test_path" >stdout 2>/dev/null
     echo $?
 )
 /build/score "/data$(sed 's/\(.*\)\binput\b/\1output/' <<< "$test_path")" stdout >>score

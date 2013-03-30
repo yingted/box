@@ -3,7 +3,7 @@ CFLAGS=-march=native -O3 -pipe -fstack-protector --param ssp-buffer-size=4 -D_FO
 export CFLAGS
 #strip again
 INSTALL=sudo install -o0
-all:drop score tprolog box.o
+all:drop score #tprolog box.o
 	$(INSTALL) -sm555 drop score tprolog ../rootfs/build
 	objcopy --redefine-sym main=_start --redefine-sym _start=__start ../rootfs/usr/lib/crt1.o crt1.o
 	$(INSTALL) -m555 run.sh ../rootfs/build
@@ -21,11 +21,11 @@ drop:drop.c
 score:score.cpp
 	g++ score.cpp -o score $(CFLAGS)
 	strip score
-box.o:box.c libseccomp
+box.o:box.c #libseccomp
 	g++ box.c -c -lseccomp -L. $(CFLAGS)
-libseccomp:
-	mkdir -p libseccomp
-	[ -x /usr/lib/libseccomp.so.0 ] && mkdir libseccomp/lib && cp /usr/lib/libseccomp.so.0 libseccomp/lib/libseccomp.so.0.0.0 || (cd libseccomp-libseccomp && ./configure --prefix=`readlink -m ../libseccomp` --libdir=`readlink -m ../libseccomp/lib` && make && make install)
+#libseccomp:
+#	mkdir -p libseccomp
+#	[ -x /usr/lib/libseccomp.so.0 ] && mkdir libseccomp/lib && cp /usr/lib/libseccomp.so.0 libseccomp/lib/libseccomp.so.0.0.0 || (cd libseccomp-libseccomp && ./configure --prefix=`readlink -m ../libseccomp` --libdir=`readlink -m ../libseccomp/lib` && make && make install)
 tprolog:
 	make -C ../OpenTuring/turing/src ../bin/tprolog
 	cp ../OpenTuring/turing/bin/tprolog .
