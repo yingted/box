@@ -1,5 +1,5 @@
 #!/bin/sh
-#usage: $0 user problem < file
+#usage: $0 user problem lang < file
 set -e
 wait_mins=1
 conf="rootfs/data${2%/*}/config"
@@ -18,6 +18,6 @@ mkdir "$1/lock" 2>&- || die
 base="$1/`date +%s`"
 mkdir "$base" 2>&- || die
 echo "$2" > "$base/in"
-cat > "$base/solution.cpp"
+cat > "$base/solution.$3"
 echo 202 Accepted
 echo -n "$base"
