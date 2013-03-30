@@ -5,7 +5,7 @@ export CFLAGS
 INSTALL=sudo install -o0
 all:drop score tprolog box.o
 	$(INSTALL) -sm555 drop score tprolog ../rootfs/build
-	$(INSTALL) -m555 compile.sh ../rootfs/build
+	$(INSTALL) -m555 run.sh ../rootfs/build
 	objcopy --redefine-sym main=_start --redefine-sym _start=__start /usr/lib/gcc/i686-redhat-linux/4.6.3/../../../crt1.o crt1.o
 	$(INSTALL) -m444 crt1.o box.o ../rootfs/build
 	rm crt1.o
