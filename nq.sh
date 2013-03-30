@@ -17,7 +17,7 @@ trap '[ -d "$1/lock" ] && rmdir "$1/lock"' exit
 mkdir "$1/lock" 2>&- || die
 base="$1/`date +%s`"
 mkdir "$base" 2>&- || die
-echo "$2" > "$base/in"
 cat > "$base/solution.cpp"
+echo "$2" > "$base/in"
 echo 202 Accepted
 echo -n "$base"

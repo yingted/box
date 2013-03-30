@@ -19,8 +19,8 @@
 # along with this library; if not, see <http://www.gnu.org/licenses>.
 #
 
-prefix=/home/ted/box/libseccomp
-libdir=/home/ted/box/libseccomp/lib
+prefix=/home/ted/box/src/libseccomp
+libdir=/home/ted/box/src/libseccomp/lib
 includedir=${prefix}/include
 
 Name: libseccomp

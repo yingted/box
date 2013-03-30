@@ -2,6 +2,7 @@
 host=localhost
 root=box
 input=/test/input.txt
+lang=cpp
 files=()
 catfile(){
 	files[${#files[@]}]="$1";
@@ -19,13 +20,15 @@ do
 				catfile "$OPTARG";;
 			i)
 				input="$OPTARG";;
+			t)
+				lang="$OPTARG";;
 			l)
 				curl -sf "http://$host/$root/" && echo
 				exit $?;;
 			q)
 				exec 2>/dev/null;;
 			?)
-				echo "$0 [-h(elp)] [-s(erver) server=$host] [-r(oot) (root=)$box] [-f(ile) (file=)$(readlink -f /dev/stdin)] [-i(nput) (input=)$input] [-l(ist and quit)] [-q(uiet)] [file [...]]"
+				echo "$0 [-h(elp)] [-s(erver) server=$host] [-r(oot) (root=)$box] [-f(ile) (file=)$(readlink -f /dev/stdin)] [-i(nput) (input=)$input] [-t(ype) (lang)=cpp] [-l(ist and quit)] [-q(uiet)] [file [...]]"
 				exit;;
 		esac
 	done
@@ -35,7 +38,7 @@ do
 done
 exec < <(cat "${files[@]}")
 prefix="$host/$root"
-id="$(curl -sf "http://$prefix/submit?input=$(js -e 'print(encodeURIComponent(readline()))' <<< "$input")" --data-binary "@-")"
+id="$(curl -sf "http://$prefix/submit?lang=$lang&input=$(js -e 'print(encodeURIComponent(readline()))' <<< "$input")" --data-binary "@-")"
 case "$?" in
 	0)
 		echo "submission id $id" >&2

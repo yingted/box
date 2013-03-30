@@ -90,19 +90,21 @@ def application(env,respond):
 		except IOError:
 			pass#404
 	elif path=="/submit":
+		get=parse_qs(env.get("QUERY_STRING",""))
 		inlen=int(env.get("CONTENT_LENGTH",-1))
 		if inlen<0:
 			return err("411 Length Required")
 		if inlen>64*1024:
 			print inlen,"too large"
 			return err("413 Request Entity Too Large")
-		infile=parse_qs(env.get("QUERY_STRING","")).get("input")
-		if not infile or type(infile)!=list or len(infile)!=1:
-			return err("400 Bad Request")
-		infile=infile[0]
-		if infile not in flist[3]:
+		for param in"input","lang":
+			if len(get.get("input",[]))!=1:
+				return err("400 Bad Request")
+		infile=get["input"][0]
+		lang=get["lang"][0]
+		if infile not in flist[3]or lang not in("cpp","py2","py3","java","t"):
 			return err("404 Not Found")
-		rc,msg=Popen(("./nq.sh",user,infile),stdin=PIPE,stdout=PIPE).communicate(env["wsgi.input"].read(inlen))[0].split("\n")
+		rc,msg=Popen(("./nq.sh",user,infile,lang),stdin=PIPE,stdout=PIPE).communicate(env["wsgi.input"].read(inlen))[0].split("\n")
 		return good(msg)
 	elif path=="/code":
 		return good('\n'.join([user]+([x for x in listdir("code/"+user)if x!="lock"]if exists("code/"+user)else[])))
