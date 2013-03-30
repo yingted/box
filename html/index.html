@@ -192,6 +192,13 @@
 				</legend>
 				<label for="infile">input file:</label>
 				<select id="infile"></select>
+				<select id="lang">
+					<option>cpp</option>
+					<option>java</option>
+					<option>py2</option>
+					<option>py3</option>
+					<option>t</option>
+				</select>
 				<hr>
 				<div id="problem">
 					<small>problem.txt will be here</small>
@@ -301,11 +308,13 @@ int main(int argc,char*argv[]){
 				$.support.cors=true;//may not be needed
 			}
 			session.setMode("ace/mode/c_cpp");
-			session.addEventListener("change",function(){
+			function retryAnnotate(){
 				tryannotate();
-			});
+			}
+			session.addEventListener("change",retryAnnotate);
+			$("#lang").change(retryAnnotate);
 			function tryannotate(ann){
-				if(!(ann=anns[session.getValue()]||ann))
+				if(!(ann=anns[session.getValue()+"\0"+$("#lang").val()]||ann))
 					return;
 				$.map(phs,function(e){
 					e.detach();
@@ -488,7 +497,7 @@ int main(int argc,char*argv[]){
 					ann.push({type:gcchash[m[3]]||"note",row:m[1]-1,column:m[2]-1,text:m[4]});
 				if(rc!==undefined)
 					dbg("program exited",rc+(rchash.hasOwnProperty(rc)?" ("+rchash[rc]+")":""));
-				anns[code]=ann;
+				anns[code+"\0"+$("#lang").val()]=ann;
 				tryannotate();//will not dig edit history
 			}
 			function submit(e){
@@ -496,15 +505,15 @@ int main(int argc,char*argv[]){
 					e.preventDefault();
 				run.prop("disabled",true);
 				info("submitting…");
-				var file=$("#infile").val(),code=session.getValue();
+				var file=$("#infile").val(),code=session.getValue(),lang=$("#lang").val();
 				if(!file)
 					return;
-				if(anns.hasOwnProperty(code)){
+				if(anns.hasOwnProperty(code+"\0"+lang)){
 					err("double-submission blocked; add a comment and try again if you meant to do this");
 					run.prop("disabled",false);
 					return;
 				}
-				$.post(fileUrl("/submit?input="+encodeURIComponent(file)),code,function(x){
+				$.post(fileUrl("/submit?lang="+lang+"&input="+encodeURIComponent(file)),code,function(x){
 					info("upload successful");
 					var url=fileUrl("/code/"+x),score=url+"/score";
 					(function connect(){
