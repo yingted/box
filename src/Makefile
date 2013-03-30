@@ -10,6 +10,7 @@ all:drop score tprolog box.o
 	$(INSTALL) -m444 crt1.o box.o ../rootfs/build
 	rm crt1.o
 	$(INSTALL) -m555 -T libseccomp/lib/libseccomp.so.0.0.0 ../rootfs/build/libseccomp.so.0
+	chcon -vt httpd_unconfined_script_exec_t ../{server.py,nq.sh}
 clean:
 	rm -f drop score tprolog box.o crt1.o
 	make -C libseccomp-libseccomp clean
