@@ -23,7 +23,8 @@ score:score.cpp
 box.o:box.c libseccomp
 	g++ box.c -c `PKG_CONFIG_PATH=libseccomp/lib/pkgconfig pkg-config --cflags --libs libseccomp` -L. $(CFLAGS)
 libseccomp:
-	cd libseccomp-libseccomp && make && make install
+	mkdir -p libseccomp
+	cd libseccomp-libseccomp && ./configure --prefix=`readlink -m ../libseccomp` --libdir=`readlink -m ../libseccomp/lib` && make && make install
 tprolog:
 	make -C ../OpenTuring/turing/src ../bin/tprolog
 	cp ../OpenTuring/turing/bin/tprolog .
