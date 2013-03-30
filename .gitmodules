@@ -3,4 +3,4 @@
 	url = git://git.code.sf.net/p/libseccomp/libseccomp
 [submodule "OpenTuring"]
 	path = OpenTuring
-	url = git://github.com/Open-Turing-Project/OpenTuring.git
+	url = ssh://git@bitbucket.org/yingted/openturing.git
