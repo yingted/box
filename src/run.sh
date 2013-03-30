@@ -1,7 +1,8 @@
-#!/bin/sh
-#usage: $0 test_path file_blocks wall_secs cpu_secs memory_kb vsize_kb
+#!/bin/bash
+#usage: $0 test_path lang file_blocks wall_secs cpu_secs memory_kb vsize_kb
 set -e
-test_path="$1";
+test_path="$1"
+lang="${test_path##*.}"
 file_blocks="${2:-1}"
 wall_secs="${3:-2}"
 cpu_secs="${4:-1}"
@@ -27,7 +28,7 @@ strip solution
 (
 	set +e
 	ulimit -d1024 -f"$file_blocks" -i10 -m"$memory_kb" -n10 -q0 -t"$cpu_secs" -v"$vsize_kb" -x0
-	time -o score -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" timeout "$wall_secs" ./solution <"/data$test_path" >stdout 2>/dev/null
+	time -o score -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" timeout "$wall_secs" taskset 0x00000001 ./solution <"/data$test_path" >stdout 2>/dev/null
 	echo $?
 )
 /build/score "/data$(sed 's/\(.*\)\binput\b/\1output/' <<< "$test_path")" stdout >>score
