@@ -6,10 +6,10 @@ INSTALL=sudo install -o0
 all:drop score tprolog box.o
 	$(INSTALL) -sm555 drop score tprolog ../rootfs/build
 	$(INSTALL) -m555 compile.sh ../rootfs/build
-	objcopy --redefine-sym main=_start --redefine-sym _start=__start /usr/lib/gcc/i686-redhat-linux/4.6.3/../../../crt1.o crt1.o
+	objcopy --redefine-sym main=_start --redefine-sym _start=__start ../rootfs/usr/lib/crt1.o crt1.o
 	$(INSTALL) -m444 crt1.o box.o ../rootfs/build
 	rm crt1.o
-	$(INSTALL) -m555 -T libseccomp/lib/libseccomp.so.0.0.0 ../rootfs/build/libseccomp.so.0
+	#$(INSTALL) -m555 -T /usr/lib/libseccomp.so.0 ../rootfs/build/libseccomp.so.0
 clean:
 	rm -f drop score tprolog box.o crt1.o
 	make -C libseccomp-libseccomp clean
@@ -20,11 +20,11 @@ drop:drop.c
 score:score.cpp
 	g++ score.cpp -o score $(CFLAGS)
 	strip score
-box.o:box.c libseccomp
-	g++ box.c -c `PKG_CONFIG_PATH=libseccomp/lib/pkgconfig pkg-config --cflags --libs libseccomp` -L. $(CFLAGS)
-libseccomp:
-	mkdir -p libseccomp
-	cd libseccomp-libseccomp && ./configure --prefix=`readlink -m ../libseccomp` --libdir=`readlink -m ../libseccomp/lib` && make && make install
+box.o:box.c #libseccomp
+	g++ box.c -c -lseccomp -L. $(CFLAGS)
+#libseccomp:
+#	mkdir -p libseccomp
+#	cd libseccomp-libseccomp && ./configure --prefix=`readlink -m ../libseccomp` --libdir=`readlink -m ../libseccomp/lib` && make && make install
 tprolog:
 	make -C ../OpenTuring/turing/src ../bin/tprolog
 	cp ../OpenTuring/turing/bin/tprolog .
