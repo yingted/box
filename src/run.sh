@@ -38,7 +38,7 @@ case "${sol#*.}" in
 		strip solution
 		run="./solution";;
 	t)
-		WINEPREFIX=/build/wineprefix xvfb-run -aw0 -s'-screen 0 1x1x8' wine /build/turing.exe -compile solution.t 2>/dev/null
+		WINEPREFIX=/build/wineprefix xvfb-run -aw0 -s'-screen 0 1x1x8' wine /build/turing.exe -compile solution.t &>/dev/null
 		rm solution.t
 		run="/build/tprolog solution.tbc";;
 	java)
@@ -48,11 +48,11 @@ case "${sol#*.}" in
 	py2)
 		python2 -O -mpy_compile solution.py2
 		rm solution.py2
-		run="python2 -SO solution.pyo";;
+		run="python2 -SO solution.py2o";;
 	py3)
 		python2 -O -mpy_compile solution.py3
 		rm solution.py3
-		run="python3 -SO solution.pyo";;
+		run="python3 -SO solution.py3o";;
 esac
 [ -n "$taskset" ] && taskset="taskset $taskset"
 (
