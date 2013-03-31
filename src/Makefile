@@ -1,16 +1,16 @@
 .PHONY: all clean
-CFLAGS=-march=native -O3 -pipe -fstack-protector --param ssp-buffer-size=4 -D_FORTIFY_SOURCE=2
+CFLAGS+=-march=native -O3 -pipe -fstack-protector --param ssp-buffer-size=4 -D_FORTIFY_SOURCE=2
 export CFLAGS
 #strip again
 INSTALL=sudo install -o0
-all:drop score #tprolog box.o
+all:drop score tprolog box.o
 	$(INSTALL) -sm555 drop score tprolog ../rootfs/build
 	objcopy --redefine-sym main=_start --redefine-sym _start=__start ../rootfs/usr/lib/crt1.o crt1.o
 	$(INSTALL) -m555 run.sh ../rootfs/build
 	$(INSTALL) -m444 crt1.o box.o ../rootfs/build
 	rm crt1.o
-	$(INSTALL) -m555 -T libseccomp/lib/libseccomp.so.0.0.0 ../rootfs/build/libseccomp.so.0
-	chcon -vt httpd_unconfined_script_exec_t ../{server.py,nq.sh}
+	#$(INSTALL) -m555 -T libseccomp/lib/libseccomp.so.0.0.0 ../rootfs/build/libseccomp.so.0
+	#chcon -vt httpd_unconfined_script_exec_t ../{server.py,nq.sh}
 clean:
 	rm -f drop score tprolog box.o crt1.o
 	make -C libseccomp-libseccomp clean
