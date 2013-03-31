@@ -8,3 +8,9 @@ devs.sh
 fstab
 rootfs.*
 OpenTuring
+drop
+score
+tprolog
+box.o
+*.t
+*.tbc
