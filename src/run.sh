@@ -15,6 +15,7 @@ tconf="/data$(sed 's/\(.*\)\binput\b/\1config/' <<< "$test_path")"
 exec 2>&1
 cd /tmp
 sol=(solution.*)
+echo >&2 "$sol"
 case "${sol#*.}" in
 	cpp)
 		deps="`cpp -MM solution.cpp | cut -d\  -f3-`";

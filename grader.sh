@@ -10,7 +10,7 @@ next(){
 	[ -z "$file" ]
 }
 declare -A wrap
-wrap=([t]="sh	-c	'"'mknod -m 644 /dev/random c 1 8; mknod -m 644 /dev/urandom c 1 9; exec "$0" "$@"'"'")
+wrap=([t]="sh	-c	'"'mknod -m 644 /dev/random c 1 8 2>/dev/null; mknod -m 644 /dev/urandom c 1 9 2>/dev/null; exec "$0" "$@"'"'")
 wrap[py]="${wrap[t]}"
 while :
 do
@@ -24,9 +24,8 @@ do
 	cp "$sln" rootfs/tmp
 	sln="${sln##*/}"
 	IFS=$'\t' curwrap=(${wrap[${sln#*.}]})
-	echo sudo lxc-execute -n box -- "${curwrap[@]}" /build/drop 99 /build/run.sh "$(cat "$file/in")" 1 2 1 $[2048*1024] $[2048*1024] \> "$file/out"
 	sudo lxc-execute -n box -- "${curwrap[@]}" /build/drop 99 /build/run.sh "$(cat "$file/in")" 1 2 1 $[2048*1024] $[2048*1024] > "$file/out"
-	#sudo chroot --userspec=99:99 rootfs /build/run.sh "$(cat "$file/in")" > "$file/out"
+	#sudo chroot rootfs "${curwrap[@]}" /build/drop 99 /build/run.sh "$(cat "$file/in")" > "$file/out"
 	rm rootfs/tmp/solution.*
 	cp rootfs/tmp/score "$file/score.part" 2> /dev/null && mv "$file/score.part" "$file/score" || { >> "$file/score"; rm -f "$file/score.part"; }
 	sudo find rootfs/tmp -mindepth 1 -delete
