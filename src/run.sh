@@ -17,7 +17,6 @@ tconf="/data$(sed 's/\(.*\)\binput\b/\1config/' <<< "$test_path")"
 exec 2>&1
 cd /tmp
 sol=(solution.*)
-echo >&2 "$sol"
 case "${sol#*.}" in
 	cpp)
 		deps="`cpp -MM solution.cpp | cut -d\  -f3-`";
@@ -39,7 +38,7 @@ case "${sol#*.}" in
 		strip solution
 		run="./solution";;
 	t)
-		WINEPREFIX=/build/wineprefix xvfb-run -aw0 -s'-screen 0 1x1x8' wine /build/turing.exe -compile solution.t
+		WINEPREFIX=/build/wineprefix xvfb-run -aw0 -s'-screen 0 1x1x8' wine /build/turing.exe -compile solution.t 2>/dev/null
 		rm solution.t
 		run="/build/tprolog solution.tbc";;
 	java)
