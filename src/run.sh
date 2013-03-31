@@ -8,7 +8,7 @@ wall_secs="${3:-2}"
 cpu_secs="${4:-1}"
 memory_kb="${5:-$[256*1024]}"
 vsize_kb="${6:-$[320*1024]}"
-taskset=1
+taskset="${7:-1}"
 [ -e "/data/config" ] && . "/data/config" #$test_path is never /
 conf="/data${test_path%/*}/config"
 [ -e "$conf" ] && . "$conf"
@@ -35,7 +35,7 @@ case "${sol#*.}" in
 		else
 			/usr/libexec/gcc/i686-redhat-linux/4.6.3/collect2 --build-id --no-add-needed --eh-frame-hdr -m elf_i386 -e __start --hash-style=gnu -dynamic-linker /lib/ld-linux.so.2 -o solution /build/crt1.o /usr/lib/gcc/i686-redhat-linux/4.6.3/../../../crti.o /usr/lib/gcc/i686-redhat-linux/4.6.3/crtbegin.o -L/usr/lib/gcc/i686-redhat-linux/4.6.3 -L/usr/lib/gcc/i686-redhat-linux/4.6.3/../../.. /build/box.o /build/libseccomp.a -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/i686-redhat-linux/4.6.3/crtend.o /usr/lib/gcc/i686-redhat-linux/4.6.3/../../../crtn.o solution.o
 		fi
-		rm solution.o
+		rm solution.{cpp,o}
 		strip solution
 		run="./solution";;
 	t)
