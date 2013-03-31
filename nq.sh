@@ -2,6 +2,7 @@
 #usage: $0 user problem lang < file
 set -e
 wait_mins=1
+[ -e rootfs/data/config ] && . rootfs/data/config
 conf="rootfs/data${2%/*}/config"
 [ -e "$conf" ] && . "$conf"
 tconf="rootfs/data$(sed 's/\(.*\)\binput\b/\1config/' <<< "$2")"
