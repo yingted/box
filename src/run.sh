@@ -50,7 +50,7 @@ case "${sol#*.}" in
 		rm solution.py2
 		run="python2 -SO solution.py2o";;
 	py3)
-		python2 -O -mpy_compile solution.py3
+		python3 -O -mpy_compile solution.py3
 		rm solution.py3
 		run="python3 -SO solution.py3o";;
 esac
