@@ -9,6 +9,7 @@ cpu_secs="${4:-1}"
 memory_kb="${5:-$[256*1024]}"
 vsize_kb="${6:-$[320*1024]}"
 taskset=1
+[ -e "/data/config" ] && . "/data/config" #$test_path is never /
 conf="/data${test_path%/*}/config"
 [ -e "$conf" ] && . "$conf"
 tconf="/data$(sed 's/\(.*\)\binput\b/\1config/' <<< "$test_path")"
