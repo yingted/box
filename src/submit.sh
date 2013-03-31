@@ -35,8 +35,9 @@ do
 	OPTIND=1
 	[ "$#" -gt 0 ] && catfile "$1" && shift
 done
-[ -z "$lang" ] && lang="${input##*.}"
 exec < <(cat "${files[@]}")
+[ -z "$lang" ] && lang="${files##*.}"
+[ "$lang" = py ] && lang="py$(python --version |& tr -cd [:digit:] | head -c1)"
 prefix="$host/$root"
 id="$(curl -sf "http://$prefix/submit?lang=$lang&input=$(js -e 'print(encodeURIComponent(readline()))' <<< "$input")" --data-binary "@-")"
 case "$?" in

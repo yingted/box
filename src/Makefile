@@ -3,18 +3,18 @@ CFLAGS+=-march=native -O3 -pipe -fstack-protector --param ssp-buffer-size=4 -D_F
 export CFLAGS
 #strip again
 INSTALL=sudo install -o0
-all:drop score tprolog box.o
+all:drop score tprolog box.o pybox.py2o pybox.py3o
 	$(INSTALL) -sm555 drop score tprolog ../rootfs/build
 	objcopy --redefine-sym main=_start --redefine-sym _start=__start ../rootfs/usr/lib/crt1.o crt1.o
 	$(INSTALL) -m555 run.sh ../rootfs/build
-	$(INSTALL) -m444 ../OpenTuring/turing/package/turing.exe crt1.o box.o libseccomp-libseccomp/src/libseccomp.a ../rootfs/build
-	sudo cp -dr --no-preserve=ownership ../OpenTuring/turing/package/support ../rootfs/build/
+	$(INSTALL) -m444 OpenTuring/turing/package/turing.exe crt1.o box.o libseccomp-libseccomp/src/libseccomp.a pybox.py{2,3}o ../rootfs/build
+	sudo cp -dr --no-preserve=ownership OpenTuring/turing/package/support pysandbox-root/lib/python2.7/site-packages/{sandbox,_sandbox.so} ../rootfs/build/
 	sudo chmod -R 444 ../rootfs/build/support
 	sudo find ../rootfs/build/support -type d -exec chmod 555 {} +
 	rm crt1.o
 	grep -Fxq 1 /sys/fs/selinux/enforce 2>/dev/null && chcon -vt httpd_unconfined_script_exec_t ../{server.py,nq.sh}
 clean:
-	rm -f drop score tprolog box.o crt1.o
+	rm -f drop score tprolog box.o crt1.o pybox.py{2,3}o
 	make -C libseccomp-libseccomp clean
 	rm -rf libseccomp
 drop:drop.c
@@ -23,12 +23,19 @@ drop:drop.c
 score:score.cpp
 	g++ score.cpp -o score $(CFLAGS)
 	strip score
-box.o:box.c #libseccomp
-	g++ box.c -c -lseccomp -L. $(CFLAGS)
+box.o:box.c libseccomp
+	g++ box.c -c -Ilibseccomp/include -lseccomp -L. $(CFLAGS)
 libseccomp:
 	mkdir -p libseccomp
 	[ -x /usr/lib/libseccomp.so.0 ] && mkdir libseccomp/lib && cp /usr/lib/libseccomp.so.0 libseccomp/lib/libseccomp.so.0.0.0 || (cd libseccomp-libseccomp && ./configure --prefix=`readlink -m ../libseccomp` --libdir=`readlink -m ../libseccomp/lib` && make && make install)
 tprolog:
-	make -kC ../OpenTuring/turing/src || :
-	make -C ../OpenTuring/turing/src ../bin/tprolog
-	cp ../OpenTuring/turing/bin/tprolog .
+	make -kC OpenTuring/turing/src || :
+	make -C OpenTuring/turing/src ../bin/tprolog
+	cp OpenTuring/turing/bin/tprolog .
+pysandbox-root:
+	cd pysandbox && ./setup.py install --prefix=../pysandbox-root
+pybox.py2o:pybox.py
+	python2 -SOO -mpy_compile pybox.py
+	mv pybox.py{,2}o
+pybox.py3o:pybox.py
+	python3 -SOOc 'import py_compile;py_compile.compile("pybox.py","pybox.py3o")'
