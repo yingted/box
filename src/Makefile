@@ -23,7 +23,7 @@ drop:drop.c
 score:score.cpp
 	g++ score.cpp -o score $(CFLAGS)
 	strip score
-box.o:box.c libseccomp
+box.o:box.c #libseccomp
 	g++ box.c -c -lseccomp -L. $(CFLAGS)
 libseccomp:
 	mkdir -p libseccomp
