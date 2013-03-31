@@ -9,7 +9,7 @@ catfile(){
 }
 while [ "$#" -gt 0 ]
 do
-	while getopts "hs:r:f:i:lq" opt
+	while getopts "hs:r:f:i:t:lq" opt
 	do
 		case "$opt" in
 			s)
