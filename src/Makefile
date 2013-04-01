@@ -3,7 +3,7 @@ CFLAGS+=-march=native -O3 -pipe -fstack-protector --param ssp-buffer-size=4 -D_F
 export CFLAGS
 #strip again
 INSTALL=sudo install -o0
-all:drop score tprolog box.o pybox.py2o pybox.py3o
+all:drop score tprolog box.o libseccomp pybox.py2o pybox.py3o
 	$(INSTALL) -sm555 drop score tprolog ../rootfs/build
 	objcopy --redefine-sym main=_start --redefine-sym _start=__start ../rootfs/usr/lib/crt1.o crt1.o
 	$(INSTALL) -m555 run.sh ../rootfs/build
@@ -21,8 +21,16 @@ drop:drop.c
 score:score.cpp
 	g++ score.cpp -o score $(CFLAGS)
 	strip score
+<<<<<<< HEAD
 box.o:box.c
 	g++ box.c -c -lseccomp $(CFLAGS)
+=======
+box.o:box.c libseccomp
+	g++ box.c -c -Ilibseccomp/include -L. $(CFLAGS)
+libseccomp:
+	mkdir -p libseccomp
+	cd libseccomp-libseccomp && ./configure --prefix=`readlink -m ../libseccomp` --libdir=`readlink -m ../libseccomp/lib` && make && make install
+>>>>>>> adff1a7aa240207fdbb8a4ff9165cce1da11dad9
 tprolog:
 	make -kC OpenTuring/turing/src || :
 	make -C OpenTuring/turing/src ../bin/tprolog
