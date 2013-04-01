@@ -37,6 +37,7 @@ do
 done
 exec < <(cat "${files[@]}")
 [ -z "$lang" ] && lang="${files##*.}"
+[ -z "$lang" ] && lang=cpp
 [ "$lang" = py ] && lang="py$(python --version |& tr -cd [:digit:] | head -c1)"
 prefix="$host/$root"
 id="$(curl -sf "http://$prefix/submit?lang=$lang&input=$(js -e 'print(encodeURIComponent(readline()))' <<< "$input")" --data-binary "@-")"

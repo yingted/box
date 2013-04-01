@@ -33,7 +33,8 @@ tprolog:
 	make -C OpenTuring/turing/src ../bin/tprolog
 	cp OpenTuring/turing/bin/tprolog .
 pysandbox-root:
-	cd pysandbox && ./setup.py install --prefix=../pysandbox-root
+	cd pysandbox && python2 setup.py install --prefix=../pysandbox-root
+	cd pysandbox && python3 setup.py install --prefix=../pysandbox-root
 pybox.py2o:pybox.py
 	python2 -SOO -mpy_compile pybox.py
 	mv pybox.py{,2}o
