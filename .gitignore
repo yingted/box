@@ -13,4 +13,5 @@ score
 tprolog
 box.o
 *.tbc
+*.py{2,3}{c,o}
 *~
