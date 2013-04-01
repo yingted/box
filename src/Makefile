@@ -7,7 +7,7 @@ all:drop score tprolog box.o
 	$(INSTALL) -sm555 drop score tprolog ../rootfs/build
 	objcopy --redefine-sym main=_start --redefine-sym _start=__start ../rootfs/usr/lib/crt1.o crt1.o
 	$(INSTALL) -m555 run.sh ../rootfs/build
-	$(INSTALL) -m444 ../OpenTuring/turing/package/turing.exe crt1.o box.o libseccomp-libseccomp/src/libseccomp.a ../rootfs/build
+	$(INSTALL) -m444 ../OpenTuring/turing/package/turing.exe crt1.o box.o ../rootfs/build
 	sudo cp -dr --no-preserve=ownership ../OpenTuring/turing/package/support ../rootfs/build/
 	sudo chmod -R 444 ../rootfs/build/support
 	sudo find ../rootfs/build/support -type d -exec chmod 555 {} +
