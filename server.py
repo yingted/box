@@ -102,7 +102,7 @@ def application(env,respond):
 				return err("400 Bad Request")
 		infile=get["input"][0]
 		lang=get["lang"][0]
-		if infile not in flist[3]or lang not in("cpp","py2","py3","java","t"):
+		if infile not in flist[3]or lang not in("cpp","java","js","py2","py3","t"):
 			return err("404 Not Found")
 		rc,msg=Popen(("./nq.sh",user,infile,lang),stdin=PIPE,stdout=PIPE).communicate(env["wsgi.input"].read(inlen))[0].split("\n")
 		return good(msg)
