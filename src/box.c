@@ -12,13 +12,10 @@ extern int _start(int,char*[]);
 int _start(int argc,char *argv[]){
 	int ret;
 #ifndef RUN
-#define add(x,...) &&!(ret=seccomp_rule_add_exact(ctx,SCMP_ACT_ALLOW,SCMP_SYS(x),__VA_ARGS__))
+#define add(x,...) &&!(ret=seccomp_rule_add(ctx,SCMP_ACT_ALLOW,SCMP_SYS(x),__VA_ARGS__))
 	scmp_filter_ctx ctx;
-	int fd1 = open("/dev/random", 0), fd2 = open("/dev/urandom", 0);
 	if((ctx=seccomp_init(SCMP_ACT_KILL))
 		add(read,1,SCMP_A0(SCMP_CMP_EQ,STDIN_FILENO))
-		add(read,1,SCMP_A0(SCMP_CMP_EQ,fd1))
-		add(read,1,SCMP_A0(SCMP_CMP_EQ,fd2))
 		add(write,1,SCMP_A0(SCMP_CMP_EQ,STDOUT_FILENO))
 		add(write,1,SCMP_A0(SCMP_CMP_EQ,STDERR_FILENO))
 		add(fstat64,1,SCMP_A0(SCMP_CMP_EQ,STDIN_FILENO))
@@ -34,7 +31,7 @@ int _start(int argc,char *argv[]){
 			return main(argc,argv);
 #ifndef RUN
 	seccomp_release(ctx);
-	fprintf(stderr,"error %d\n",ret);
+	fprintf(stderr,"seccomp error %d\n",ret);
 	return-ret;
 #endif
 }
