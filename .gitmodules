@@ -1,6 +1,9 @@
 [submodule "src/libseccomp-libseccomp"]
 	path = src/libseccomp-libseccomp
 	url = git://git.code.sf.net/p/libseccomp/libseccomp
-[submodule "OpenTuring"]
-	path = OpenTuring
+[submodule "src/OpenTuring"]
+	path = src/OpenTuring
 	url = ssh://git@bitbucket.org/yingted/openturing.git
+[submodule "src/pysandbox"]
+	path = src/pysandbox
+	url = git://github.com/haypo/pysandbox.git

@@ -25,7 +25,7 @@ do
 	sln="${sln##*/}"
 	IFS=$'\t' eval curwrap=(${wrap[${sln#*.}]})
 	curwrap=(sh -c 'mknod -m 644 /dev/random c 1 8 2>/dev/null; mknod -m 644 /dev/urandom c 1 9 2>/dev/null; exec "$0" "$@"')
-	sudo lxc-execute -n box -- "${curwrap[@]}" /build/drop 99 /build/run.sh "$(cat "$file/in")" 1 2 1 $[2048*1024] $[2048*1024] > "$file/out"
+	sudo lxc-execute -n box -- "${curwrap[@]}" /build/drop 99 /build/run.sh "$(cat "$file/in")" '' '' '' $[2048*1024] $[2048*1024] > "$file/out"
 	#sudo chroot rootfs "${curwrap[@]}" /build/drop 99 /build/run.sh "$(cat "$file/in")" > "$file/out"
 	rm -f rootfs/tmp/solution.* 2> /dev/null
 	cp rootfs/tmp/score "$file/score.part" 2> /dev/null && mv "$file/score.part" "$file/score" || { >> "$file/score"; rm -f "$file/score.part"; }

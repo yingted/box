@@ -2,7 +2,6 @@
 host=localhost
 root=box
 input=/test/input.txt
-lang=cpp
 files=()
 catfile(){
 	files[${#files[@]}]="$1";
@@ -28,7 +27,7 @@ do
 			q)
 				exec 2>/dev/null;;
 			?)
-				echo "$0 [-h(elp)] [-s(erver) server=$host] [-r(oot) (root=)$box] [-f(ile) (file=)$(readlink -f /dev/stdin)] [-i(nput) (input=)$input] [-t(ype) (lang)=cpp] [-l(ist and quit)] [-q(uiet)] [file [...]]"
+				echo "$0 [-h(elp)] [-s(erver) server=$host] [-r(oot) (root=)$box] [-f(ile) (file=)$(readlink -f /dev/stdin)] [-i(nput) (input=)$input] [-t(ype) (lang=)(auto)] [-l(ist and quit)] [-q(uiet)] [file [...]]"
 				exit;;
 		esac
 	done
@@ -37,6 +36,8 @@ do
 	[ "$#" -gt 0 ] && catfile "$1" && shift
 done
 exec < <(cat "${files[@]}")
+[ -z "$lang" ] && lang="${files##*.}"
+[ "$lang" = py ] && lang="py$(python --version |& tr -cd [:digit:] | head -c1)"
 prefix="$host/$root"
 id="$(curl -sf "http://$prefix/submit?lang=$lang&input=$(js -e 'print(encodeURIComponent(readline()))' <<< "$input")" --data-binary "@-")"
 case "$?" in
