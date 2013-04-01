@@ -8,7 +8,7 @@ all:drop score tprolog box.o pybox.py2o pybox.py3o
 	objcopy --redefine-sym main=_start --redefine-sym _start=__start ../rootfs/usr/lib/crt1.o crt1.o
 	$(INSTALL) -m555 run.sh ../rootfs/build
 	$(INSTALL) -m444 OpenTuring/turing/package/turing.exe crt1.o box.o libseccomp-libseccomp/src/libseccomp.a pybox.py{2,3}o ../rootfs/build
-	sudo cp -dr --no-preserve=ownership OpenTuring/turing/package/support pysandbox-root/lib/python2.7/site-packages/{sandbox,_sandbox.so} ../rootfs/build/
+	sudo cp -dr --no-preserve=ownership OpenTuring/turing/package/support pysandbox-root/lib/python2.7/site-packages/{sandbox,_sandbox.so} pysandbox-root/lib/python3.2/site-packages/_sandbox.cpython-32mu.so ../rootfs/build/
 	sudo chmod -R 444 ../rootfs/build/support
 	sudo find ../rootfs/build/support -type d -exec chmod 555 {} +
 	rm crt1.o
@@ -33,7 +33,8 @@ tprolog:
 	make -C OpenTuring/turing/src ../bin/tprolog
 	cp OpenTuring/turing/bin/tprolog .
 pysandbox-root:
-	cd pysandbox && ./setup.py install --prefix=../pysandbox-root
+	cd pysandbox && python2 setup.py install --prefix=../pysandbox-root
+	cd pysandbox && python3 setup.py install --prefix=../pysandbox-root
 pybox.py2o:pybox.py
 	python2 -SOO -mpy_compile pybox.py
 	mv pybox.py{,2}o
