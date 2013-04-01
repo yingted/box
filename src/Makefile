@@ -7,8 +7,8 @@ all:drop score tprolog box.o pybox.py2o pybox.py3o
 	$(INSTALL) -sm555 drop score tprolog ../rootfs/build
 	objcopy --redefine-sym main=_start --redefine-sym _start=__start ../rootfs/usr/lib/crt1.o crt1.o
 	$(INSTALL) -m555 run.sh ../rootfs/build
-	$(INSTALL) -m444 OpenTuring/turing/package/turing.exe crt1.o box.o pybox.py{2,3}o ../rootfs/build 
-	sudo cp -dr --no-preserve=ownership OpenTuring/turing/package/support pysandbox-root/lib/python2.7/site-packages/{sandbox,_sandbox.so} ../rootfs/build
+	$(INSTALL) -m444 ../OpenTuring/turing/package/turing.exe crt1.o box.o pybox.py{2,3}o ../rootfs/build 
+	sudo cp -dr --no-preserve=ownership ../OpenTuring/turing/package/support pysandbox-root/lib/python3.3/site-packages/{sandbox,_sandbox*} ../rootfs/build
 	sudo chmod -R 444 ../rootfs/build/support
 	sudo find ../rootfs/build/support -type d -exec chmod 555 {} +
 	rm crt1.o
@@ -25,9 +25,9 @@ score:score.cpp
 	strip score
 box.o:box.c libseccomp
 	g++ box.c -c -Ilibseccomp/include -lseccomp -L. $(CFLAGS)
-libseccomp:
-	mkdir -p libseccomp
-	[ -x /usr/lib/libseccomp.so.0 ] && mkdir libseccomp/lib && cp /usr/lib/libseccomp.so.0 libseccomp/lib/libseccomp.so.0.0.0 || (cd libseccomp-libseccomp && ./configure --prefix=`readlink -m ../libseccomp` --libdir=`readlink -m ../libseccomp/lib` && make && make install)
+#libseccomp:
+#	mkdir -p libseccomp
+#	[ -x /usr/lib/libseccomp.so.0 ] && mkdir libseccomp/lib && cp /usr/lib/libseccomp.so.0 libseccomp/lib/libseccomp.so.0.0.0 || (cd libseccomp-libseccomp && ./configure --prefix=`readlink -m ../libseccomp` --libdir=`readlink -m ../libseccomp/lib` && make && make install)
 tprolog:
 	make -kC OpenTuring/turing/src || :
 	make -C OpenTuring/turing/src ../bin/tprolog
