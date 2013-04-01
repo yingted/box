@@ -42,21 +42,19 @@ case "${sol#*.}" in
 	java)
 		javac solution.java
 		rm solution.java
-		run="java solution";;
+		run="java -client -Djava.security.manager -Djava.security.policy=/build/java.policy solution";;
 	py2)
-		python2 -O -mpy_compile solution.py2
-		rm solution.py2
-		run="python2 -SO solution.py2o";;
+		#python2 -SOO -mpy_compile solution.py2
+		run="python2 -SOO /build/pybox.py2o solution.py2";;
 	py3)
-		python3 -O -mpy_compile solution.py3
-		rm solution.py3
-		run="python3 -SO solution.py3o";;
+		#python3 -SOOc 'import py_compile;py_compile.compile("solution.py3","solution.py3o")'
+		run="python3 -SOO /build/pybox.py3o solution.py3";;
 esac
 [ -n "$taskset" ] && taskset="taskset $taskset"
 (
 	set +e
-	ulimit -d1024 -f"$file_blocks" -i5 -m"$memory_kb" -n10 -q0 -t"$cpu_secs" -v"$vsize_kb" -x0
-	time -o score -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" $taskset timeout "$wall_secs" $run <"/data$test_path" >stdout #2>/dev/null
+	ulimit -d1024 -f"$file_blocks" -i5 -m"$memory_kb" -n11 -q0 -t"$cpu_secs" -v"$vsize_kb" -x0
+	time -o score -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" $taskset timeout "$wall_secs" $run <"/data$test_path" >stdout 2>/dev/null
 	echo $?
 )
 /build/score "/data$(sed 's/\(.*\)\binput\b/\1output/' <<< "$test_path")" stdout >>score
