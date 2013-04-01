@@ -3,7 +3,7 @@ CFLAGS+=-march=native -O3 -pipe -fstack-protector --param ssp-buffer-size=4 -D_F
 export CFLAGS
 #strip again
 INSTALL=sudo install -o0
-all:drop score tprolog box.o libseccomp pybox.py2o pybox.py3o
+all:drop score tprolog box.o pybox.py2o pybox.py3o
 	$(INSTALL) -sm555 drop score tprolog ../rootfs/build
 	objcopy --redefine-sym main=_start --redefine-sym _start=__start ../rootfs/usr/lib/crt1.o crt1.o
 	$(INSTALL) -m555 run.sh ../rootfs/build
