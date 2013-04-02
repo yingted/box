@@ -7,18 +7,9 @@ extern"C"{
 #include<sys/stat.h>
 #include<fcntl.h>
 #include<stdio.h>
-#ifdef RUN
-int mymain(int argc,char*argv[]){
-	printf("Hello, World!\n");
-	return 0;
-}
-int main(int argc,char *argv[]){
-#define mymain main
-#else
 extern int main(int,char*[]);
 extern int _start(int,char*[]);
 int _start(int argc,char *argv[]){
-#endif
 	int ret;
 #define add(x,...) &&!(ret=seccomp_rule_add(ctx,SCMP_ACT_ALLOW,SCMP_SYS(x),__VA_ARGS__))
 	scmp_filter_ctx ctx;
@@ -42,8 +33,7 @@ int _start(int argc,char *argv[]){
 		add(time,0)
 		add(times,0)
 		add(exit_group,0)
-		//&&(ret=seccomp_load(ctx))>=0)
-		&&1)
+		&&(ret=seccomp_load(ctx))>=0)
 			return main(argc,argv);
 	seccomp_release(ctx);
 	fprintf(stderr,"seccomp error %d\n",ret);
