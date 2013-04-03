@@ -16,10 +16,8 @@ int _start(int argc,char *argv[]){
 /* set appropriate functions for 32bit/64bit */
 #if defined(__LP64__) || defined(_LP64)
     #define _FSTAT fstat
-    #define _MMAP mmap
 #else
     #define _FSTAT fstat64
-    #define _MMAP mmap2
 #endif
 	if((ctx=seccomp_init(SCMP_ACT_KILL))
 		add(read,1,SCMP_A0(SCMP_CMP_EQ,STDIN_FILENO))
@@ -28,7 +26,11 @@ int _start(int argc,char *argv[]){
 		add(_FSTAT,1,SCMP_A0(SCMP_CMP_EQ,STDIN_FILENO))
 		add(_FSTAT,1,SCMP_A0(SCMP_CMP_EQ,STDOUT_FILENO))
 		add(_FSTAT,1,SCMP_A0(SCMP_CMP_EQ,STDERR_FILENO))
-		add(_MMAP,3,SCMP_A2(SCMP_CMP_EQ,PROT_READ|PROT_WRITE),SCMP_A3(SCMP_CMP_EQ,MAP_PRIVATE|MAP_ANONYMOUS),SCMP_A5(SCMP_CMP_EQ,(off_t)0))
+#if defined(__LP64__) || defined(_LP64)
+		add(mmap,3,SCMP_A2(SCMP_CMP_EQ,PROT_READ|PROT_WRITE),SCMP_A3(SCMP_CMP_EQ,MAP_PRIVATE|MAP_ANONYMOUS),SCMP_A5(SCMP_CMP_EQ,(off_t)0))
+#else
+		add(mmap2,4,SCMP_A2(SCMP_CMP_EQ,PROT_READ|PROT_WRITE),SCMP_A3(SCMP_CMP_EQ,MAP_PRIVATE|MAP_ANONYMOUS),SCMP_A4(SCMP_CMP_EQ,-1),SCMP_A5(SCMP_CMP_EQ,(off_t)0))
+#endif
 		add(munmap,0)
 		add(time,0)
 		add(times,0)
