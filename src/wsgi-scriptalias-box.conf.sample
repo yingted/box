@@ -1,0 +1,13 @@
+#This file belongs at /etc/httpd/conf.d, alphabetically after the file with (uncommented)
+#LoadModule wsgi_module modules/mod_wsgi.so
+#LogLevel info
+WSGISocketPrefix /var/run/wsgi
+WSGIDaemonProcess box-wsgi user=my_username group=my_username threads=60 home=/my/path/to/box
+WSGIProcessGroup box-wsgi
+WSGIScriptAlias /box /my/path/to/box/server.py
+<Directory /my/path/to/box>
+	Order allow,deny
+	<Files server.py>
+		Order deny,allow
+	</Files>
+</Directory>
