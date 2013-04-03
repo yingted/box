@@ -11,7 +11,6 @@ extern int main(int,char*[]);
 extern int _start(int,char*[]);
 int _start(int argc,char *argv[]){
 	int ret;
-#ifndef RUN
 #define add(x,...) &&!(ret=seccomp_rule_add(ctx,SCMP_ACT_ALLOW,SCMP_SYS(x),__VA_ARGS__))
 	scmp_filter_ctx ctx;
 /* set appropriate functions for 32bit/64bit */
@@ -35,12 +34,9 @@ int _start(int argc,char *argv[]){
 		add(times,0)
 		add(exit_group,0)
 		&&(ret=seccomp_load(ctx))>=0)
-#endif
 			return main(argc,argv);
-#ifndef RUN
 	seccomp_release(ctx);
 	fprintf(stderr,"seccomp error %d\n",ret);
 	return-ret;
-#endif
 }
 }
