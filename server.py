@@ -40,7 +40,7 @@ def scorescb():
 	global scores,scoreupdate
 	old=scores
 	score_sub_s=[]
-	for x in check_output(("find","code","-mindepth","3","-name","score","-type","f","-print0")).split("\0")[:-1]:
+	for x in check_output(("find","code","-mindepth","3","-name","solution.*","-type","f","-print0")).split("\0")[:-1]:
 		try:
 			score_sub_s.append((map(int,read(x).split("\n")[-2].split(" ")),x.split("/")))
 		except:

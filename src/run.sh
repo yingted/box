@@ -2,18 +2,13 @@
 #usage: $0 test_path file_blocks wall_secs cpu_secs memory_kb vsize_kb taskset
 set -e
 shopt -s failglob
+[ -n "$1" ]
 test_path="$1"
-file_blocks="${2:-1}"
-wall_secs="${3:-2}"
-cpu_secs="${4:-1}"
-memory_kb="${5:-$[256*1024]}"
-vsize_kb="${6:-$[320*1024]}"
-taskset="${7:-1}"
-[ -e "/data/config" ] && . "/data/config" #$test_path is never /
+. "/data/config"
 conf="/data${test_path%/*}/config"
-[ -e "$conf" ] && . "$conf"
+[ "$test_path" != / -a -e "$conf" ] && . "$conf"
 tconf="/data$(sed 's/\(.*\)\binput\b/\1config/' <<< "$test_path")"
-[ -e "$tconf" ] && . "$tconf"
+[ "$test_path" != / -a -e "$tconf" ] && . "$tconf"
 exec 2>&1
 cd /tmp
 sol=(solution.*)
@@ -55,7 +50,7 @@ esac
 [ -n "$taskset" ] && taskset="taskset $taskset"
 (
 	set +e
-	ulimit -d1024 -f"$file_blocks" -i5 -m"$memory_kb" -n11 -q0 -t"$cpu_secs" -v"$vsize_kb" -x0
+	ulimit "${ulimit_args[@]}"
 	'time' -o score -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" $taskset timeout "$wall_secs" $run <"/data$test_path" >stdout 2>/dev/null
 	echo $?
 )
