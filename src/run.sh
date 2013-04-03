@@ -43,6 +43,8 @@ case "${sol#*.}" in
 		javac solution.java
 		rm solution.java
 		run="java -client -Djava.security.manager -Djava.security.policy=/build/java.policy solution";;
+	js)
+		run="/usr/bin/js -e 'delete load;delete read;delete run;delete snarf' solution.js";;
 	py2)
 		#python2 -SOO -mpy_compile solution.py2
 		run="python2 -SOO /build/pybox.py2o solution.py2";;
