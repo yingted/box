@@ -29,9 +29,9 @@ tprolog:
 	cp OpenTuring/turing/bin/tprolog .
 pysandbox-root:
 	cd pysandbox && python2 setup.py install --prefix=../pysandbox-root
-	cd pysandbox && python3 setup.py install --prefix=../pysandbox-root
+	cd pysandbox && python3.2 setup.py install --prefix=../pysandbox-root
 pybox.py2o:pybox.py
 	python2 -SOO -mpy_compile pybox.py
 	mv pybox.py{,2}o
 pybox.py3o:pybox.py
-	python3 -SOOc 'import py_compile;py_compile.compile("pybox.py","pybox.py3o")'
+	python3.2 -SOOc 'import py_compile;py_compile.compile("pybox.py","pybox.py3o")'
