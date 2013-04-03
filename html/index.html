@@ -465,7 +465,7 @@ int main(int argc,char*argv[]){
 					text.attr("href",url);
 				return text;
 			}
-			function onscore(x,url,file){
+			function onscore(x,url,file,lang){
 				if(x.length){
 					x=x.split("\n");
 					var sizes=x[1].split(" ").map(Number),bar=$("#bar").clone().removeAttr("id").append("&nbsp;"),den=sizes[0]+(sizes[3]^=1),last=0;
@@ -485,11 +485,11 @@ int main(int argc,char*argv[]){
 					add("eof",3,"!");
 					info(sizes[0]+" lines, "+(100*sizes[1]/sizes[0]).toFixed(2)+"% correct"+(sizes[2]?", "+(100*sizes[2]/sizes[0]).toFixed(2)+"% whitespace error":"")+(sizes[3]?", no EOF":""),bar);
 					dbg("run completed",x[0],$("#timef").clone().removeAttr("id"));
-					dbg("ran",link(fileUrl(url+"/solution.cpp"),"this program"),file?"on "+file+",":"on the input referenced",link(fileUrl(url+"/in"),file?"path here":"here"));
+					dbg("ran",link(fileUrl(url+"/solution."+lang),"this program"),file?"on "+file+",":"on the input referenced",link(fileUrl(url+"/in"),file?"path here":"here"));
 				}else
 					warn("code was not executed");
 			}
-			function onout(x,code){
+			function onout(x,code,lang){
 				var rc,abbr=/^(?:[^\n]{0,40}\n?){0,10}/.exec(x=x.replace(/^\d+\n$/m,function(s){
 					rc=+s;
 					return"";
@@ -500,8 +500,12 @@ int main(int argc,char*argv[]){
 				};
 				dbg(abbr.length==x.length?x:abbr+"…");
 				dbg(link(this.url,"output"));
-				for(var ann=[],re=/^solution\.cpp:(\d+):(\d+): (\w+: )?([^\n]*)/mg,m;m=re.exec(x);)
-					ann.push({type:gcchash[m[3]]||"note",row:m[1]-1,column:m[2]-1,text:m[4]});
+				switch(lang){
+					case"cpp":
+						for(var ann=[],re=/^solution\.cpp:(\d+):(\d+): (\w+: )?([^\n]*)/mg,m;m=re.exec(x);)
+							ann.push({type:gcchash[m[3]]||"note",row:m[1]-1,column:m[2]-1,text:m[4]});
+						break;
+				}
 				if(rc!==undefined)
 					dbg("program exited",rc+(rchash.hasOwnProperty(rc)?" ("+rchash[rc]+")":""));
 				anns[code+"\0"+$("#lang").val()]=ann;
@@ -527,10 +531,10 @@ int main(int argc,char*argv[]){
 						$.ajax(score).done(function(x){
 							(function connect(){
 								 $.ajax(url+"/out").done(function(x){
-									 onout.call(this,x,code);
+									 onout.call(this,x,code,lang);
 								 }).error(retry(connect,"cancelled by admin"));
 							})();
-							onscore(x,url,file);
+							onscore(x,url,file,lang);
 						}).error(retry(connect,"cancelled by admin"));
 					})();
 				}).error(function(x,s){
@@ -564,10 +568,12 @@ int main(int argc,char*argv[]){
 				$.ajax(fileUrl("/code")).done(function(x){
 					var a=x.split("\n"),hist=$("#hist"),base="/code/"+a.shift()+"/";
 					hist.find("tr:gt(0)").remove();
-					$.map($(a).sort(function(a,b){
-						return b-a;//newest first
-					}),function(t){
-						var e=base+t,fe=fileUrl(e);
+					$.map($.map(a,function(e){
+						return[e.match(/^(\d+)\.(.*)$/).slice(1)];
+					}).sort(function(a,b){
+						return b[0]-a[0];//newest first
+					}),function(t_lang){
+						var t=t_lang[0],lang=t_lang[1],e=base+t,fe=fileUrl(e);
 						t=(t=new Date(1000*t)).toDateString().substring(4,11)//"%3m %02d "
 							+asnprintfn0nd(2,t.getHours())
 							+":"+asnprintfn0nd(2,t.getMinutes())
@@ -581,17 +587,18 @@ int main(int argc,char*argv[]){
 								$("#infile").val(val).change();
 							});
 						},"load").appendTo(tr.insertCell(-1));
-						link(fe+"/solution.cpp","link").appendTo(tr.insertCell(-1));
+						link(fe+"/solution."+lang,"link").appendTo(tr.insertCell(-1));
 						link(function(){
 							dbg("loading code and output from",t);
 							var vl,code,evt=function(val){
 								dbg("loaded output from",t);
 								onout.call({url:fe+"/out"},val,code);
 							};
-							get(e+"/solution.cpp",function(val){
+							get(e+"/solution."+lang,function(val){
 								dbg("loaded code from",t);
 								session.setValue(val);
 								code=val;
+								$("#lang").val(lang).change();
 								vl=vl?evt(vl):true;
 							});
 							get(e+"/out",function(val){

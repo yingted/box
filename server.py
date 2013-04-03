@@ -107,7 +107,7 @@ def application(env,respond):
 		rc,msg=Popen(("./nq.sh",user,infile,lang),stdin=PIPE,stdout=PIPE).communicate(env["wsgi.input"].read(inlen))[0].split("\n")
 		return good(msg)
 	elif path=="/code":
-		return good('\n'.join([user]+([x for x in listdir("code/"+user)if x!="lock"]if exists("code/"+user)else[])))
+		return good('\n'.join([user]+([next(x+sol[8:]for sol in listdir("code/"+user+"/"+x)if sol.startswith("solution."))for x in listdir("code/"+user)if x!="lock"]if exists("code/"+user)else[])))
 	elif path.startswith("/code/")and path[6:].startswith(user+"/"):
 		if path!=normpath(path):
 			return err("400 Bad Request")

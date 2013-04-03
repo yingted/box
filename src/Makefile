@@ -12,7 +12,7 @@ all:drop score tprolog box.o pysandbox-root pybox.py2o pybox.py3o
 	sudo chmod -R 444 ../rootfs/build/support
 	sudo find ../rootfs/build/support -type d -exec chmod 555 {} +
 	rm crt1.o
-	[ -e /sys/fs/selinux/enforce ] && grep -Fxq 1 /sys/fs/selinux/enforce 2>/dev/null && chcon -vt httpd_unconfined_script_exec_t ../{server.py,nq.sh}
+	[ -e /sys/fs/selinux/enforce ] && grep -Fxq 1 /sys/fs/selinux/enforce 2>/dev/null && chcon -vt httpd_unconfined_script_exec_t ../{server.py,nq.sh} && sudo chcon -Rvt httpd_sys_rw_content_t ../code && chcon -vt httpd_unconfined_script_exec_t ../server.py
 clean:
 	rm -rf drop score tprolog box.o crt1.o pybox.py{2,3}o pysandbox-root
 drop:drop.c
