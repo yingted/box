@@ -29,29 +29,29 @@ case "${sol#*.}" in
 		fi
 		rm solution.{cpp,o}
 		strip solution
-		run="./solution";;
+		run=(./solution);;
 	t)
 		WINEPREFIX=/build/wineprefix xvfb-run -aw0 -s'-screen 0 1x1x8' wine /build/turing.exe -compile solution.t &>/dev/null
 		rm solution.t
-		run="/build/tprolog solution.tbc";;
+		run=(/build/tprolog solution.tbc);;
 	java)
 		javac solution.java
 		rm solution.java
-		run="java -client -Djava.security.manager -Djava.security.policy=/build/java.policy solution";;
+		run=(java -client -Djava.security.manager -Djava.security.policy=/build/java.policy solution);;
 	js)
-		run="/usr/bin/js -e 'delete load;delete read;delete run;delete snarf' solution.js";;
+		run=(/usr/bin/js -e 'delete load;delete read;delete run;delete snarf' solution.js);;
 	py2)
 		#python2 -SOO -mpy_compile solution.py2
-		run="python2 -SOO /build/pybox.py2o solution.py2";;
+		run=(python2 -SOO /build/pybox.py2o solution.py2);;
 	py3)
 		#python3 -SOOc 'import py_compile;py_compile.compile("solution.py3","solution.py3o")'
-		run="python3 -SOO /build/pybox.py3o solution.py3";;
+		run=(python3 -SOO /build/pybox.py3o solution.py3);;
 esac
 [ -n "$taskset" ] && taskset="taskset $taskset"
 (
 	set +e
 	ulimit "${ulimit_args[@]}"
-	'time' -o score -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" $taskset timeout "$wall_secs" $run <"/data$test_path" >stdout 2>/dev/null
+	'time' -o score -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" $taskset timeout "$wall_secs" "${run[@]}" <"/data$test_path" >stdout 2>/dev/null
 	echo $?
 )
 /build/score "/data$(sed 's/\(.*\)\binput\b/\1output/' <<< "$test_path")" stdout >>score
