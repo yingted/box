@@ -13,15 +13,20 @@ exec 2>&1
 cd /tmp
 sol=(solution.*)
 case "${sol#*.}" in
-	cpp)
-		deps="`cpp -MM solution.cpp | cut -d\  -f3-`";
+	cpp*)
+		deps="`cpp -MM $sol | cut -d\  -f3-`";
 		if [ -n "$deps" ]
 		then
 			echo "fatal error: unmet dependencies: $deps"
 			echo "compilation terminated."
 			exit 1
 		fi
-		g++ solution.cpp -c -O3 -Wall -Wunreachable-code -march=native -pipe
+		if [ "${sol#*.}" = "cpp11" ]; then
+		    mv solution.cpp{11,}
+		    g++ solution.cpp -c -std=gnu++11 -O3 -Wall -Wunreachable-code -march=native -pipe
+		else
+		    g++ solution.cpp -c -O3 -Wall -Wunreachable-code -march=native -pipe
+		fi
 		if [ -x /usr/lib/gcc/x86_64-unknown-linux-gnu/4.7.2/collect2 ]; then
 			/usr/lib/gcc/x86_64-unknown-linux-gnu/4.7.2/collect2 --build-id --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -e __start -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o solution /build/crt1.o /usr/lib/gcc/x86_64-unknown-linux-gnu/4.7.2/../../../../lib/crti.o /usr/lib/gcc/x86_64-unknown-linux-gnu/4.7.2/crtbegin.o -L/usr/lib/gcc/x86_64-unknown-linux-gnu/4.7.2 -L/usr/lib/gcc/x86_64-unknown-linux-gnu/4.7.2/../../../../lib -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-unknown-linux-gnu/4.7.2/../../.. /build/box.o -L/build -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc -lseccomp /usr/lib/gcc/x86_64-unknown-linux-gnu/4.7.2/crtend.o /usr/lib/gcc/x86_64-unknown-linux-gnu/4.7.2/../../../../lib/crtn.o solution.o
 		else
