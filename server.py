@@ -23,10 +23,10 @@ def update(path,cb,nodelay=False):
 	t.start()#wait 1 sec for modification, ratelimit
 def flistcb():
 	global flist
-	files=sorted([x[11:]for x in check_output(("find","-L","rootfs/data","-type","f","-name","*input*","-perm","-4","-print0")).split("\0")if binputb.search(x)and not bdosb.search(x)],reverse=True)
+	files=sorted([x[4:]for x in check_output(("find","-L","data","-type","f","-name","*input*","-perm","-4","-print0")).split("\0")if binputb.search(x)and not bdosb.search(x)],reverse=True)
 	flist=("\n".join(files),sorted(set(map(problem,files))),{},files)
 	print"found %d files"%len(files)
-update("rootfs/data",flistcb,True)
+update("data",flistcb,True)
 def read(path):
 	h=flist[2]
 	if path not in h:
@@ -86,7 +86,7 @@ def application(env,respond):
 		return good(flist[0])
 	elif path in flist[1]:
 		try:
-			return good(read("rootfs/data"+path))
+			return good(read("data"+path))
 		except IOError:
 			pass#404
 	elif path=="/submit":
