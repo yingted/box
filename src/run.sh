@@ -34,7 +34,8 @@ case "${sol#*.}" in
 		strip solution
 		run=(./solution);;
 	t)
-		WINEPREFIX=/build/wineprefix xvfb-run -aw0 -s'-screen 0 1x1x8' wine /build/turing.exe -compile solution.t &>/dev/null
+		WINEPREFIX=/build/wineprefix timeout -k31 30 xvfb-run -aw0 -s'-screen 0 1x1x8' wine /build/turing.exe -compile solution.t &>/dev/null
+		(( $? == 124 || $? == 137 )) && { echo "turing compile timed out"; exit 1; }
 		rm solution.t
 		run=(/build/tprolog solution.tbc);;
 	java)
