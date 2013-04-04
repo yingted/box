@@ -148,7 +148,7 @@
 				font-size:10pt;
 			}
 			#histsc{
-				max-height:5em;
+				max-height:6em;
 				overflow-y:auto;
 			}
 			.td-last{
@@ -213,7 +213,7 @@
 					<span>history</span>
 					<button id="rlhist" class="dev">reload</button>
 				</legend>
-				<!--<div id="histsc" class="mh">-->
+				<div id="histsc" class="mh">
 					<small>
 						these are yours, the rest are <a href="scores.html">here</a>
 					</small>
@@ -230,7 +230,7 @@
 							</tr>
 						</tbody>
 					</table>
-				<!--</div>-->
+				</div>
 			</fieldset>
 			<fieldset>
 				<legend>
@@ -484,9 +484,9 @@ int main(int argc,char*argv[]){
 					add("ws",2);
 					add("bad",4);
 					add("eof",3,"!");
-					info(sizes[0]+" lines, "+(100*sizes[1]/sizes[0]).toFixed(2)+"% correct"+(sizes[2]?", "+(100*sizes[2]/sizes[0]).toFixed(2)+"% whitespace error":"")+(sizes[3]?", no EOF":""),bar);
+					info(sizes[0]+" line"+(sizes[0]==1?"":"s")+", "+(100*sizes[1]/sizes[0]).toFixed(2)+"% correct"+(sizes[2]?", "+(100*sizes[2]/sizes[0]).toFixed(2)+"% whitespace error":"")+(sizes[3]?", no EOF":""),bar);
 					dbg("run completed",x[0],$("#timef").clone().removeAttr("id"));
-					dbg("ran",link(fileUrl(url+"/solution."+lang),"this program"),file?"on "+file+",":"on the input referenced",link(fileUrl(url+"/in"),file?"path here":"here"));
+					dbg("ran",link(url+"/solution."+lang,"this program"),file?"on "+file+",":"on the input referenced",link(url+"/in",file?"path here":"here"));
 				}else
 					warn("code was not executed");
 			}
@@ -612,7 +612,7 @@ int main(int argc,char*argv[]){
 							dbg("loading score from",t);
 							get(e+"/score",function(val){
 								dbg("loaded score from",t);
-								onscore(val,e);
+								onscore(val,fileUrl(e));
 							});
 						},"load").appendTo(tr.insertCell(-1));
 						ts(t).appendTo(tr.insertCell(-1)).parent().addClass("td-last");
