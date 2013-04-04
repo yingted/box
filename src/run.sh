@@ -37,7 +37,6 @@ case "${sol#*.}" in
 		run=(./solution);;
 	t)
 		WINEPREFIX=/build/wineprefix xvfb-run -aw0 -s'-screen 0 1x1x8' wine /build/turing.exe -compile solution.t &>/dev/null
-		(( $? == 124 || $? == 137 )) && { echo "turing compile timed out"; exit 1; }
 		rm solution.t
 		run=(/build/tprolog solution.tbc);;
 	java)
@@ -53,13 +52,15 @@ case "${sol#*.}" in
 		#python3.2 -SOOc 'import py_compile;py_compile.compile("solution.py3","solution.py3o")'
 		run=(python3.2 -SOO /build/pybox.py3o solution.py3);;
 esac
+echo "run=(${run[@]})" > run_cmd
 )
 
 [ -n "$taskset" ] && taskset="taskset $taskset"
 (
 	set +e
+	. ./run_cmd
 	ulimit "${ulimit_args[@]}"
-	'time' -o score -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" $taskset timeout "$wall_secs" "${run[@]}" <"$test_path" >stdout 2>/dev/null
+	'time' -o score -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" $taskset timeout "$wall_secs" "${run[@]}" <"$test_path" >stdout
 	echo $?
 )
 #/build/score "/data$(sed 's/\(.*\)\binput\b/\1output/' <<< "$test_path")" stdout >>score
