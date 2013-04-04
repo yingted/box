@@ -29,9 +29,9 @@ do
 	sudo ln "data$test_path" rootfs/data/in
 	sudo chmod 664 rootfs/data/in
 	conf="data${test_path%/*}/config"
-	[ -e "$conf" ] && sudo ln "$conf" rootfs/tmp/config && sudo chmod 775 rootfs/tmp/config
+	[ -e "$conf" ] && sudo cp "$conf" rootfs/tmp/config && sudo chmod 775 rootfs/tmp/config
 	tconf="data$(sed 's/\(.*\)\binput\b/\1config/' <<< "$test_path")"
-	[ -e "$tconf" ] && sudo ln "$tconf" rootfs/tmp/testconfig && sudo chmod 775 rootfs/tmp/testconfig
+	[ -e "$tconf" ] && sudo cp "$tconf" rootfs/tmp/testconfig && sudo chmod 775 rootfs/tmp/testconfig
 	sudo lxc-execute -n box -- "${curwrap[@]}" /build/drop 99 /build/run.sh > "$file/out"
 	#sudo chroot rootfs "${curwrap[@]}" /build/drop 99 /build/run.sh "$(cat "$file/in")" > "$file/out"
 	src/score "data$(sed 's/\(.*\)\binput\b/\1output/' <<< "$test_path")" rootfs/tmp/stdout >> rootfs/tmp/score
