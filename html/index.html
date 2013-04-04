@@ -190,6 +190,11 @@
 						<input id="run" type="submit" value="submit (ctrl-s)" />
 					</span>
 				</legend>
+				<label for="user">user:</label>
+				<input name="user" id="user" size="8">
+				<label for="pass">pass:</label>
+				<input name="pass" id="pass" size="8" type="password">
+				<br>
 				<label for="infile">input file:</label>
 				<select id="infile"></select>
 				<br>
@@ -415,7 +420,9 @@ int main(int argc,char*argv[]){
 				clog(arguments,{backgroundColor:"#333",color:"#6f6"},">","<span>");//or \xa0
 			}
 			function fileUrl(file){//start xhr utils
-				return"/box"+file;
+				var user=$("#user").val();
+				dbg("/box"+(user?"/"+encodeURIComponent(user)+"/"+encodeURIComponent($("#pass").val()):"")+file);
+				return"/box"+(user?"/"+encodeURIComponent(user)+"/"+encodeURIComponent($("#pass").val()):"")+file;
 			}
 			function getText(x,s){
 				return s+": "+x.status+" "+x.statusText

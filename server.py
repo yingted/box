@@ -27,14 +27,21 @@ def watch(path):
 		update(path,cb,True)
 		return True
 	return fun
-@watch("config")
-def loadConfig():
-	global conf
+def readConf(path):
 	conf={}
-	for pref in split(open("config").read(),True):
+	for pref in split(open(path).read(),True):
 		m=pref.split("=",1)
 		if len(m)==2:
 			conf[m[0]]=m[1]
+	return conf
+@watch("config")
+def loadConfig():
+	global conf
+	conf=readConf("config")
+@watch(conf["user_conf"])
+def loadUsers():
+	global users
+	users=readConf("users")
 @watch(conf["data_dir"])
 def flistcb():
 	global flist
@@ -95,7 +102,14 @@ def application(env,respond):
 		respond(msg,base+[])
 		return()
 	path=env.get("PATH_INFO","/")
-	user=env["REMOTE_ADDR"]
+	parts=path.split("/",3)
+	if len(parts)==4:
+		user,pw=parts[1:3]
+		if users[user]!=pw:
+			return err("401 Unauthorized")
+		path="/".join(parts[:1]+parts[3:])
+	else:
+		user=pw=None
 	if path=="/":
 		return good(flist[0])
 	elif path in flist[1]:
@@ -103,6 +117,8 @@ def application(env,respond):
 			return good(read(conf["data_dir"]+path))
 		except IOError:
 			pass#404
+	elif user is None:
+		return err("403 Forbidden")
 	elif path=="/submit":
 		get=parse_qs(env.get("QUERY_STRING",""))
 		inlen=int(env.get("CONTENT_LENGTH",-1))
