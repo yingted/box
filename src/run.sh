@@ -7,6 +7,8 @@ rm /tmp/config
 exec 2>&1
 cd /tmp
 sol=(solution.*)
+(
+ulimit "${compile_ulimit_args[@]}"
 case "${sol#*.}" in
 	cpp*)
 		deps="`cpp -MM $sol | cut -d\  -f3-`";
@@ -29,34 +31,39 @@ case "${sol#*.}" in
 		fi
 		rm solution.{cpp,o}
 		strip solution
-		run=(./solution);;
+		echo 'run=(./solution)' > run_cmd;;
 	t)
 		WINEPREFIX=/build/wineprefix xvfb-run -aw0 -s'-screen 0 1x1x8' wine /build/turing.exe -compile solution.t &>/dev/null
+		ret="$?"
 		rm solution.t
 		if [ "$(head -c8 solution.tbc | xxd -p)" = 4552524f52000d0a ]
 		then
 			tail -n+2 solution.tbc | dos2unix | sed -n 's/^Line \([0-9]\+\) \[\([0-9]\+\) - \([0-9]\+\)\] of ([^()]*):/\1 \2 \3/p'
 			echo
 			rm solution.tbc
+			exit "$?"
 		else
-			run=(/build/tprolog solution.tbc)
+			echo 'run=(/build/tprolog solution.tbc)' > run_cmd
 		fi;;
 	java)
 		javac solution.java
 		rm solution.java
-		run=(java -client -Djava.security.manager -Djava.security.policy=/build/java.policy solution);;
+        echo 'run=(java -client -Djava.security.manager -Djava.security.policy=/build/java.policy solution)' > run_cmd;;
 	js)
-		run=(/usr/bin/js -e 'delete load;delete read;delete run;delete snarf' solution.js);;
+		echo 'run=(/usr/bin/js -e "delete load;delete read;delete run;delete snarf" solution.js)' > run_cmd;;
 	py2)
 		#python2 -SOO -mpy_compile solution.py2
-		run=(python2 -SOO /build/pybox.py2o solution.py2);;
+		echo 'run=(python2 -SOO /build/pybox.py2o solution.py2)' > run_cmd;;
 	py3)
 		#python3.2 -SOOc 'import py_compile;py_compile.compile("solution.py3","solution.py3o")'
-		run=(python3.2 -SOO /build/pybox.py3o solution.py3);;
+		echo 'run=(python3.2 -SOO /build/pybox.py3o solution.py3)' > run_cmd;;
 esac
+)
 [ -n "$taskset" ] && taskset="taskset $taskset"
 (
 	set +e
+	. ./run_cmd
+	rm run_cmd
 	ulimit "${ulimit_args[@]}"
 	'time' -o score -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" $taskset timeout "$wall_secs" "${run[@]}" <"$test_path" >stdout 2>/dev/null
 	echo $?
