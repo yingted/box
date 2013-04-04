@@ -1,4 +1,5 @@
 #this file belongs at config (i.e. box/config)
+data_dir=data #path, with no trailing slash, to problems, such as /home/user/Documents/problems
 wait_mins=1 #between submissions
 ulimit_args=(-d1024 -f1 -i5 -m$[256*1024] -n11 -q0 -t1 -v$[320*1024] -x0)
 taskset=
