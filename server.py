@@ -75,7 +75,6 @@ def scorescb():
 		scores.append((ip," ".join(map(str,s))+" "+str(t)))
 	if scores:
 		scores[0]=scores[0][1:]
-	print scores
 	if scores!=old:
 		print"updated %d scores"%len(ip_in_score_time_s)
 		scoreupdate.set()

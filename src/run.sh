@@ -17,10 +17,10 @@ case "${sol#*.}" in
 			exit 1
 		fi
 		if [ "${sol#*.}" = "cpp11" ]; then
-		    mv solution.cpp{11,}
-		    g++ solution.cpp -c -std=gnu++11 -O3 -Wall -Wunreachable-code -march=native -pipe
+			mv solution.cpp{11,}
+			g++ solution.cpp -c -std=gnu++11 -O3 -Wall -Wunreachable-code -march=native -pipe
 		else
-		    g++ solution.cpp -c -O3 -Wall -Wunreachable-code -march=native -pipe
+			g++ solution.cpp -c -O3 -Wall -Wunreachable-code -march=native -pipe
 		fi
 		if [ -x /usr/lib/gcc/x86_64-unknown-linux-gnu/4.7.2/collect2 ]; then
 			/usr/lib/gcc/x86_64-unknown-linux-gnu/4.7.2/collect2 --build-id --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -e __start -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o solution /build/crt1.o /usr/lib/gcc/x86_64-unknown-linux-gnu/4.7.2/../../../../lib/crti.o /usr/lib/gcc/x86_64-unknown-linux-gnu/4.7.2/crtbegin.o -L/usr/lib/gcc/x86_64-unknown-linux-gnu/4.7.2 -L/usr/lib/gcc/x86_64-unknown-linux-gnu/4.7.2/../../../../lib -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-unknown-linux-gnu/4.7.2/../../.. /build/box.o -L/build -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc -lseccomp /usr/lib/gcc/x86_64-unknown-linux-gnu/4.7.2/crtend.o /usr/lib/gcc/x86_64-unknown-linux-gnu/4.7.2/../../../../lib/crtn.o solution.o
@@ -31,10 +31,16 @@ case "${sol#*.}" in
 		strip solution
 		run=(./solution);;
 	t)
-		WINEPREFIX=/build/wineprefix timeout -k31 30 xvfb-run -aw0 -s'-screen 0 1x1x8' wine /build/turing.exe -compile solution.t &>/dev/null
-		(( $? == 124 || $? == 137 )) && { echo "turing compile timed out"; exit 1; }
+		WINEPREFIX=/build/wineprefix xvfb-run -aw0 -s'-screen 0 1x1x8' wine /build/turing.exe -compile solution.t &>/dev/null
 		rm solution.t
-		run=(/build/tprolog solution.tbc);;
+		if [ "$(head -c8 solution.tbc | xxd -p)" = 4552524f52000d0a ]
+		then
+			tail -n+2 solution.tbc | dos2unix | sed -n 's/^Line \([0-9]\+\) \[\([0-9]\+\) - \([0-9]\+\)\] of ([^()]*):/\1 \2 \3/p'
+			echo
+			rm solution.tbc
+		else
+			run=(/build/tprolog solution.tbc)
+		fi;;
 	java)
 		javac solution.java
 		rm solution.java
