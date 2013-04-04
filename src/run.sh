@@ -2,11 +2,8 @@
 set -e
 shopt -s failglob
 test_path="/data/in"
-. "/build/config"
-conf="/tmp/config"
-[ "$test_path" != / -a -e "$conf" ] && . "$conf"
-tconf="/tmp/testconfig"
-[ "$test_path" != / -a -e "$tconf" ] && . "$tconf"
+. /tmp/config
+rm /tmp/config
 exec 2>&1
 cd /tmp
 sol=(solution.*)
