@@ -1,10 +1,10 @@
 #!/bin/sh
 #usage: $0 user problem lang < file
 set -e
-[ -e rootfs/data/config ] && . rootfs/data/config
-conf="rootfs/data${2%/*}/config"
+[ -e rootfs/build/config ] && . rootfs/build/config
+conf="data${2%/*}/config"
 [ -e "$conf" ] && . "$conf"
-tconf="rootfs/data$(sed 's/\(.*\)\binput\b/\1config/' <<< "$2")"
+tconf="data$(sed 's/\(.*\)\binput\b/\1config/' <<< "$2")"
 [ -e "$tconf" ] && . "$tconf"
 die(){
 	echo 429 Too Many Requests
