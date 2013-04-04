@@ -307,6 +307,7 @@ int main(int argc,char*argv[]){
 			</small>
 		</div>
 		<script type="text/javascript">//screw modules/separation/good practice; start loading ace
+			$(window).load(function(){//hack
 			if($.browser.msie||!console)
 				console={log:function(){},info:function(){},warn:function(){},error:function(){}};
 			$("legend,#templates>*").contents().filter(function(){
@@ -421,7 +422,6 @@ int main(int argc,char*argv[]){
 			}
 			function fileUrl(file){//start xhr utils
 				var user=$("#user").val();
-				dbg("/box"+(user?"/"+encodeURIComponent(user)+"/"+encodeURIComponent($("#pass").val()):"")+file);
 				return"/box"+(user?"/"+encodeURIComponent(user)+"/"+encodeURIComponent($("#pass").val()):"")+file;
 			}
 			function getText(x,s){
@@ -750,6 +750,7 @@ int main(int argc,char*argv[]){
 				}
 			});
 			dbg("loaded in",Date.now()-starttime,"ms");
+			});//end hack
 		</script>
 	</body>
 </html><!-- vim:ts=2 sw=2
