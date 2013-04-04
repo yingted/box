@@ -2,6 +2,7 @@
 .*
 code
 rootfs
+data/*
 server.pyc
 config
 devs.sh
