@@ -34,25 +34,24 @@ case "${sol#*.}" in
 		fi
 		rm solution.{cpp,o}
 		strip solution
-		run=(./solution);;
+		echo 'run=(./solution)' > run_cmd;;
 	t)
 		WINEPREFIX=/build/wineprefix xvfb-run -aw0 -s'-screen 0 1x1x8' wine /build/turing.exe -compile solution.t &>/dev/null
 		rm solution.t
-		run=(/build/tprolog solution.tbc);;
+		echo 'run=(/build/tprolog solution.tbc)' > run_cmd;;
 	java)
 		javac solution.java
 		rm solution.java
-        run=(java -client -Djava.security.manager -Djava.security.policy=/build/java.policy solution);;
+        echo 'run=(java -client -Djava.security.manager -Djava.security.policy=/build/java.policy solution)' > run_cmd;;
 	js)
-		run=(/usr/bin/js -e 'delete load;delete read;delete run;delete snarf' solution.js);;
+		echo 'run=(/usr/bin/js -e "delete load;delete read;delete run;delete snarf" solution.js)' > run_cmd;;
 	py2)
 		#python2 -SOO -mpy_compile solution.py2
-		run=(python2 -SOO /build/pybox.py2o solution.py2);;
+		echo 'run=(python2 -SOO /build/pybox.py2o solution.py2)' > run_cmd;;
 	py3)
 		#python3.2 -SOOc 'import py_compile;py_compile.compile("solution.py3","solution.py3o")'
-		run=(python3.2 -SOO /build/pybox.py3o solution.py3);;
+		echo 'run=(python3.2 -SOO /build/pybox.py3o solution.py3)' > run_cmd;;
 esac
-echo "run=(${run[@]})" > run_cmd
 )
 
 [ -n "$taskset" ] && taskset="taskset $taskset"
