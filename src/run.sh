@@ -10,6 +10,8 @@ tconf="/tmp/testconfig"
 exec 2>&1
 cd /tmp
 sol=(solution.*)
+(
+ulimit "${compile_ulimit_args[@]}"
 case "${sol#*.}" in
 	cpp*)
 		deps="`cpp -MM $sol | cut -d\  -f3-`";
@@ -34,14 +36,14 @@ case "${sol#*.}" in
 		strip solution
 		run=(./solution);;
 	t)
-		WINEPREFIX=/build/wineprefix timeout -k31 30 xvfb-run -aw0 -s'-screen 0 1x1x8' wine /build/turing.exe -compile solution.t &>/dev/null
+		WINEPREFIX=/build/wineprefix xvfb-run -aw0 -s'-screen 0 1x1x8' wine /build/turing.exe -compile solution.t &>/dev/null
 		(( $? == 124 || $? == 137 )) && { echo "turing compile timed out"; exit 1; }
 		rm solution.t
 		run=(/build/tprolog solution.tbc);;
 	java)
 		javac solution.java
 		rm solution.java
-		run=(java -client -Djava.security.manager -Djava.security.policy=/build/java.policy solution);;
+        run=(java -client -Djava.security.manager -Djava.security.policy=/build/java.policy solution);;
 	js)
 		run=(/usr/bin/js -e 'delete load;delete read;delete run;delete snarf' solution.js);;
 	py2)
@@ -51,6 +53,8 @@ case "${sol#*.}" in
 		#python3.2 -SOOc 'import py_compile;py_compile.compile("solution.py3","solution.py3o")'
 		run=(python3.2 -SOO /build/pybox.py3o solution.py3);;
 esac
+)
+
 [ -n "$taskset" ] && taskset="taskset $taskset"
 (
 	set +e
