@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/python2 -S
 from wsgiref.simple_server import make_server#,demo_app
 from cgi import FieldStorage
 from threading import Timer,Event
@@ -7,10 +7,11 @@ from os.path import normpath,exists
 from urlparse import urlparse,parse_qs
 from subprocess import Popen,PIPE
 from os import listdir
+from shlex import split
 import re
 CT_PLAIN=("Content-type","text/plain;charset=UTF-8")
-binputb=re.compile("\\binput\\b")
-bdosb=re.compile("\\bdos\\b")
+binputb=re.compile(r"\binput\b")
+bdosb=re.compile("\bdos\b")
 slashall=re.compile("/[^/]*$")
 stuff=("-e","modify","-e","move","-e","create","-e","delete","-e","unmount","-e","close_write")
 def problem(x):
@@ -21,12 +22,25 @@ def update(path,cb,nodelay=False):
 	t=Timer(int(not nodelay),update,(path,cb))
 	t.setDaemon(True)
 	t.start()#wait 1 sec for modification, ratelimit
+def watch(path):
+	def fun(cb):
+		update(path,cb,True)
+		return True
+	return fun
+@watch("config")
+def loadConfig():
+	global conf
+	conf={}
+	for pref in split(open("config").read(),True):
+		m=pref.split("=",1)
+		if len(m)==2:
+			conf[m[0]]=m[1]
+@watch(conf["data_dir"])
 def flistcb():
 	global flist
-	files=sorted([x[4:]for x in check_output(("find","-L","data","-type","f","-name","*input*","-perm","-4","-print0")).split("\0")if binputb.search(x)and not bdosb.search(x)],reverse=True)
+	files=sorted([x[len(conf["data_dir"]):]for x in check_output(("find","-L",conf["data_dir"],"-type","f","-name","*input*","-perm","-4","-print0")).split("\0")if binputb.search(x)and not bdosb.search(x)],reverse=True)
 	flist=("\n".join(files),sorted(set(map(problem,files))),{},files)
 	print"found %d files"%len(files)
-update("data",flistcb,True)
 def read(path):
 	h=flist[2]
 	if path not in h:
@@ -36,13 +50,14 @@ def read(path):
 	return h[path]
 scores=None
 scoreupdate=Event()
+@watch("code")
 def scorescb():
 	global scores,scoreupdate
 	old=scores
 	score_sub_s=[]
 	for x in check_output(("find","code","-mindepth","3","-name","solution.*","-type","f","-print0")).split("\0")[:-1]:
 		try:
-			score_sub_s.append((map(int,read(x).split("\n")[-2].split(" ")),x.split("/")))
+			score_sub_s.append((map(int,read(x[:x.rindex("/")]+"/score").split("\n")[-2].split(" ")),x.split("/")))
 		except:
 			pass
 	ip_in_score_time_s=dict([((p[1],read("/".join(p[:3])+"/in").rstrip("\n")),(s,int(p[2])))for(s,p)in sorted(score_sub_s)]).items()
@@ -64,7 +79,6 @@ def scorescb():
 		print"updated %d scores"%len(ip_in_score_time_s)
 		scoreupdate.set()
 		scoreupdate.clear()
-update("code",scorescb,True)
 def application(env,respond):
 	base=[]
 	if"HTTP_ORIGIN"in env:
@@ -86,7 +100,7 @@ def application(env,respond):
 		return good(flist[0])
 	elif path in flist[1]:
 		try:
-			return good(read("data"+path))
+			return good(read(conf["data_dir"]+path))
 		except IOError:
 			pass#404
 	elif path=="/submit":

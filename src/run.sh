@@ -2,11 +2,8 @@
 set -e
 shopt -s failglob
 test_path="/data/in"
-. "/build/config"
-conf="/tmp/config"
-[ "$test_path" != / -a -e "$conf" ] && . "$conf"
-tconf="/tmp/testconfig"
-[ "$test_path" != / -a -e "$tconf" ] && . "$tconf"
+. /tmp/config
+rm /tmp/config
 exec 2>&1
 cd /tmp
 sol=(solution.*)
@@ -22,10 +19,10 @@ case "${sol#*.}" in
 			exit 1
 		fi
 		if [ "${sol#*.}" = "cpp11" ]; then
-		    mv solution.cpp{11,}
-		    g++ solution.cpp -c -std=gnu++11 -O3 -Wall -Wunreachable-code -march=native -pipe
+			mv solution.cpp{11,}
+			g++ solution.cpp -c -std=gnu++11 -O3 -Wall -Wunreachable-code -march=native -pipe
 		else
-		    g++ solution.cpp -c -O3 -Wall -Wunreachable-code -march=native -pipe
+			g++ solution.cpp -c -O3 -Wall -Wunreachable-code -march=native -pipe
 		fi
 		if [ -x /usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0/collect2 ]; then
 			/usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0/collect2 --build-id --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -e __start -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o solution /build/crt1.o /usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0/../../../../lib/crti.o /usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0/crtbegin.o -L/usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0 -L/usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0/../../../../lib -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0/../../.. /build/box.o -L/build -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc -lseccomp /usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0/crtend.o /usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0/../../../../lib/crtn.o solution.o
@@ -37,8 +34,17 @@ case "${sol#*.}" in
 		echo 'run=(./solution)' > run_cmd;;
 	t)
 		WINEPREFIX=/build/wineprefix xvfb-run -aw0 -s'-screen 0 1x1x8' wine /build/turing.exe -compile solution.t &>/dev/null
+		ret="$?"
 		rm solution.t
-		echo 'run=(/build/tprolog solution.tbc)' > run_cmd;;
+		if [ "$(head -c8 solution.tbc | xxd -p)" = 4552524f52000d0a ]
+		then
+			tail -n+2 solution.tbc | dos2unix | sed -n 's/^Line \([0-9]\+\) \[\([0-9]\+\) - \([0-9]\+\)\] of ([^()]*):/\1 \2 \3/p'
+			echo
+			rm solution.tbc
+			exit "$?"
+		else
+			echo 'run=(/build/tprolog solution.tbc)' > run_cmd
+		fi;;
 	java)
 		javac solution.java
 		rm solution.java
@@ -53,13 +59,13 @@ case "${sol#*.}" in
 		echo 'run=(python3.2 -SOO /build/pybox.py3o solution.py3)' > run_cmd;;
 esac
 )
-
 [ -n "$taskset" ] && taskset="taskset $taskset"
 (
 	set +e
 	. ./run_cmd
+	rm run_cmd
 	ulimit "${ulimit_args[@]}"
-	'time' -o score -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" $taskset timeout "$wall_secs" "${run[@]}" <"$test_path" >stdout
+	'time' -o score -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" $taskset timeout "$wall_secs" "${run[@]}" <"$test_path" >stdout 2>/dev/null
 	echo $?
 )
 #/build/score "/data$(sed 's/\(.*\)\binput\b/\1output/' <<< "$test_path")" stdout >>score

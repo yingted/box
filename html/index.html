@@ -213,7 +213,7 @@
 					<span>history</span>
 					<button id="rlhist" class="dev">reload</button>
 				</legend>
-				<div id="histsc" class="mh">
+				<!--<div id="histsc" class="mh">-->
 					<small>
 						these are yours, the rest are <a href="scores.html">here</a>
 					</small>
@@ -230,7 +230,7 @@
 							</tr>
 						</tbody>
 					</table>
-				</div>
+				<!--</div>-->
 			</fieldset>
 			<fieldset>
 				<legend>
@@ -333,7 +333,7 @@ int main(int argc,char*argv[]){
 				});
 				session.setAnnotations(ann=$.extend(true,[],ann));
 				phs=$.map(ann,function(e){
-						var ph=new PlaceHolder(session,1,e,[],"ann-"+e.type);
+						var ph=new PlaceHolder(session,e.length||1,e,[],"ann-"+e.type);
 						ph.pos.addEventListener("change",function(f){
 							e.row=f.value.row;
 							e.column=f.value.column;//doesn't matter
@@ -484,7 +484,7 @@ int main(int argc,char*argv[]){
 					add("ws",2);
 					add("bad",4);
 					add("eof",3,"!");
-					info(sizes[0]+" line"+(sizes[0]==1?"":"s")+", "+(100*sizes[1]/sizes[0]).toFixed(2)+"% correct"+(sizes[2]?", "+(100*sizes[2]/sizes[0]).toFixed(2)+"% whitespace error":"")+(sizes[3]?", no EOF":""),bar);
+					info(sizes[0]+" line"+(sizes[0]==1?"":"s")+", "+(100*(sizes[0]?sizes[1]/sizes[0]:1)).toFixed(2)+"% correct"+(sizes[2]?", "+(100*sizes[2]/sizes[0]).toFixed(2)+"% whitespace error":"")+(sizes[3]?", no EOF":""),bar);
 					dbg("run completed",x[0],$("#timef").clone().removeAttr("id"));
 					dbg("ran",link(url+"/solution."+lang,"this program"),file?"on "+file+",":"on the input referenced",link(url+"/in",file?"path here":"here"));
 				}else
@@ -506,10 +506,14 @@ int main(int argc,char*argv[]){
 						for(var ann=[],re=/^solution\.cpp:(\d+):(\d+): (\w+: )?([^\n]*)/mg,m;m=re.exec(x);)
 							ann.push({type:gcchash[m[3]]||"note",row:m[1]-1,column:m[2]-1,text:m[4]});
 						break;
+					case"t":
+						for(var ann=[],re=/^([0-9]+) ([0-9]+) ([0-9]+) ([^\n]*)$/mg,m;m=re.exec(x);)
+							ann.push({type:"error",row:m[1]-1,column:m[2]-1,length:m[3]-m[2],text:m[4]});
+						break;
 				}
 				if(rc!==undefined)
 					dbg("program exited",rc+(rchash.hasOwnProperty(rc)?" ("+rchash[rc]+")":""));
-				anns[code+"\0"+$("#lang").val()]=ann;
+				anns[code+"\0"+lang]=ann;
 				tryannotate();//will not dig edit history
 			}
 			function submit(e){
@@ -593,7 +597,7 @@ int main(int argc,char*argv[]){
 							dbg("loading code and output from",t);
 							var vl,code,evt=function(val){
 								dbg("loaded output from",t);
-								onout.call({url:fe+"/out"},val,code);
+								onout.call({url:fe+"/out"},val,code,lang);
 							};
 							get(e+"/solution."+lang,function(val){
 								dbg("loaded code from",t);

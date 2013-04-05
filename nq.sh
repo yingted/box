@@ -1,11 +1,7 @@
 #!/bin/sh
 #usage: $0 user problem lang < file
 set -e
-[ -e rootfs/build/config ] && . rootfs/build/config
-conf="data${2%/*}/config"
-[ -e "$conf" ] && . "$conf"
-tconf="data$(sed 's/\(.*\)\binput\b/\1config/' <<< "$2")"
-[ -e "$tconf" ] && . "$tconf"
+. ./config "$2"
 die(){
 	echo 429 Too Many Requests
 	exit
