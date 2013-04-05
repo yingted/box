@@ -34,7 +34,7 @@ do
 	sudo chown 99:99 rootfs/tmp/config
 	sudo lxc-execute -n box -- "${curwrap[@]}" /build/drop 99 /build/run.sh > "$file/out"
 	#sudo chroot rootfs "${curwrap[@]}" /build/drop 99 /build/run.sh "$(cat "$file/in")" > "$file/out"
-	{ cat rootfs/tmp/score 2>/dev/null; rootfs/build/score "$datadir$(sed 's/\(.*\)\binput\b/\1output/' <<< "$test_path")" rootfs/tmp/stdout; } > "$file/score.part" && mv "$file/score.part" "$file/score" || { >> "$file/score"; rm -f "$file/score.part"; }
+	{ cat rootfs/tmp/score 2>/dev/null; rootfs/build/score "$data_dir$(sed 's/\(.*\)\binput\b/\1output/' <<< "$test_path")" rootfs/tmp/stdout; } > "$file/score.part" && mv "$file/score.part" "$file/score" || { >> "$file/score"; rm -f "$file/score.part"; }
 	rm -f rootfs/tmp/{stdout,score,solution.*} 2> /dev/null
 	sudo find rootfs/{tmp,data} -mindepth 1 -delete
 	tail -1 "$file/score"
