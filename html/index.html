@@ -506,7 +506,8 @@ int main(int argc,char*argv[]){
 					"137":"resource exceeded",
 					"159":"system disallowed action",
 				};
-				dbg(abbr.length==x.length?x:abbr+"…");
+				if(x)
+					dbg(abbr.length==x.length?x:abbr+"…");
 				dbg(link(this.url,"output"));
 				switch(lang){
 					case"cpp":

@@ -25,7 +25,7 @@ def update(path,cb,nodelay=False):
 def watch(path):
 	def fun(cb):
 		update(path,cb,True)
-		return True
+		return cb
 	return fun
 def readConf(path):
 	conf={}
@@ -103,13 +103,11 @@ def application(env,respond):
 		return()
 	path=env.get("PATH_INFO","/")
 	parts=path.split("/",3)
+	user=pw=None
 	if len(parts)==4:
-		user,pw=parts[1:3]
-		if user not in users or users[user]!=pw:
-			return err("401 Unauthorized")
-		path="/".join(parts[:1]+parts[3:])
-	else:
-		user=pw=None
+		if users.get(parts[1],None)==parts[2]:
+			user,pw=parts[1:3]
+			path="/".join(parts[:1]+parts[3:])
 	if path=="/":
 		return good(flist[0])
 	elif path in flist[1]:
