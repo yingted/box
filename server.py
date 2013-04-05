@@ -115,6 +115,11 @@ def application(env,respond):
 			return good(read(conf["data_dir"]+path))
 		except IOError:
 			pass#404
+	elif path=="/scores":
+		t=float(parse_qs(env.get("QUERY_STRING","")).get("timeout",[0])[0])
+		if t:#optimize
+			scoreupdate.wait(None if t<0 else t)
+		return good("".join([x if type(x)==str else x[1]if user!=x[0]else"*"+x[1]for x in scores]))
 	elif user is None:
 		return err("403 Forbidden")
 	elif path=="/submit":
@@ -152,11 +157,6 @@ def application(env,respond):
 			return good(read(path))
 		if exists(path):
 			return good(read(path))
-	elif path=="/scores":
-		t=float(parse_qs(env.get("QUERY_STRING","")).get("timeout",[0])[0])
-		if t:#optimize
-			scoreupdate.wait(None if t<0 else t)
-		return good("".join([x if type(x)==str else x[1]if user!=x[0]else"*"+x[1]for x in scores]))
 	return err("404 Not Found")
 if __name__=="__main__":
 	make_server("",8000,application).serve_forever()
