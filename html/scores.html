@@ -59,7 +59,7 @@
 				<option>really bad</option>
 				<option>other</option>
 			</select>
-			<label for="ip">ip:</label>
+			<label for="ip">user:</label>
 			<select id="ip">
 				<option>(all)</option>
 				<option>me</option>
@@ -85,7 +85,7 @@
 			function $(id){
 				return document.getElementById(id);
 			}
-			var url="/box/scores",xhr=[
+			var pf="/box"+(location.hash.match(/^#!(.*)/)||[,""])[1],url=pf+"/scores",xhr=[
 				function(){return new XMLHttpRequest()},
 				function(){return new ActiveXObject("Msxml2.XMLHTTP")},
 				function(){return new ActiveXObject("Msxml3.XMLHTTP")},
@@ -155,7 +155,7 @@
 					}
 				}
 				x.send();
-				url="/box/scores?timeout=30";
+				url=pf+"/scores?timeout=30";
 			})();
 			var head=document.getElementsByTagName("head")[0],style=document.createElement("style"),tc2;
 			style.type="text/css";

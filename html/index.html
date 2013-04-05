@@ -220,7 +220,7 @@
 				</legend>
 				<!--<div id="histsc" class="mh">-->
 					<small>
-						these are yours, the rest are <a href="scores.html">here</a>
+						these are yours, the rest are <a href="scores.html" id="scores">here</a>
 					</small>
 					<table>
 						<tbody id="hist">
@@ -546,6 +546,7 @@ int main(int argc,char*argv[]){
 							(function connect(){
 								 $.ajax(url+"/out").done(function(x){
 									 onout.call(this,x,code,lang);
+									 loadhist();
 								 }).error(retry(connect,"cancelled by admin"));
 							})();
 							onscore(x,url,file,lang);
@@ -578,6 +579,11 @@ int main(int argc,char*argv[]){
 			$("#cc").click(function(){
 				cache={};
 			});
+			function updateLogin(e){
+				var hash=fileUrl("").replace(/^\/[^/]*/,"");
+				this.hash=hash?"#!"+hash:"";
+			}
+			$("#scores").mouseover(updateLogin).mousedown(updateLogin).focus(updateLogin).keydown(updateLogin).click(updateLogin);
 			function loadhist(){
 				$.ajax(fileUrl("/code")).done(function(x){
 					var a=x.split("\n"),hist=$("#hist"),base="/code/"+a.shift()+"/";
