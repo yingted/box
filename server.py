@@ -105,7 +105,7 @@ def application(env,respond):
 	parts=path.split("/",3)
 	if len(parts)==4:
 		user,pw=parts[1:3]
-		if users[user]!=pw:
+		if user not in users or users[user]!=pw:
 			return err("401 Unauthorized")
 		path="/".join(parts[:1]+parts[3:])
 	else:
