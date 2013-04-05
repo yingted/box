@@ -535,7 +535,6 @@
 					return;
 				}
 				$.post(fileUrl("/submit?lang="+lang+"&input="+encodeURIComponent(file)),code,function(x){
-					loadhist();
 					info("upload successful");
 					var url=fileUrl("/code/"+x),score=url+"/score";
 					(function connect(){
