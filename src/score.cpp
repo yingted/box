@@ -27,7 +27,7 @@ int main(int argc,char*argv[]){
 				++eq;
 			else if(clean(yes)==clean(maybe))
 				++like;
-		}	
+		}
 	cout<<tot<<' '<<eq<<' '<<like<<' '<<(sol.peek()==EOF)<<endl;
 	return 0;
 }
