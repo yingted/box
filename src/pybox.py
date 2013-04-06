@@ -1,7 +1,8 @@
 #!/usr/bin/python -SOO
 import sys,sandbox
 conf=sandbox.SandboxConfig("traceback","codecs","datetime","encodings","exit","future","hashlib","itertools","math","random","regex","stdin","stdout","stderr","time","unicodedata",use_subprocess=False)
-conf.allowModule("sys","argv")
+for mod in("sys","argv"),("heapq",),("bisect",),("operator","itemgetter"):
+	conf.allowModule(*mod)
 conf.recursion_limit=sys.getrecursionlimit()
 sys.argv=sys.argv[1:]
 with open(sys.argv[0],"rb")as fp:
