@@ -538,6 +538,7 @@ int main(int argc,char*argv[]){
 							(function connect(){
 								 $.ajax(url+"/out").done(function(x){
 									 onout.call(this,x,code,lang);
+									 loadhist();
 								 }).error(retry(connect,"cancelled by admin"));
 							})();
 							onscore(x,url,file,lang);
