@@ -110,7 +110,7 @@
 			}
 			.ts{
 				position:absolute;
-				right:1px;
+				right:0;
 				top:0;
 				font-family:monospace;
 				color:#707;
@@ -118,6 +118,7 @@
 				opacity:0.3;
 				filter:alpha(opacity=30);/*msie*/
 				zoom:1;
+				margin-right:1px;
 			}
 			.ts-hh:hover,.entry:hover>.ts-hh,tr:hover>.td-last>.ts-hh{
 				display:none;
@@ -128,6 +129,7 @@
 				background-color:#eee;
 				border:dashed 1px #999;
 				margin:-1px;
+				margin-right:0;
 			}
 			.ann-error,.ann-warning,.ann-info{
 				position:absolute;
@@ -150,9 +152,11 @@
 			#histsc{
 				max-height:6em;
 				overflow-y:auto;
+				overflow-x:hidden;
 			}
 			.td-last{
-				position:absolute;
+				position:relative;
+				padding:0;
 			}
 			hr{
 				height:1px;
@@ -213,7 +217,7 @@
 					<span>history</span>
 					<button id="rlhist" class="dev">reload</button>
 				</legend>
-				<!--<div id="histsc" class="mh">-->
+				<div id="histsc" class="mh">
 					<small>
 						these are yours, the rest are <a href="scores.html">here</a>
 					</small>
@@ -230,7 +234,7 @@
 							</tr>
 						</tbody>
 					</table>
-				<!--</div>-->
+				</div>
 			</fieldset>
 			<fieldset>
 				<legend>
@@ -621,7 +625,7 @@ int main(int argc,char*argv[]){
 								onscore(val,fileUrl(e));
 							});
 						},"load").appendTo(tr.insertCell(-1));
-						ts(t).appendTo(tr.insertCell(-1)).parent().addClass("td-last");
+						ts(t).appendTo($("<div>").appendTo(tr.insertCell(-1)).append("&nbsp;")).parent().addClass("td-last");
 					});
 				}).error(erf("loading history"));
 			}
