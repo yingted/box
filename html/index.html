@@ -311,7 +311,7 @@ int main(int argc,char*argv[]){
 			$("legend,#templates>*").contents().filter(function(){
 				return this.nodeType==3;//Node.TEXT_NODE
 			}).remove();
-			var editor=ace.edit("editor"),session=editor.getSession(),themes=[["bright",["chrome","clouds","crimson_editor","dawn","dreamweaver","eclipse","github","solarized_light","textmate","tomorrow"]],["dark",["clouds_midnight","cobalt","idle_fingers","kr_theme","merbivore","merbivore_soft","mono_industrial","monokai","pastel_on_dark","solarized_dark","tomorrow_night","tomorrow_night_blue","tomorrow_night_bright","tomorrow_night_eighties","twilight","vibrant_ink"]]],problem=$("#problem"),run=$("#run"),defconfig={wait_mins:1,file_blocks:1,wall_secs:2,cpu_secs:4,memory_kb:256*1024,vsize_kb:320*1024},out=$("#out"),sacrifice=$("<span>"),anns={},PlaceHolder=require("ace/placeholder").PlaceHolder,phs=[],rescroll,cache={};//TODO: defconfig
+			var editor=ace.edit("editor"),session=editor.getSession(),themes=[["bright",["chrome","clouds","crimson_editor","dawn","dreamweaver","eclipse","github","solarized_light","textmate","tomorrow"]],["dark",["clouds_midnight","cobalt","idle_fingers","kr_theme","merbivore","merbivore_soft","mono_industrial","monokai","pastel_on_dark","solarized_dark","tomorrow_night","tomorrow_night_blue","tomorrow_night_bright","tomorrow_night_eighties","twilight","vibrant_ink"]]],problem=$("#problem"),run=$("#run"),defconfig={wait_mins:1,file_blocks:1,wall_secs:2,cpu_secs:4,memory_kb:256*1024,vsize_kb:320*1024},out=$("#out"),sacrifice=$("<span>"),anns={},PlaceHolder=require("ace/placeholder").PlaceHolder,phs=[],rescroll,cache={},subs;//TODO: defconfig
 			if($.browser.msie){
 				warn("msie: ymmv");
 				session.setValue(session.getValue().replace(/\r/g,""));
@@ -526,14 +526,15 @@ int main(int argc,char*argv[]){
 					e.preventDefault();
 				run.prop("disabled",true);
 				info("submitting…");
-				var file=$("#infile").val(),code=session.getValue(),lang=$("#lang").val();
+				var file=$("#infile").val(),code=session.getValue(),lang=$("#lang").val(),sub=code+"\0"+lang+"\0"+file;
 				if(!file)
 					return;
-				if(anns.hasOwnProperty(code+"\0"+lang)){
+				if(subs.hasOwnProperty(sub)){
 					err("double-submission blocked; add a comment and try again if you meant to do this");
 					run.prop("disabled",false);
 					return;
 				}
+				subs[sub]=true;
 				$.post(fileUrl("/submit?lang="+lang+"&input="+encodeURIComponent(file)),code,function(x){
 					info("upload successful");
 					var url=fileUrl("/code/"+x),score=url+"/score";
