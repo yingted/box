@@ -165,5 +165,4 @@ def application(env,respond):
 			return good(read(path))
 	return err("404 Not Found")
 if __name__=="__main__":
-	print"starting"
 	make_server("",8000,application).serve_forever()
