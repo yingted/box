@@ -151,5 +151,4 @@ def application(env,respond):
 		return good("".join([x if type(x)==str else x[1]if user!=x[0]else"*"+x[1]for x in scores]))
 	return err("404 Not Found")
 if __name__=="__main__":
-	print"starting"
 	make_server("",8000,application).serve_forever()
