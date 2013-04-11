@@ -23,7 +23,7 @@ for u in map(lambda x:x.split('=')[0],read('users').split('\n')[:-1]):
         if (u,p) not in scores: print 'No submission'
         else:
             s,t = scores[(u,p)]
-            x = int(round(float(points[p])*float(s[1])/float(s[0])))
+            x = int(float(points[p])*float(s[1])/float(s[0]))
             total += x
             print '%d (%d/%d), submitted on %s'%(x,s[1],s[0],str(datetime.fromtimestamp(t)))        
     print 'Total = '+str(total)
