@@ -1,4 +1,4 @@
-.PHONY: all clean
+.PHONY: all clean test
 CFLAGS+=-march=native -O3 -pipe -fstack-protector --param ssp-buffer-size=4 -D_FORTIFY_SOURCE=2
 export CFLAGS
 #strip again
@@ -43,3 +43,7 @@ pybox.py3o:pybox.py
 	xhost +
 	cd ..; sudo chroot rootfs sh -c 'mknod -m 644 /dev/random c 1 8 2>/dev/null; mknod -m 644 /dev/urandom c 1 9 2>/dev/null; cd /tmp; HOME=/tmp WINEPREFIX=/build/wineprefix DISPLAY=$(DISPLAY) wine /build/turing.exe -run "$$(winepath -w /dev/null)"'
 	xhost -
+urchin:
+	wget https://raw.github.com/scraperwiki/urchin/master/urchin
+test:urchin
+	bash urchin test
