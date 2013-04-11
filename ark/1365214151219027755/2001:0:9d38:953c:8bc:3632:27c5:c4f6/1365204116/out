@@ -1,0 +1,2 @@
+solution.cpp:6:8: error: too many decimal points in number
+solution.cpp:1:1: error: ‘var’ does not name a type
