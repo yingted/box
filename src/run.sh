@@ -33,7 +33,8 @@ case "${sol#*.}" in
 		strip solution
 		echo 'run=(./solution)' > run_cmd;;
 	t)
-		WINEPREFIX=/build/wineprefix xvfb-run -aw0 -s'-screen 0 1x1x8' wine /build/turing.exe -compile solution.t &>/dev/null
+	    export PATH=/usr/bin
+		WINEPREFIX=/build/wineprefix xvfb-run -aw0 -s'-screen 0 1x1x8' wine /build/turing.exe -compile solution.t &> /dev/null
 		ret="$?"
 		rm solution.t
 		if [ "$(head -c8 solution.tbc | xxd -p)" = 4552524f52000d0a ]
