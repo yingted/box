@@ -623,7 +623,7 @@ int main(int argc,char*argv[]){
 							dbg("loading score from",t);
 							get(e+"/score",function(val){
 								dbg("loaded score from",t);
-								onscore(val,fileUrl(e));
+								onscore(val,fileUrl(e),undefined,lang);
 							});
 						},"load").appendTo(tr.insertCell(-1));
 						ts(t).appendTo($("<div>").appendTo(tr.insertCell(-1)).append("&nbsp;")).parent().addClass("td-last");
