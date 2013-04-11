@@ -120,7 +120,7 @@
 				zoom:1;
 				margin-right:1px;
 			}
-			.ts-hh:hover,.entry:hover>.ts-hh,tr:hover>.td-last>.ts-hh{
+			.ts-hh:hover,.entry:hover>.ts-hh,tr:hover>td>.td-last>.ts-hh{
 				display:none;
 			}
 			.ts:hover{
@@ -634,7 +634,7 @@
 							dbg("loading score from",t);
 							get(e+"/score",function(val){
 								dbg("loaded score from",t);
-								onscore(val,fileUrl(e));
+								onscore(val,fileUrl(e),undefined,lang);
 							});
 						},"load").appendTo(tr.insertCell(-1));
 						ts(t).appendTo($("<div>").appendTo(tr.insertCell(-1)).append("&nbsp;")).parent().addClass("td-last");
