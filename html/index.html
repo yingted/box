@@ -477,7 +477,7 @@
 			function onscore(x,url,file,lang){
 				if(x.length){
 					x=x.split("\n");
-					var sizes=x[1].split(" ").map(Number),bar=$("#bar").clone().removeAttr("id").append("&nbsp;"),den=sizes[0]+(sizes[3]^=1),last=0;
+					var sizes=x[x.length-2].split(" ").map(Number),bar=$("#bar").clone().removeAttr("id").append("&nbsp;"),den=sizes[0]+(sizes[3]^=1),last=0;
 					function add(cl,sz,txt){
 						if(sz=sizes[sz]){
 							bar.find(".bar-"+cl).text(txt||sz).css({
