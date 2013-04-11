@@ -1,10 +1,12 @@
 #*
 .*
-code
+code/*
+code_bak/*
 rootfs
 data/*
 server.pyc
 config
+config.lxc
 devs.sh
 fstab
 rootfs.*
