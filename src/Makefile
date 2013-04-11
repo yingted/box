@@ -48,7 +48,7 @@ ace/build/src-min:
 ../html/ace:ace/build/src-min
 	rm -rf ../html/ace
 	mkdir -p ../html/ace
-	cp ace/{demo/kitchen-sink/require,build/src-min/{ace,keybinding-{emacs,vim},theme-*,mode-{c_cpp,java,javascript,python}}}.js ../html/ace/
+	cp ace/{demo/kitchen-sink/require,build/src-min/{ace,keybinding-{emacs,vim},worker-javascript,theme-*,mode-{c_cpp,java,javascript,python}}}.js ../html/ace/
 	python -SOOc '\
 		import json,subprocess;\
 		print"ace.config.themes=",json.dumps([[label.lower(),subprocess.check_output(("sed","-n","/<optgroup label=\""+label+"\">/,/<\\/optgroup>/s:.*<option value=\"ace/theme/\\([^\"/]*\\)\"[^<>]*>.*:\\1:p","ace/kitchen-sink.html")).split()]for label in"Bright","Dark"],separators=(",",":"));\
