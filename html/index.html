@@ -110,7 +110,7 @@
 			}
 			.ts{
 				position:absolute;
-				right:1px;
+				right:0;
 				top:0;
 				font-family:monospace;
 				color:#707;
@@ -118,8 +118,9 @@
 				opacity:0.3;
 				filter:alpha(opacity=30);/*msie*/
 				zoom:1;
+				margin-right:1px;
 			}
-			.ts-hh:hover,.entry:hover>.ts-hh,tr:hover>.td-last>.ts-hh{
+			.ts-hh:hover,.entry:hover>.ts-hh,tr:hover>td>.td-last>.ts-hh{
 				display:none;
 			}
 			.ts:hover{
@@ -128,6 +129,7 @@
 				background-color:#eee;
 				border:dashed 1px #999;
 				margin:-1px;
+				margin-right:0;
 			}
 			.ann-error,.ann-warning,.ann-info{
 				position:absolute;
@@ -150,9 +152,11 @@
 			#histsc{
 				max-height:6em;
 				overflow-y:auto;
+				overflow-x:hidden;
 			}
 			.td-last{
-				position:absolute;
+				position:relative;
+				padding:0;
 			}
 			hr{
 				height:1px;
@@ -213,7 +217,7 @@
 					<span>history</span>
 					<button id="rlhist" class="dev">reload</button>
 				</legend>
-				<!--<div id="histsc" class="mh">-->
+				<div id="histsc" class="mh">
 					<small>
 						these are yours, the rest are <a href="scores.html">here</a>
 					</small>
@@ -230,7 +234,7 @@
 							</tr>
 						</tbody>
 					</table>
-				<!--</div>-->
+				</div>
 			</fieldset>
 			<fieldset>
 				<legend>
@@ -307,7 +311,7 @@ int main(int argc,char*argv[]){
 			$("legend,#templates>*").contents().filter(function(){
 				return this.nodeType==3;//Node.TEXT_NODE
 			}).remove();
-			var editor=ace.edit("editor"),session=editor.getSession(),themes=[["bright",["chrome","clouds","crimson_editor","dawn","dreamweaver","eclipse","github","solarized_light","textmate","tomorrow"]],["dark",["clouds_midnight","cobalt","idle_fingers","kr_theme","merbivore","merbivore_soft","mono_industrial","monokai","pastel_on_dark","solarized_dark","tomorrow_night","tomorrow_night_blue","tomorrow_night_bright","tomorrow_night_eighties","twilight","vibrant_ink"]]],problem=$("#problem"),run=$("#run"),defconfig={wait_mins:1,file_blocks:1,wall_secs:2,cpu_secs:4,memory_kb:256*1024,vsize_kb:320*1024},out=$("#out"),sacrifice=$("<span>"),anns={},PlaceHolder=require("ace/placeholder").PlaceHolder,phs=[],rescroll,cache={};//TODO: defconfig
+			var editor=ace.edit("editor"),session=editor.getSession(),themes=[["bright",["chrome","clouds","crimson_editor","dawn","dreamweaver","eclipse","github","solarized_light","textmate","tomorrow"]],["dark",["clouds_midnight","cobalt","idle_fingers","kr_theme","merbivore","merbivore_soft","mono_industrial","monokai","pastel_on_dark","solarized_dark","tomorrow_night","tomorrow_night_blue","tomorrow_night_bright","tomorrow_night_eighties","twilight","vibrant_ink"]]],problem=$("#problem"),run=$("#run"),defconfig={wait_mins:1,file_blocks:1,wall_secs:2,cpu_secs:4,memory_kb:256*1024,vsize_kb:320*1024},out=$("#out"),sacrifice=$("<span>"),anns={},PlaceHolder=require("ace/placeholder").PlaceHolder,phs=[],rescroll,cache={},subs={};//TODO: defconfig
 			if($.browser.msie){
 				warn("msie: ymmv");
 				session.setValue(session.getValue().replace(/\r/g,""));
@@ -496,6 +500,7 @@ int main(int argc,char*argv[]){
 					return"";
 				}))[0],gcchash={"error: ":"error","warning: ":"warning","note: ":"info"},rchash={
 					"0":"normal exit",
+					"124":"wall time limit exceeded",
 					"137":"resource exceeded",
 					"159":"system disallowed action",
 				};
@@ -521,14 +526,15 @@ int main(int argc,char*argv[]){
 					e.preventDefault();
 				run.prop("disabled",true);
 				info("submitting…");
-				var file=$("#infile").val(),code=session.getValue(),lang=$("#lang").val();
+				var file=$("#infile").val(),code=session.getValue(),lang=$("#lang").val(),sub=code+"\0"+lang+"\0"+file;
 				if(!file)
 					return;
-				if(anns.hasOwnProperty(code+"\0"+lang)){
+				if(subs.hasOwnProperty(sub)){
 					err("double-submission blocked; add a comment and try again if you meant to do this");
 					run.prop("disabled",false);
 					return;
 				}
+				subs[sub]=true;
 				$.post(fileUrl("/submit?lang="+lang+"&input="+encodeURIComponent(file)),code,function(x){
 					info("upload successful");
 					var url=fileUrl("/code/"+x),score=url+"/score";
@@ -537,6 +543,7 @@ int main(int argc,char*argv[]){
 							(function connect(){
 								 $.ajax(url+"/out").done(function(x){
 									 onout.call(this,x,code,lang);
+									 loadhist();
 								 }).error(retry(connect,"cancelled by admin"));
 							})();
 							onscore(x,url,file,lang);
@@ -616,10 +623,10 @@ int main(int argc,char*argv[]){
 							dbg("loading score from",t);
 							get(e+"/score",function(val){
 								dbg("loaded score from",t);
-								onscore(val,fileUrl(e));
+								onscore(val,fileUrl(e),undefined,lang);
 							});
 						},"load").appendTo(tr.insertCell(-1));
-						ts(t).appendTo(tr.insertCell(-1)).parent().addClass("td-last");
+						ts(t).appendTo($("<div>").appendTo(tr.insertCell(-1)).append("&nbsp;")).parent().addClass("td-last");
 					});
 				}).error(erf("loading history"));
 			}

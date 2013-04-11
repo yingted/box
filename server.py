@@ -8,6 +8,7 @@ from urlparse import urlparse,parse_qs
 from subprocess import Popen,PIPE
 from os import listdir
 from shlex import split
+from traceback import print_exc
 import re
 CT_PLAIN=("Content-type","text/plain;charset=UTF-8")
 binputb=re.compile(r"\binput\b")
@@ -18,7 +19,12 @@ def problem(x):
 	return slashall.sub("/problem.txt",x)
 def update(path,cb,nodelay=False):
 	nodelay=nodelay or call(("inotifywait","-qo/dev/null","-rt30",path)+stuff)==2
-	cb()
+	try:
+		cb()
+	except:
+		print"="*79+"{"
+		print_exc()
+		print"}"+"="*79
 	t=Timer(int(not nodelay),update,(path,cb))
 	t.setDaemon(True)
 	t.start()#wait 1 sec for modification, ratelimit

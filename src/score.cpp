@@ -12,7 +12,7 @@ const string&clean(string&s){
 	ssize_t st=s.find_first_not_of(" \t");
 	if(st==string::npos)
 		return es;
-	s=s.substr(st,s.find_last_not_of(" \t")-st);
+	s=s.substr(st,s.find_last_not_of(" \t")-st+1);
 	s.resize(unique(s.begin(),s.end(),bp)-s.begin());
 	return s;
 }
@@ -27,7 +27,7 @@ int main(int argc,char*argv[]){
 				++eq;
 			else if(clean(yes)==clean(maybe))
 				++like;
-		}	
+		}
 	cout<<tot<<' '<<eq<<' '<<like<<' '<<(sol.peek()==EOF)<<endl;
 	return 0;
 }
