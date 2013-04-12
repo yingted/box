@@ -46,9 +46,9 @@ case "${sol#*.}" in
 			echo 'run=(/build/tprolog solution.tbc)' > run_cmd
 		fi;;
 	java)
-		javac solution.java
+		javac -Xlint -O solution.java
 		rm solution.java
-        echo 'run=(java -client -Djava.security.manager -Djava.security.policy=/build/java.policy solution)' > run_cmd;;
+        echo 'run=(java -client -Djava.security.manager -Djava.security.policy=/build/java.policy Solution)' > run_cmd;;
 	js)
 		echo 'run=(/usr/bin/js -e "delete load;delete read;delete run;delete snarf" solution.js)' > run_cmd;;
 	py2)
