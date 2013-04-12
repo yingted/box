@@ -30,6 +30,7 @@ do
 	test_path="$(cat "$file/in")"
 	sudo rm -f rootfs/data/in
 	sudo ln "$data_dir$test_path" rootfs/data/in
+	sudo chmod o+r-w rootfs/data/in #safe, assuming 99 is not in the user or group
 	cat config "$data_dir${test_path%/*}/config" "$data_dir$(sed 's/\(.*\)\binput\b/\1config/' <<< "$test_path")" > rootfs/tmp/config 2> /dev/null
 	sudo chown 99:99 rootfs/tmp/config
 	sudo lxc-execute -n box -- "${curwrap[@]}" /build/drop 99 /build/run.sh > "$file/out"
