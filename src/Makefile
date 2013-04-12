@@ -1,4 +1,4 @@
-.PHONY: all clean
+.PHONY: all clean test
 CFLAGS+=-march=native -O3 -pipe -fstack-protector --param ssp-buffer-size=4 -D_FORTIFY_SOURCE=2
 export CFLAGS
 #strip again
@@ -53,3 +53,5 @@ ace/build/src-min:
 		import json,subprocess;\
 		print"ace.config.themes=",json.dumps([[label.lower(),subprocess.check_output(("sed","-n","/<optgroup label=\""+label+"\">/,/<\\/optgroup>/s:.*<option value=\"ace/theme/\\([^\"/]*\\)\"[^<>]*>.*:\\1:p","ace/kitchen-sink.html")).split()]for label in"Bright","Dark"],separators=(",",":"));\
 	' >> ../html/ace/ace.js
+test:urchin
+	bash urchin test
