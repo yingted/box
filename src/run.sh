@@ -51,6 +51,10 @@ case "${sol#*.}" in
         echo 'run=(java -client -Djava.security.manager -Djava.security.policy=/build/java.policy Solution)' > run_cmd;;
 	js)
 		echo 'run=(/usr/bin/js -e "delete load;delete read;delete run;delete snarf" solution.js)' > run_cmd;;
+        lua)
+		luac solution.lua
+		rm solution.lua
+		echo 'run=(lua /build/luasandbox.luac)' > run_cmd;;
 	py2)
 		#python2 -SOO -mpy_compile solution.py2
 		echo 'run=(python2 -SOO /build/pybox.py2o solution.py2)' > run_cmd;;

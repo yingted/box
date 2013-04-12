@@ -3,11 +3,11 @@ CFLAGS+=-march=native -O3 -pipe -fstack-protector --param ssp-buffer-size=4 -D_F
 export CFLAGS
 #strip again
 INSTALL=sudo install -o0
-all:drop score tprolog box.o pysandbox-root pybox.py2o pybox.py3o ../config ../html/ace
+all:drop score tprolog box.o pysandbox-root pybox.py2o pybox.py3o luasandbox.luac ../config ../html/ace
 	$(INSTALL) -sm555 drop score tprolog ../rootfs/build
 	objcopy --redefine-sym main=_start --redefine-sym _start=__start ../rootfs/usr/lib/crt1.o crt1.o
 	$(INSTALL) -m555 run.sh ../rootfs/build
-	$(INSTALL) -m444 OpenTuring/turing/package/turing.exe crt1.o box.o pybox.py{2,3}o ../rootfs/build
+	$(INSTALL) -m444 OpenTuring/turing/package/turing.exe crt1.o box.o pybox.py{2,3}o luasandbox.luac ../rootfs/build
 	sudo cp -dr --no-preserve=ownership OpenTuring/turing/package/support pysandbox-root/lib/python2.7/site-packages/{sandbox,_sandbox.so} pysandbox-root/lib/python3.*/site-packages/_sandbox.cpython* ../rootfs/build/
 	sudo chmod -R 444 ../rootfs/build/support
 	sudo find ../rootfs/build/support -type d -exec chmod 555 {} +
@@ -35,6 +35,8 @@ pybox.py2o:pybox.py
 	mv pybox.py{,2}o
 pybox.py3o:pybox.py
 	python3.2 -SOOc 'import py_compile;py_compile.compile("pybox.py","pybox.py3o")'
+luasandbox.luac:luasandbox.lua
+	luac -o luasandbox.luac luasandbox.lua
 ../config:
 	install config.sample ../config
 ../rootfs/build/wineprefix:
@@ -48,8 +50,8 @@ ace/build/src-min:
 ../html/ace:ace/build/src-min
 	rm -rf ../html/ace
 	mkdir -p ../html/ace
-	cp ace/{demo/kitchen-sink/require,build/src-min/{ace,keybinding-{emacs,vim},worker-javascript,theme-*,mode-{c_cpp,java,javascript,python,turing}}}.js ../html/ace/
-	python -SOOc '\
+	cp ace/{demo/kitchen-sink/require,build/src-min/{ace,keybinding-{emacs,vim},worker-javascript,theme-*,mode-{c_cpp,java,javascript,python,lua,turing}}}.js ../html/ace/
+	python2 -SOOc '\
 		import json,subprocess;\
 		print"ace.config.themes=",json.dumps([[label.lower(),subprocess.check_output(("sed","-n","/<optgroup label=\""+label+"\">/,/<\\/optgroup>/s:.*<option value=\"ace/theme/\\([^\"/]*\\)\"[^<>]*>.*:\\1:p","ace/kitchen-sink.html")).split()]for label in"Bright","Dark"],separators=(",",":"));\
 	' >> ../html/ace/ace.js
