@@ -526,7 +526,7 @@ int main(int argc,char*argv[]){
 						break;
 					case"java":
 						for(var ann=[],re=/^solution\.java:(\d+): (\w+: )?((?:.*\n){0,3}).*\n(\s*)\^/mg,m;m=re.exec(x);)
-							ann.push({type:gcchash[m[2]]||"error",row:+m[1],column:+m[4].length+1,text:m[3]});
+							ann.push({type:gcchash[m[2]]||"error",row:m[1]-1,column:m[4].length,text:m[3]});
 						break;
 				}
 				if(rc!==undefined)
