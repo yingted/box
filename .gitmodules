@@ -4,3 +4,6 @@
 [submodule "src/pysandbox"]
 	path = src/pysandbox
 	url = git://github.com/haypo/pysandbox.git
+[submodule "src/ace"]
+	path = src/ace
+	url = git://github.com/ajaxorg/ace.git

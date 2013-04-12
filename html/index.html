@@ -311,7 +311,7 @@ int main(int argc,char*argv[]){
 			$("legend,#templates>*").contents().filter(function(){
 				return this.nodeType==3;//Node.TEXT_NODE
 			}).remove();
-			var editor=ace.edit("editor"),session=editor.getSession(),themes=[["bright",["chrome","clouds","crimson_editor","dawn","dreamweaver","eclipse","github","solarized_light","textmate","tomorrow"]],["dark",["clouds_midnight","cobalt","idle_fingers","kr_theme","merbivore","merbivore_soft","mono_industrial","monokai","pastel_on_dark","solarized_dark","tomorrow_night","tomorrow_night_blue","tomorrow_night_bright","tomorrow_night_eighties","twilight","vibrant_ink"]]],problem=$("#problem"),run=$("#run"),defconfig={wait_mins:1,file_blocks:1,wall_secs:2,cpu_secs:4,memory_kb:256*1024,vsize_kb:320*1024},out=$("#out"),sacrifice=$("<span>"),anns={},PlaceHolder=require("ace/placeholder").PlaceHolder,phs=[],rescroll,cache={},subs={};//TODO: defconfig
+			var editor=ace.edit("editor"),session=editor.getSession(),problem=$("#problem"),run=$("#run"),defconfig={wait_mins:1,file_blocks:1,wall_secs:2,cpu_secs:4,memory_kb:256*1024,vsize_kb:320*1024},out=$("#out"),sacrifice=$("<span>"),anns={},PlaceHolder=require("ace/placeholder").PlaceHolder,phs=[],rescroll,cache={},subs={};//TODO: defconfig
 			if($.browser.msie){
 				warn("msie: ymmv");
 				session.setValue(session.getValue().replace(/\r/g,""));
@@ -319,12 +319,21 @@ int main(int argc,char*argv[]){
 				$("legend>:nth-child(2)").addClass("nc2");
 				$.support.cors=true;//may not be needed
 			}
-			session.setMode("ace/mode/c_cpp");
-			function retryAnnotate(){
+			session.addEventListener("change",function(){
 				tryannotate();
-			}
-			session.addEventListener("change",retryAnnotate);
-			$("#lang").change(retryAnnotate);
+			});
+			$("#lang").change(function(){
+				session.setMode("ace/mode/"+{
+					cpp:"c_cpp",
+					cpp11:"c_cpp",
+					java:"java",
+					js:"javascript",
+					py2:"python",
+					py3:"python",
+					t:"turing",
+				}[$(this).val()]);
+				tryannotate();
+			}).change();
 			function tryannotate(ann){
 				if(!(ann=anns[session.getValue()+"\0"+$("#lang").val()]||ann))
 					return;
@@ -659,7 +668,7 @@ int main(int argc,char*argv[]){
 					});
 			}).change();
 			info("added ace bindings: ace ctrl-1→",link(loadcode,"load code from cookies"),"; ace ctrl-2→",link(custcmds.reannotateCode.exec,"re-annotate"),"; ace ctrl-3→",link(custcmds.resetAnnotateCache.exec,"reset annotations cache"));
-			$("#theme").append($(themes).map(function(i,e){return $("<optgroup>").attr("label",e[0]).append($(e[1]).map(function(i,e){return $("<option>").attr("value",e).text(e)[0]}))[0]}))
+			$("#theme").append($(ace.config.themes).map(function(i,e){return $("<optgroup>").attr("label",e[0]).append($(e[1]).map(function(i,e){return $("<option>").attr("value",e).text(e)[0]}))[0]}))
 				.change(function(e){editor.setTheme("ace/theme/"+e.target.value)}).val("textmate");
 			$.each("select-whole-line highlight-active-line show-invisibles display-indent-guides show-gutter show-print-margin highlight-selected-word h-scroll-bar-always-visible animated-scroll use-soft-tabs behaviours-enabled fade-fold-widgets".split(" "),function(i,e){
 				var f="set"+e.replace(/(?:-|^)([a-z])/g,function(_,e){
