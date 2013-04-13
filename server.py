@@ -46,12 +46,12 @@ conf={}
 @watch("config")
 def loadConfig():
 	global conf
-	newconf=readConf("config")
-	for k in set(conf.keys()+newconf.keys()):
-		if k not in conf or k not in newconf or newconf[k]!=conf[k]:
+	oldconf=conf
+	conf=readConf("config")
+	for k in set(oldconf.keys()+conf.keys()):
+		if k not in oldconf or k not in conf or oldconf[k]!=conf[k]:
 			for cb in onprefchange[k]:
 				cb()
-	conf=newconf
 @watch(conf["user_conf"])
 def loadUsers():
 	global users
