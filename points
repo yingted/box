@@ -1,4 +1,7 @@
-/increase/input-small.txt=30
-/increase/input-large.txt=70
-/wheel/input.txt=40
-/happy/input.txt=20
+/bracket/input-small.txt=10
+/bracket/input-large.txt=30
+/mindiff/input-small.txt=30
+/mindiff/input-large.txt=70
+/av/input-small.txt=20
+/av/input-medium.txt=30
+/av/input-large.txt=50
