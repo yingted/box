@@ -1,0 +1,1 @@
+pybox 'print(sum(map(int,__builtins__.get("raw_input",input)().split())))'
