@@ -1,0 +1,6 @@
+pybox(){
+	for n in 2 3
+	do
+		diff output <(PYTHONPATH=../../../rootfs/build python"$n" ../../pybox.py"$n"o < input <(echo "$@"))
+	done
+}
