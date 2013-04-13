@@ -9,6 +9,7 @@ from subprocess import Popen,PIPE
 from os import listdir
 from shlex import split
 from traceback import print_exc
+from collections import defaultdict
 import re
 CT_PLAIN=("Content-type","text/plain;charset=UTF-8")
 binputb=re.compile(r"\binput\b")
@@ -31,22 +32,34 @@ def update(path,cb,nodelay=False):
 def watch(path):
 	def fun(cb):
 		update(path,cb,True)
-		return True
+		return cb
 	return fun
+onprefchange=defaultdict(list)
+conf={}
 @watch("config")
 def loadConfig():
 	global conf
+	oldconf=conf
 	conf={}
 	for pref in split(open("config").read(),True):
 		m=pref.split("=",1)
 		if len(m)==2:
 			conf[m[0]]=m[1]
+	for k in set(oldconf.keys()+conf.keys()):
+		if k not in oldconf or k not in conf or oldconf[k]!=conf[k]:
+			for cb in onprefchange[k]:
+				cb()
 @watch(conf["data_dir"])
 def flistcb():
 	global flist
-	files=sorted([x[len(conf["data_dir"]):]for x in check_output(("find","-L",conf["data_dir"],"-type","f","-name","*input*","-perm","-4","-print0")).split("\0")if binputb.search(x)and not bdosb.search(x)],reverse=True)
+	allfiles=sorted([x[len(conf["data_dir"]):]for x in check_output(("find","-L",conf["data_dir"],"-type","f","-name","*input*","-perm","-4","-print0")).split("\0")if binputb.search(x)and not bdosb.search(x)],reverse=True)
+	fileset=set(allfiles)
+	files=[x for x in filter(bool,conf.get("problem_pref","").split(","))if x in fileset]
+	fileset=set(files)
+	files+=[x for x in allfiles if x not in fileset]
 	flist=("\n".join(files),sorted(set(map(problem,files))),{},files)
 	print"found %d files"%len(files)
+onprefchange["problem_pref"].append(flistcb)
 def read(path):
 	h=flist[2]
 	if path not in h:
