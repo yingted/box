@@ -39,16 +39,16 @@ conf={}
 @watch("config")
 def loadConfig():
 	global conf
-	newconf={}
+	oldconf=conf
+	conf={}
 	for pref in split(open("config").read(),True):
 		m=pref.split("=",1)
 		if len(m)==2:
-			newconf[m[0]]=m[1]
-	for k in set(conf.keys()+newconf.keys()):
-		if k not in conf or k not in newconf or newconf[k]!=conf[k]:
+			conf[m[0]]=m[1]
+	for k in set(oldconf.keys()+conf.keys()):
+		if k not in oldconf or k not in conf or oldconf[k]!=conf[k]:
 			for cb in onprefchange[k]:
 				cb()
-	conf=newconf
 @watch(conf["data_dir"])
 def flistcb():
 	global flist
