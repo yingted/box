@@ -46,7 +46,7 @@ luasandbox.luac:luasandbox.lua
 	cd ..; sudo chroot rootfs sh -c 'mknod -m 644 /dev/random c 1 8 2>/dev/null; mknod -m 644 /dev/urandom c 1 9 2>/dev/null; cd /tmp; HOME=/tmp WINEPREFIX=/build/wineprefix DISPLAY=$(DISPLAY) wine /build/turing.exe -run "$$(winepath -w /dev/null)"'
 	xhost -
 ace/build/src-min:
-	cd ace && ./Makefile.dryice.js --m normal
+	cd ace && npm install && ./Makefile.dryice.js --m normal
 ../html/ace:ace/build/src-min
 	rm -rf ../html/ace
 	mkdir -p ../html/ace
