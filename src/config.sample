@@ -14,3 +14,4 @@ ulimit_args=(-d1024 -f1 -i5 -m$[256*1024] -n11 -q0 -t1 -v$[320*1024] -x0)
 compile_ulimit_args=(-m$[256*1024] -t30 -v$[320*1024])
 taskset=
 wall_secs=1
+#problem_pref=/first/input-small.txt,/first/input-large.txt
