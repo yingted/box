@@ -1,5 +1,6 @@
 #*
 .*
+ark/*
 code/*
 code_bak/*
 rootfs
@@ -18,3 +19,4 @@ box.o
 *.tbc
 *.py{2,3}{c,o}
 *~
+users
