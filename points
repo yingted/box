@@ -1,7 +1,6 @@
-/bracket/input-small.txt=10
-/bracket/input-large.txt=30
-/mindiff/input-small.txt=30
-/mindiff/input-large.txt=70
-/av/input-small.txt=20
-/av/input-medium.txt=30
-/av/input-large.txt=50
+/monsterat/input-small.txt=15
+/monsterat/input-large.txt=25
+/maxdist/input-small.txt=30
+/maxdist/input-large.txt=50
+/enko/input-small.txt=40
+/enko/input-large.txt=60
