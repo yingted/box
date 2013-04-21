@@ -15,3 +15,4 @@ compile_ulimit_args=(-m$[256*1024] -t30 -v$[320*1024])
 taskset=
 wall_secs=1
 user_conf=users
+#problem_pref=/first/input-small.txt,/first/input-large.txt
