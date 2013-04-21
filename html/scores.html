@@ -29,7 +29,7 @@
 			.ok{
 				background-color:#ff0;
 			}
-			.dumb{
+			.bad{
 				color:#777;
 			}
 			.me{
@@ -127,7 +127,7 @@
 											cl+=
 												d[0]==d[1]?"good":
 												d[0]-d[1]==d[2]?"ok":
-												!+d[1]&&!+d[2]?"dumb":"other";
+												!+d[1]&&!+d[2]?"bad":"other";
 											tr.insertCell(-1)[tc]=c;
 											tr.insertCell(-1)[tc]=d[0];
 											tr.insertCell(-1)[tc]=d[1];
