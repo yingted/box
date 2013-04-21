@@ -8,6 +8,7 @@ exec 2>&1
 cd /tmp
 sol=(solution.*)
 (
+set -e
 ulimit "${compile_ulimit_args[@]}"
 case "${sol#*.}" in
 	cpp*)
@@ -25,7 +26,7 @@ case "${sol#*.}" in
 			g++ solution.cpp -c -O3 -Wall -Wunreachable-code -march=native -pipe
 		fi
 		if [ -x /usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0/collect2 ]; then
-			/usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0/collect2 --build-id --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -e __start -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o solution /build/crt1.o /usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0/../../../../lib/crti.o /usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0/crtbegin.o -L/usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0 -L/usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0/../../../../lib -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0/../../.. /build/box.o -L/build -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc -lseccomp /usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0/crtend.o /usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0/../../../../lib/crtn.o solution.o
+			PATH=/usr/bin /usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0/collect2 --build-id --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -e __start -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o solution /build/crt1.o /usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0/../../../../lib/crti.o /usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0/crtbegin.o -L/usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0 -L/usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0/../../../../lib -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0/../../.. /build/box.o -L/build -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc -lseccomp /usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0/crtend.o /usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0/../../../../lib/crtn.o solution.o
 		else
 			/usr/libexec/gcc/i686-redhat-linux/4.6.3/collect2 --build-id --no-add-needed --eh-frame-hdr -m elf_i386 -e __start --hash-style=gnu -dynamic-linker /lib/ld-linux.so.2 -o solution /build/crt1.o /usr/lib/gcc/i686-redhat-linux/4.6.3/../../../crti.o /usr/lib/gcc/i686-redhat-linux/4.6.3/crtbegin.o -L/usr/lib/gcc/i686-redhat-linux/4.6.3 -L/usr/lib/gcc/i686-redhat-linux/4.6.3/../../.. /build/box.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc -lseccomp /usr/lib/gcc/i686-redhat-linux/4.6.3/crtend.o /usr/lib/gcc/i686-redhat-linux/4.6.3/../../../crtn.o solution.o
 		fi

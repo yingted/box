@@ -1,13 +1,14 @@
 #!/usr/bin/python2 -SOO
 from datetime import datetime
 from subprocess import check_output
+import sys
 def read(path):
     data = ''
     with open(path) as f:
         data = f.read()
     return data
 score_sub_s=[]
-for x in check_output(("find","code","-mindepth","3","-name","solution.*","-type","f","-print0")).split("\0")[:-1]:
+for x in check_output(("find",sys.argv[1],"-mindepth","3","-name","solution.*","-type","f","-print0")).split("\0")[:-1]:
     try:
         score_sub_s.append((map(int,read(x[:x.rindex("/")]+"/score").split("\n")[-2].split(" ")),x.split("/")))
     except:

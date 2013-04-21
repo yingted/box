@@ -42,4 +42,7 @@ function run_sandbox(file)
     return pcall(f)
 end
 b,msg = run_sandbox('luac.out')
-if not b then io.stderr:write("error: " .. msg .. "\n") end
+if not b then
+    io.stderr:write("error: " .. msg .. "\n")
+    os.exit(1)
+end
