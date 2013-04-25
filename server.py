@@ -10,6 +10,7 @@ from os import listdir
 from shlex import split
 from traceback import print_exc
 from collections import defaultdict
+from time import sleep
 import re
 CT_PLAIN=("Content-type","text/plain;charset=UTF-8")
 binputb=re.compile(r"\binput\b")
@@ -20,6 +21,7 @@ def problem(x):
 	return slashall.sub("/problem.txt",x)
 def update(path,cb,nodelay=False):
 	nodelay=nodelay or call(("inotifywait","-qo/dev/null","-rt30",path)+stuff)==2
+	sleep(1e-3)#XXX fix lockup
 	try:
 		cb()
 	except:
