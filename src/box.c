@@ -31,6 +31,7 @@ int _start(int argc,char *argv[]){
 #else
 		add(mmap2,4,SCMP_A2(SCMP_CMP_EQ,PROT_READ|PROT_WRITE),SCMP_A3(SCMP_CMP_EQ,MAP_PRIVATE|MAP_ANONYMOUS),SCMP_A4(SCMP_CMP_EQ,-1),SCMP_A5(SCMP_CMP_EQ,(off_t)0))
 #endif
+        add(brk,0)
 		add(munmap,0)
 		add(time,0)
 		add(times,0)
