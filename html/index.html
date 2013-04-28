@@ -504,7 +504,7 @@
 					add("ws",2);
 					add("bad",4);
 					add("eof",3,"!");
-					info(sizes[0]+" line"+(sizes[0]==1?"":"s")+", "+(100*(sizes[0]?sizes[1]/sizes[0]:1)).toFixed(2)+"% correct"+(sizes[2]?", "+(100*sizes[2]/sizes[0]).toFixed(2)+"% whitespace error":"")+(sizes[3]?", no EOF":""),bar);
+					info(sizes[0]+" total"+", "+(100*(sizes[0]?sizes[1]/sizes[0]:1)).toFixed(2)+"% correct"+(sizes[2]?", "+(100*sizes[2]/sizes[0]).toFixed(2)+"% whitespace error":"")+(sizes[3]?", no EOF":""),bar);
 					dbg("run completed",x[x.length-3],$("#timef").clone().removeAttr("id"));
 					dbg("ran",link(url+"/solution."+lang,"this program"),file?"on "+file+",":"on the input referenced",link(url+"/in",file?"path here":"here"));
 				}else
