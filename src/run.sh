@@ -76,7 +76,7 @@ esac
 	if [ -n "$interactive" ]; then
 		mkfifo fifo
 		ulimit "${ulimit_args[@]}"
-		/data/judge "$test_path" <fifo 2>stdout | 'time' -o score -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" $taskset timeout "$wall_secs" "${run[@]}" >fifo 2>/dev/null
+		/data/judge "$test_path" <fifo 3>stdout | 'time' -o score -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" $taskset timeout "$wall_secs" "${run[@]}" >fifo 2>/dev/null
 		echo $?
 		rm -f fifo
 	else
