@@ -30,7 +30,6 @@ do
 		sudo install -o99 "$sln" rootfs/tmp
 		sln="${sln##*/}"
 		IFS=$'\t' eval curwrap=(${wrap[${sln#*.}]})
-		curwrap=(sh -c 'mknod -m 644 /dev/random c 1 8 2>/dev/null; mknod -m 644 /dev/urandom c 1 9 2>/dev/null; exec "$0" "$@"')
 		sudo rm -f rootfs/data/{in,judge} #just in case
 		sudo ln "$data_dir$test_path" rootfs/data/in
 		sudo chmod o+r-w rootfs/data/in #safe, assuming 99 is not in the user or group
