@@ -206,7 +206,7 @@
 				<select id="lang">
 					<option value="cpp">C++ (g++ 4.8.0)</option>
 					<option value="cpp11">C++11 (g++ 4.8.0 -std=gnu++11)</option>
-					<option value="java">Java (OpenJDK 1.7.0_17)</option>
+					<option value="java">Java (OpenJDK 1.7.0_21)</option>
 					<option value="js">JavaScript (JavaScript-C 1.8.5)</option>
 					<option value="lua">Lua 5.2.2</option>
 					<option value="py2">Python 2.7.4</option>
@@ -285,9 +285,10 @@
 				<a href="http://jquery.com/">jQuery</a>,
 				<a href="http://labjs.com/"><abbr title="Loading And Blocking JavaScript">LABjs</abbr></a>,
 				<a href="http://sourceforge.net/projects/libseccomp/">libseccomp</a>,
+				<a href="http://www.lua.org">Lua</a>5.2.2,
 				<a href="http://lxc.sourceforge.net/"><abbr title="Linux Containers">lxc</abbr></a>,
 				<a href="http://code.google.com/p/modwsgi/">mod_wsgi</a>,
-				<a href="http://icedtea.classpath.org/">OpenJDK</a> 1.7.0,
+				<a href="http://icedtea.classpath.org/">OpenJDK</a> 1.7.0_21,
 				<a href="https://github.com/Open-Turing-Project/OpenTuring">OpenTuring</a> 1.0,
 				<a href="https://github.com/haypo/pysandbox">pysandbox</a> 1.5,
 				<a href="http://www.python.org/">python</a> 2.7.4 and 3.2.3,
@@ -550,11 +551,11 @@
 				var file=$("#infile").val(),code=session.getValue(),lang=$("#lang").val(),sub=code+"\0"+lang+"\0"+file;
 				if(!file)
 					return;
-				if(subs.hasOwnProperty(sub)){
-					err("double-submission blocked; add a comment and try again if you meant to do this");
-					run.prop("disabled",false);
-					return;
-				}
+				//if(subs.hasOwnProperty(sub)){
+				//	err("double-submission blocked; add a comment and try again if you meant to do this");
+				//	run.prop("disabled",false);
+				//	return;
+				//}
 				subs[sub]=true;
 				$.post(fileUrl("/submit?lang="+lang+"&input="+encodeURIComponent(file)),code,function(x){
 					info("upload successful");
@@ -687,7 +688,6 @@
 			info("added ace bindings: ace ctrl-1→",link(loadcode,"load code from cookies"),"; ace ctrl-2→",link(custcmds.reannotateCode.exec,"re-annotate"),"; ace ctrl-3→",link(custcmds.resetAnnotateCache.exec,"reset annotations cache"));
 			$("#theme").append($(ace.config.themes).map(function(i,e){return $("<optgroup>").attr("label",e[0]).append($(e[1]).map(function(i,e){return $("<option>").attr("value",e).text(e)[0]}))[0]}))
 				.change(function(e){editor.setTheme("ace/theme/"+e.target.value)}).val("textmate");
-			session.setUseSoftTabs(false);
 			$.each("select-whole-line highlight-active-line show-invisibles display-indent-guides show-gutter show-print-margin highlight-selected-word h-scroll-bar-always-visible animated-scroll use-soft-tabs behaviours-enabled fade-fold-widgets".split(" "),function(i,e){
 				var f="set"+e.replace(/(?:-|^)([a-z])/g,function(_,e){
 					return e.toUpperCase();
