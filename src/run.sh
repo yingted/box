@@ -49,7 +49,7 @@ case "${sol#*.}" in
 	java)
 		javac -Xlint -O solution.java
 		rm solution.java
-		echo 'run=(java -client -Djava.security.manager -Djava.security.policy=/build/java.policy Solution)' > run_cmd;;
+		echo 'run=(java -client -Djava.security.manager -Djava.security.policy=/build/java.policy solution)' > run_cmd;;
 	js)
 		echo 'run=(/usr/bin/js -e "delete load;delete read;delete run;delete snarf" solution.js)' > run_cmd;;
 	lua)

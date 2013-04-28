@@ -9,6 +9,7 @@ server.pyc
 config
 config.lxc
 devs.sh
+init.sh
 fstab
 rootfs.*
 OpenTuring
