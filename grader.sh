@@ -33,7 +33,7 @@ do
 		sudo rm -f rootfs/data/{in,judge} #just in case
 		sudo ln "$data_dir$test_path" rootfs/data/in
 		sudo chmod o+r-w rootfs/data/in #safe, assuming 99 is not in the user or group
-		[ "$interactive" = "y" ] && sudo ln "$data_dir${test_path%/*}/$judge_file" rootfs/data/judge && sudo chmod o+rx-w rootfs/data/judge
+		[ -n "$interactive" ] && sudo ln "$data_dir${test_path%/*}/$judge_file" rootfs/data/judge && sudo chmod o+rx-w rootfs/data/judge
 		sudo chown 99:99 rootfs/tmp/config
 		sudo lxc-execute -n box -- "${curwrap[@]}" /build/drop 99 /build/run.sh > "$file/out"
 		#sudo chroot rootfs "${curwrap[@]}" /build/drop 99 /build/run.sh "$(cat "$file/in")" > "$file/out"
