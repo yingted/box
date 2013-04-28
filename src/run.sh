@@ -49,7 +49,7 @@ case "${sol#*.}" in
 	java)
 		javac -Xlint -O solution.java
 		rm solution.java
-        echo 'run=(java -client -Djava.security.manager -Djava.security.policy=/build/java.policy Solution)' > run_cmd;;
+	echo 'run=(java -client -Djava.security.manager -Djava.security.policy=/build/java.policy Solution)' > run_cmd;;
 	js)
 		echo 'run=(/usr/bin/js -e "delete load;delete read;delete run;delete snarf" solution.js)' > run_cmd;;
 	py2)
@@ -65,17 +65,17 @@ esac
 	set +e
 	. ./run_cmd
 	rm run_cmd
-        if [ -x /data/judge ]; then
-            mkfifo fifo
-            ulimit "${ulimit_args[@]}"
-            /data/judge "$test_path" <fifo 2>stdout | 'time' -o score -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" $taskset timeout "$wall_secs" "${run[@]}" >fifo 2>/dev/null
-            echo $?
-            rm -f fifo
-        else
-            ulimit "${ulimit_args[@]}"
-	    'time' -o score -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" $taskset timeout "$wall_secs" "${run[@]}" <"$test_path" >stdout 2>/dev/null
-	    echo $?
-        fi
+	if [ -x /data/judge ]; then
+		mkfifo fifo
+		ulimit "${ulimit_args[@]}"
+		/data/judge "$test_path" <fifo 2>stdout | 'time' -o score -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" $taskset timeout "$wall_secs" "${run[@]}" >fifo 2>/dev/null
+		echo $?
+		rm -f fifo
+	else
+		ulimit "${ulimit_args[@]}"
+		'time' -o score -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" $taskset timeout "$wall_secs" "${run[@]}" <"$test_path" >stdout
+		echo $?
+	fi
 )
 #/build/score "/data$(sed 's/\(.*\)\binput\b/\1output/' <<< "$test_path")" stdout >>score
 #rm stdout
