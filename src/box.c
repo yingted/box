@@ -15,9 +15,9 @@ int _start(int argc,char *argv[]){
 	scmp_filter_ctx ctx;
 /* set appropriate functions for 32bit/64bit */
 #if defined(__LP64__) || defined(_LP64)
-    #define _FSTAT fstat
+	#define _FSTAT fstat
 #else
-    #define _FSTAT fstat64
+	#define _FSTAT fstat64
 #endif
 	if((ctx=seccomp_init(SCMP_ACT_KILL))
 		add(read,1,SCMP_A0(SCMP_CMP_EQ,STDIN_FILENO))
