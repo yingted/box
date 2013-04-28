@@ -73,9 +73,19 @@ esac
 	set +e
 	. ./run_cmd
 	rm run_cmd
-	ulimit "${ulimit_args[@]}"
-	'time' -o score -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" $taskset timeout "$wall_secs" "${run[@]}" <"$test_path" >stdout
-	echo $?
+        if [ -x /data/judge ]; then
+            mkfifo fifo
+            echo "/data/judge $test_path <fifo 2>stdout | ${run[@]} >fifo 2>/dev/null" > judge_cmd
+            chmod +x judge_cmd
+            ulimit "${ulimit_args[@]}"
+            'time' -o score -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" $taskset timeout "$wall_secs" ./judge_cmd
+            echo $?
+            rm -f fifo judge_cmd
+        else
+            ulimit "${ulimit_args[@]}"
+	    'time' -o score -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" $taskset timeout "$wall_secs" "${run[@]}" <"$test_path" >stdout
+	    echo $?
+        fi
 )
 #/build/score "/data$(sed 's/\(.*\)\binput\b/\1output/' <<< "$test_path")" stdout >>score
 #rm stdout
