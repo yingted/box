@@ -67,12 +67,10 @@ esac
 	rm run_cmd
         if [ -x /data/judge ]; then
             mkfifo fifo
-            echo "/data/judge $test_path <fifo 2>stdout | ${run[@]} >fifo 2>/dev/null" > judge_cmd
-            chmod +x judge_cmd
             ulimit "${ulimit_args[@]}"
-            'time' -o score -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" $taskset timeout "$wall_secs" ./judge_cmd
+            /data/judge "$test_path" <fifo 2>stdout | 'time' -o score -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" $taskset timeout "$wall_secs" "${run[@]}" >fifo 2>/dev/null
             echo $?
-            rm -f fifo judge_cmd
+            rm -f fifo
         else
             ulimit "${ulimit_args[@]}"
 	    'time' -o score -f "wall=%e sys=%S usr=%U cpu=%P mmax=%M rssavg=%t mavg=%t pvt=%D ss=%p ts=%X maj=%F min=%R swp=%W iow=%w in=%I out=%O" $taskset timeout "$wall_secs" "${run[@]}" <"$test_path" >stdout 2>/dev/null
