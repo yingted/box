@@ -1,12 +1,4 @@
 #!/bin/sh
-#load other configfiles
-if [ -n "$1" ]
-then
-	conf="$data_dir${1%/*}/config"
-	[ -e "$conf" ] && . "$conf"
-	tconf="$data_dir$(sed 's/\(.*\)\binput\b/\1config/' <<< "$1")"
-	[ -e "$tconf" ] && . "$tconf"
-fi
 #this file belongs at config (i.e. box/config)
 data_dir=data #no trailing slash, relative/absolute path
 wait_mins=1 #between submissions
@@ -20,3 +12,11 @@ score_cmd=rootfs/build/score
 judge_file=judge
 #score_cmd=(/bin/sh -c 'cat "$2"') for interactive
 #problem_pref=/first/input-small.txt,/first/input-large.txt
+#load other configfiles
+if [ -n "$1" ]
+then
+	conf="$data_dir${1%/*}/config"
+	[ -e "$conf" ] && . "$conf"
+	tconf="$data_dir$(sed 's/\(.*\)\binput\b/\1config/' <<< "$1")"
+	[ -e "$tconf" ] && . "$tconf"
+fi
