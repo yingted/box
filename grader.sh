@@ -23,7 +23,7 @@ do
 	echo testing "$file"
 	sudo find rootfs/tmp -mindepth 1 -delete
 	test_path="$(cat "$file/in")"
-	cat config "$data_dir${test_path%/*}/config" "$data_dir$(sed 's/\(.*\)\binput\b/\1config/' <<< "$test_path")" > rootfs/tmp/config 2> /dev/null
+	. ./config "$test_path" > rootfs/tmp/config
 	(
 		. rootfs/tmp/config
 		sln=("$file/solution."*)
