@@ -16,6 +16,7 @@ allow({
 	"bisect":("bisect","bisect_left","bisect_right","insort","insort_left","insort_right"),
 	"heapq":("heapify","heappop","heappush","heappushpop","heapreplace","merge","nlargest","nsmallest"),
 	"operator":"itemgetter",
+	"fractions":("Fraction","gcd")
 })
 conf.recursion_limit=sys.getrecursionlimit()
 sys.argv=sys.argv[1:]
