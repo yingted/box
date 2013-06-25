@@ -1,0 +1,174 @@
+0
+0
+0
+1
+level -14 point 6
+1
+level -3 point 66
+1
+level -99 point 15
+3
+level -28 point 9
+level -220 point 9
+level -412 point 9
+1
+level -3 point 1
+1
+level -7 point 19
+1
+level -1 point 1
+2
+level -17 point 63
+level -52 point 63
+0
+1
+level -1 point 6
+1
+level -2 point 56
+0
+0
+1
+level -67 point 13
+9
+level -4 point 8
+level -5 point 8
+level -7 point 30
+level -10 point 33
+level -12 point 30
+level -13 point 15
+level -15 point 25
+level -17 point 29
+level -17 point 32
+1
+level -4 point 31
+1
+level -51 point 51
+0
+2
+level -4 point 29
+level -83 point 29
+1
+level -5 point 30
+0
+1
+level -11 point 47
+1
+level -42 point 34
+2
+level -25 point 12
+level -52 point 12
+0
+0
+1
+level -16 point 9
+0
+1
+level -38 point 26
+1
+level -82 point 2
+0
+0
+0
+1
+level -1 point 7
+0
+0
+0
+3
+level -4 point 6
+level -20 point 6
+level -36 point 6
+0
+0
+1
+level -29 point 4
+1
+level -29 point 1
+0
+2
+level -46 point 43
+level -233 point 43
+3
+level -8 point 35
+level -172 point 35
+level -336 point 35
+1
+level -3 point 4
+0
+0
+0
+1
+level -10 point 54
+1
+level -54 point 5
+0
+1
+level -100 point 1
+0
+1
+level -16 point 8
+0
+1
+level -71 point 7
+0
+1
+level -18 point 3
+0
+2
+level -57 point 40
+level -249 point 40
+0
+0
+1
+level -60 point 74
+1
+level -9 point 26
+0
+0
+0
+0
+1
+level -53 point 12
+1
+level -5 point 57
+0
+1
+level -10 point 11
+1
+level -133 point 8
+0
+0
+0
+0
+0
+1
+level -2 point 23
+0
+1
+level -1 point 8
+0
+1
+level -5 point 12
+0
+0
+2
+level -20 point 3
+level -173 point 3
+0
+1
+level -15 point 59
+3
+level -1 point 17
+level -184 point 17
+level -367 point 17
+0
+1
+level -39 point 1
+2
+level -36 point 7
+level -180 point 7
+1
+level -123 point 24
+0
+0
+0

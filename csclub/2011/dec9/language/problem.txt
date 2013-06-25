@@ -1,0 +1,25 @@
+You have found a few programs written in a strange programming language. It requires a program to run it. Write a program that interprets the language.
+Input:
+N
+{N programs, one line each}
+Output:
+{whatever the programs output, plus a newline after each program's output}
+Language specification:
+This programming language only uses hexadecimal characters (0-9 and a-f). All other characters are comments. The program is made of a series of instructions. Each instruction is a hexadecimal character, followed by a number of hexadecimal characters which are not considered instructions. The address is index: in "xyz", y has address 1 and x has address 0. The program terminates when the address of the instruction moves out of the program. You may assume the program is correct and will never encounter any errors. The program might be more than 255 characters, so be sure to use your language's features to read in long lines.
+The language features a stack. Stack addressing starts from the top (top is 0, second from top is 1). All values are 4-bit: 7+12=19 normally, but here it will be 3, since the 5th bit (16) is discarded.
+Instructions:
+	0x: push x on to the stack
+	1: pop a value from the stack
+	2xy: execute from xy-128 after the next instruction where xy is a hexadecimal number (long, with 8-bits) if the stack top is non-zero and pop the stack
+	3: duplicate the top value of the stack
+	4: replace top 2 values on the stack with their sum
+	5: replace top 2 values on the stack with their product
+	6: replace top 2 values on the stack a, b with the two's complement of bitwise a and b
+	7: output the ASCII character formed by combining the top two stack values in order (second from top, top) and pop the top 2 values
+	8x: swap stack values at 0 and x
+	9: replace top 2 values on the stack second, top with 1 if second>top, otherwise 0
+	a: replace top 2 values on the stack with their quotient (rounded down)
+	b: push 0 onto the stack if it is currently empty (i.e. before execution), 1 otherwise
+	c: pop off long relative address (top) and value (second from top) and write the value to the address (in the code), so if the stack is [...xyz], the code at (next instruction address)-128+xy will be set to z
+	d: push the code at long relative address xy on to the stack
+	e,f: these two instructions are left blank because you may need to use them as "breakpoint/print" and "assert" instructions

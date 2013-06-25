@@ -1,0 +1,39 @@
+You wake up in a 2D world chained to a large box and you discover you are the test subject of an experiment. You must get from point A to point B in a M row by N column room.
+To accomplish this, you will use a portal device and a map of the room. The portal device can create a portal on any empty spot directly north, south, east, or west of you.
+However, it must either hit an obstacle (#) or the wall in the next block. There is another catch: you must fire portals of two alternating types.
+The portal type at point A must be different from the type at point B. When you fire a portal, any portals of the same type go away and anything in the same place as a portal of a different type will move to the new portal.
+Write a program to print out the minimum number of pairs of portals needed to move from point A to B. Print out 0 if it's not possible.
+The first line of input will be M and N
+The next M lines will have N letters (. means empty, # means obstacle, A and B mean points A and B).
+This will repeat until M is 0.
+Don't worry about the running time; just try to get it to work.
+Sample input:
+5 6
+#.....
+...#..
+..#A..
+#.#...
+.B..#.
+0 0
+Sample output:
+3
+Explanation:
+Pairs:
+The first portal is always at A (because that's the start).
+#.....
+...#..
+..#1.2
+#.#...
+.x..#.
+You have to go south first to get the second portal type to the upper-right.
+#....2
+...#..
+..#...
+#.#...
+.x..#1
+Move the type 2 portal to the goal.
+#1....
+...#..
+..#...
+#.#...
+.2..#.

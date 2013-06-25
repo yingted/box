@@ -1,0 +1,3 @@
+wait_mins=10
+wall_secs=80
+cpu_secs=60

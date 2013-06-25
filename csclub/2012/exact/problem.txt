@@ -1,0 +1,27 @@
+You are planning to steal M works of art from a 2-dimensional museum. Part of your plan involves opening a gap in the wall to take out the art. You need to know exactly how big this hole needs to be.
+Fortunately, you have a list of lists of coordinates of all the artwork you want (all non-negative integers).
+Output the exact widths of the artwork in ascending order, with rationalized denominators.
+In order to find the coordinates, you recorded some points along each polygon recording your starting point twice. While you walked around, you made sure that if two points were part of the artwork, so was their midpoint.
+You may assume the works of art all have at least two points (plus a third repeated point) and a point is repeated iff it is the starting point, in which case it is repeated exactly once.
+Input:
+N
+{N points}
+Output:
+{M widths, each on a separate line}
+Sample input:
+9
+3 0
+0 3
+0 0
+3 0
+0 0
+0 2
+2 2
+2 0
+0 0
+Sample output:
+2
+3sqrt2/2
+Explanation:
+The triangle has a minimum width of 3sqrt(2)/2, while the square has a minimum width of 2.
+Since 3sqrt2/2 is around 2.1, it comes after 2.

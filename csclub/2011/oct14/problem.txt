@@ -1,0 +1,18 @@
+You are given an array of N integers. Your goal is to find the length L of the longest subarray with the minimum and maximum elements differing by at most D.
+Input:
+N D
+{N integers}
+(repeats until N=0)
+Output:
+(for each test case)
+L
+Sample input:
+5 2
+1
+2
+3
+4
+1
+Sample output:
+3
+Explanation: [1,2,3],4,1 has difference 2 and length 3. There is another subarray, 1,[2,3,4],1, and it also has length 3.

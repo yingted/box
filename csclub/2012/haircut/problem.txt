@@ -1,0 +1,20 @@
+Hairy Harry gets a haircut. He has infinitely many hairs on an infinite lattice, one per point.
+Given the coordinates of the region, how many hairs does he cut? Border hairs are cut based on the angle (i.e. a right angle is a quarter of a hair).
+Inputs are given like in the problem graphics.
+Assume hairs are infinitely thin cylinders of unit height, and amount of hair cut is by mass.
+The areas are less than 2^62.
+N, the number of points, is positive.
+Input:
+N
+{N lines of x y}
+Output:
+hairs (single number on a single line)
+Sample input:
+3
+0 0
+0 1
+1 0
+Sample output:
+0.5
+Explanation:
+90/360+45/360+45/360=0.5

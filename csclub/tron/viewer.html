@@ -1,0 +1,339 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>log viewer</title>
+		<script src="http://cdn.jquerytools.org/1.2.7/full/jquery.tools.min.js"></script>
+		<style>
+			.cell{
+				position:absolute;
+				background-color:#fff;
+				border:1px solid #000;
+				width:7px;
+				height:7px;
+			}
+			#controls{
+				text-align:center;
+				width:100%;
+				cursor:default;
+				font-size:35px;
+				-webkit-touch-callout: none;
+				-webkit-user-select: none;
+				-khtml-user-select: none;
+				-moz-user-select: none;
+				-ms-user-select: none;
+				user-select: none;
+			}
+			#controls.ready span{
+				cursor:pointer;
+			}
+			#controls.ready span.active{
+				background-color:#ffc;
+				margin:-3px;
+				border:3px inset;
+			}
+			#controls.ready span:hover{
+				background-color:#ff0;
+			}
+			#links{
+				float:left;
+			}
+			#map{/*hashmap?*/
+				position:relative;
+				width:401px;
+				height:393px;
+			}
+			#msg{
+				max-height:3em;
+			}
+			#player{
+				float:left;
+				width:401px;
+			}
+			.slider{
+				background-color:#777;
+				height:10px;
+				position:relative;
+				cursor:pointer;
+				border:1px solid #333;
+				margin:10px 0;
+				width:100%;
+				margin-left:-1px;
+			}
+			.progress{
+				height:10px;
+				background-color:#C5FF00;
+			}
+			.handle{
+				background-color:#fff;
+				height:28px;
+				width:28px;
+				top:-12px;
+				position:absolute;
+				display:block;
+				margin-top:2px;
+				margin-left:-1px;
+				border:1px solid #000;
+				cursor:move;
+			}
+			.range{
+				float:right;
+				margin-top:5px;
+				font-size:20px;
+				text-align:center;
+				width:3em;
+			}
+			#map .wall{
+				background-color:#777;
+			}
+			#map .player0{
+				background-color:#33f;
+			}
+			.player0.head{
+				border-color:#99f;
+			}
+			#msg .player0{
+				color:#33f;
+			}
+			#map .player1{
+				background-color:#f83;
+			}
+			#msg .player1{
+				color:#f83;
+			}
+			.player1.head{
+				border-color:#fc9;
+			}
+			#map .player0.player1{
+				background-color:#c5c;
+			}
+			.head{
+				border-width:2px;
+				border-style:solid;
+				z-index:1;
+				-webkit-border-radius:2px;
+				-moz-border-radius:2px;
+				border-radius:2px;
+				margin:-1px;
+			}
+			.anon{
+				font-style:italic;
+			}
+		</style>
+		<script>
+		//XXX https://closure-compiler.appspot.com/code/jscac4dc7dd763e16ac9fbdd361f7993506/default.js
+			(function(){
+				var logRe=/^tron-(\d+)-(\d+)\.json$/,pagepath=location.pathname.split("/").slice(1,-1),index=null,lastcb=null,ready=false,$origFrame=null,preReset=new Function,delay,delta=null,msgs=null;
+				function reset(){
+					preReset();
+					if($origFrame===null)
+						$origFrame=($frame=$("#frame")).clone().attr("disabled",false);
+					else{
+						$("#frame").replaceWith($frame=$origFrame.clone());
+						$frame.prev(".slider").remove();
+					}
+					var $frame=$frame.rangeinput({progress:true}),slider=$frame.data("rangeinput"),intv=null,$active=null,dt=0;
+					function prev(){
+						slider.step(-1);
+					}
+					function pause(){
+						if(intv===null)
+							return;
+						clearInterval(intv);
+						$active.removeClass("active");
+						$active=intv=null;
+						dt=0;
+					}
+					function next(){
+						slider.step(1);
+					}
+					$.each({
+						start:function(){
+							slider.setValue(+$frame.attr("min"));
+						},
+						rewind:function(){
+							if(dt===-1){
+								pause();
+								return;
+							}
+							pause();
+							intv=setInterval(prev,delay);
+							$active=$(this).addClass("active");
+							dt=-1;
+						},
+						prev:prev,
+						pause:pause,
+						next:next,
+						play:function(){
+							if(dt===1){
+								pause();
+								return;
+							}
+							pause();
+							intv=setInterval(next,delay);
+							$active=$(this).addClass("active");
+							dt=1;
+						},
+						end:function(){
+							slider.setValue(+$frame.attr("max"));
+						},
+					},function(id,cb){
+						$("#"+id).unbind("click").click(function(){
+							if(ready)
+								return cb.apply(this,arguments);
+						});
+					});
+					$("#frame").attr("disabled",true).data("rangeinput").setValue(0);
+					var old=-1;
+					$frame.bind("onSlide change",function(e){
+						setTimeout(function(){
+							if(!ready)
+								return;
+							var cur=slider.getValue();
+							if(old===cur)
+								return;
+							$("#msg").empty().append(msgs[cur]||"");
+							for(var i=0;i<2;++i){
+								if(old<cur)
+									for(var di=delta[i],j=old+1;j<=cur;++j)
+										full[di[j]].addClass("player"+i);
+								else
+									for(var di=delta[i],j=old;j>cur;--j)
+										full[di[j]].removeClass("player"+i);
+								if(old>=0)
+									full[di[old]].removeClass("head");
+								full[di[cur]].addClass("head");
+							}
+							old=cur;
+						},0);
+					});
+					preReset=pause;
+				}
+				function cls(){
+					reset();
+					var $map=$("#map");
+					for(var a=["wall","player0","player1","head"],i=0;i<a.length;++i)
+						$map.find("."+a[i]).removeClass(a[i]);
+					$("#msg").text("");
+				}
+				function fetch(){
+					var $links=$("#links");
+					if(!index||!$links)
+						return;
+					$links.append($(index).find("a").map(function(i,e){
+						var path=e.pathname.split("/").slice(1);
+						if(path.length!==pagepath.length+1)
+							return null;
+						for(var i=0;i<pagepath.length;++i)
+							if(path[i]!==pagepath[i])
+								return null;
+						var m=path[path.length-1].match(logRe);
+						if(!m)
+							return null;
+						return[$("<a>").attr("href",m[0]).text(m[1]+" "+new Date(m[2]/1000)).click(function(e){
+							e.preventDefault();
+							ready=false;
+							$("#controls").removeClass("ready");
+							lastcb=function cb(o){
+								if(lastcb!=cb)
+									return;
+								if(!o||o.users.length<2||!o.log.length){
+									cls();
+									$("#msg").text("invalid log");
+									return;
+								}
+								ready=true;
+								$("#controls").addClass("ready");
+								$origFrame.attr("max",o.len);
+								msgs=[];
+								cls();
+								var $frame=$("#frame").attr("disabled",false);
+								function user(id){
+									var name=o.users[id][0],$span=$("<span class='player"+id+"'>");
+									return name===null?$span.addClass("anon").text("guest"):$span.text(name);
+								}
+								msgs[0]=user(0).add(document.createTextNode(" vs ")).add(user(1));
+								delay=100;
+								if(o.delay)
+									delay=Math.round(o.delay*1000);
+								else
+									msgs[0].add(document.createTextNode(" (no timeout)"));
+								for(var a=o.map,i=0,j=0;i<a.length;++i){
+									j+=a[i];
+									if(++i<a.length)
+										for(var k=a[i];k--;++j)
+											full[j].addClass("wall");
+								}
+								var pos=[[],[]];
+								for(var grid=[];grid.length<49;grid.push(false));
+								for(var grid=[grid];grid.length<50;grid.push(grid[0].slice(0)));
+								for(var i=0;i<2;++i)
+									for(var a=o.log[i],j=0;j<a.length;++j)
+										pos[i][a[j][0]]=a[j].slice(1);
+								for(var j=1;j<=o.len;++j){
+									var count={};
+									for(var i=0;i<2;++i){
+										var prev=pos[i][j-2],cur=pos[i][j-1];
+										grid[cur[0]][cur[1]]=true;
+										if(pos[i][j])
+											var x=pos[i][j][0],y=pos[i][j][1];
+										else
+											var x=cur[0]*2-prev[0],y=cur[1]*2-prev[1];
+										if(0<=x&&x<50&&0<=y&&y<49&&!grid[x][y]){
+											var next=[x,y];
+											count[next]=(count[next]||0)+1;
+											pos[i][j]=next;
+										}else
+											pos[i][j]=null;
+									}
+								}
+								delta=[[],[]];
+								for(var i=0;i<2;++i)
+									for(var di=delta[i],posi=pos[i],j=0;j<=o.len;++j)
+										di[j]=posi[j]?posi[j][0]*49+posi[j][1]:-1;
+								msgs[o.len]=o.winner===null?"tie":user(o.winner).add(document.createTextNode(" wins"));
+								$frame.trigger("onSlide");
+							};
+							$.getJSON(m[0],lastcb);
+						})[0],$("<br>")[0]];
+					}));
+					index=null;
+				}
+				$.ajax(".").done(function(d){
+					index=d;
+					fetch();
+				})
+				var full=[],df=document.createDocumentFragment();
+				for(var i=49;i>=0;--i)
+					for(var j=0;j<49;++j){
+						var cell=$("<div>").addClass("cell").css({left:i*8,top:j*8});
+						full.push(cell);
+						df.appendChild(cell[0]);
+					}
+				full[-1]=$();
+				$(function(){
+					$("#map").append(df);
+					reset();
+					fetch();
+				});
+			})();
+		</script>
+	</head>
+	<body>
+		<div id="player">
+			<div id="map"></div>
+			<input id="frame" disabled="disabled" type="range" min="0" max="1225" value="1" />
+			<div id="controls">
+				<span id="start">&#9198;</span>
+				<span id="rewind">&#9194;</span>
+				<span id="prev">&#9205;</span>
+				<span id="pause">&#9208;</span>
+				<span id="next">&#9204;</span>
+				<span id="play">&#9193;</span>
+				<span id="end">&#9197;</span>
+			</div>
+			<div id="msg">click a log</div>
+		</div>
+		<div id="links"></div>
+	</body>
+</html><!-- vim:set ts=4 sw=4 fdm=indent:-->

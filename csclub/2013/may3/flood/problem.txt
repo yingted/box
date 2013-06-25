@@ -1,0 +1,34 @@
+A flood has filled your R>0 rows by C>0 columns home!
+The insurance company wants blueprints, which are blue and white.
+Unfortunately, your blueprint is wrong, since it depicts your house.
+In order to make it show the flooded state, you use the flood-fill tool.
+The end result can be an entirely blue or entirely white blueprint.
+You want to know M, the minimum number of steps if you can fill from any pixels.
+You heard that one way to solve this problem is to try filling solely from each pixel.
+Then, the answer is the minimum number of steps you took.
+Input:
+R C
+{R rows of C columns each containing 'b' or 'w'}
+{repeats until R=C=0}
+Output:
+{1 line per test case containing M, the minimum number of steps}
+Sample input:
+2 2
+bw
+wb
+5 3
+bbw
+wwb
+bbb
+www
+bbb
+0 0
+Sample output:
+2
+2
+Explanation:
+Start with the top-right white pixel.
+Start with the block of 4 blue pixels.
+Time:
+R,C≤15 for small
+R,C≤50 for large (extra credit, worth half of small)

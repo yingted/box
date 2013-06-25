@@ -1,0 +1,29 @@
+Your class has decided to assign its N students N jobs. To do this, the teacher uses a grid with M rows and N columns to randomize the assignment of the students.
+The teacher puts the students 1 to N on the top and the jobs 1 to N on the bottom. Then, the students are allowed to draw lines in the columns. No two lines can be horizontally adjacent.
+To find the pairings, the teacher follows the line from each student down to a job, following a horizontal line whenever possible.
+You want to make one student 0<S<=N have a specific job 0<J<=N. Output the minimum number of lines you need to add, or -1 if its not possible.
+Input:
+M N S J
+{M rows of 2*N-1 characters}
+{repeats until M=0}
+Sample input:
+7 6 3 5
+|-| | |-| |
+| |-| | |-|
+| | |-| | |
+| |-| | |-|
+| | | |-| |
+|-| |-| | |
+| |-| | |-|
+7 6 3 3
+|-| | |-| |
+| |-| | |-|
+| | |-| | |
+| |-| | |-|
+| | | |-| |
+|-| |-| | |
+| |-| | |-|
+0 0 0 0
+Sample output:
+-1
+1

@@ -1,0 +1,28 @@
+27
+Prime minister: $2 bn cut includes "defense spending reductions of 20%"
+!@#$%^&*()_+-=`~[]\{}|;':",./<>?
+'"`
+__builtins__
+_____
+_
+    
+_prefix
+suffix_
+xXDragonSlayerXx
+John Smith <john.smith@example.com>
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="client-nojs">
+<head>
+<title>Wikipedia, the free encyclopedia</title>
+<meta charset="UTF-8" />
+<meta name="generator" content="MediaWiki 1.22wmf1" />
+<link rel="alternate" type="application/atom+xml" title="Wikipedia picture of the day feed" href="/w/api.php?action=featuredfeed&amp;feed=potd&amp;feedformat=atom" />
+<link rel="alternate" type="application/atom+xml" title="Wikipedia featured articles feed" href="/w/api.php?action=featuredfeed&amp;feed=featured&amp;feedformat=atom" />
+<link rel="alternate" type="application/atom+xml" title="Wikipedia &quot;On this day...&quot; feed" href="/w/api.php?action=featuredfeed&amp;feed=onthisday&amp;feedformat=atom" />
+<link rel="apple-touch-icon" href="//en.wikipedia.org/apple-touch-icon.png" />
+<link rel="shortcut icon" href="//bits.wikimedia.org/favicon/wikipedia.ico" />
+<link rel="search" type="application/opensearchdescription+xml" href="/w/opensearch_desc.php" title="Wikipedia (en)" />
+<link rel="EditURI" type="application/rsd+xml" href="//en.wikipedia.org/w/api.php?action=rsd" />
+<link rel="copyright" href="//creativecommons.org/licenses/by-sa/3.0/" />
+<link rel="alternate" type="application/atom+xml" title="Wikipedia Atom feed" href="/w/index.php?title=Special:RecentChanges&amp;feed=atom" />
+

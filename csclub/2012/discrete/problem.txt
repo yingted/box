@@ -1,0 +1,6 @@
+You own a racecar in an infinite discrete frictionless vacuum. Somebody has taken it for a ride for T seconds, after which it has its position P and velocity set to 0, where it started. Every second, the velocity is increased by the acceleration, which is some integer. The position is then increased by the (increased) velocity. Fuel consumed is the absolute value of the product of acceleration and *beginning* velocity. To complicate matters, the odometer is taken mod K (non-negative). Output the minimum amount of fuel M<=2^30 consumed.
+Input:
+T K
+{T lines, each with a successive position P (excluding the leading zero)}
+Output:
+M

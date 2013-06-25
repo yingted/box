@@ -1,0 +1,35 @@
+POINTS: small = 40pt, large = 60pt
+
+You wish to enko with someone. However, the act of Enjo-kōsai is banned in your country. Therefore you will have to communicate secretly. You communicate with that person by sending data through a underground communication network consisting of N nodes, labelled from 0 to N-1. This network can effectively eliminate all possible survilience from the government by using sophisticated encryption protocols. However, since the nodes are secret, they are not reliable, thus the nodes can often disconnect and the link would be lost. Given the probabilities of P(X,Y) that the link between node X and Y will not fail, output the working probability of the best connection from node 0 to node N-1, to 4 decimal places. The working probability of a connection is defined as the product of working probabilites of the links in the connection.
+
+Input:
+N M
+{M links follows:
+X Y P(X,Y) there exists a link between X and Y, and the probability of this link working is P(X,Y)
+}
+Repeats until N=M=0
+
+Output:
+{The working probability of the best possible connection from 0 to N-1, rounded to 4 decimal places}
+
+Sample Input:
+3 3
+0 1 0.8269
+1 2 0.5888
+0 2 0.0001
+0 0
+
+Sample Output:
+0.4869
+
+Explanation:
+Although there is a direct link from 0 to 2, the probability of this link working is only 0.0001, which is smaller than the probability of connection 0->1->2 = P(0,1)*P(1,2) = 0.8269*0.5888 = 0.486879 ≈ 0.4869.
+
+Limits:
+cpu = 1s
+memory = 2048MB
+0<P(X,Y)≤1, P(X,Y) is accurate to 4 decimal places
+There is guranteed to be a valid connection from 0 to N-1.
+input-small.txt: 1≤N≤12, N-1≤M≤66
+input-large.txt: 1≤N≤2000, N-1≤M≤20000
+There are at most 10 test cases per input.

@@ -1,0 +1,24 @@
+There are N missiles approaching you at time T, each causing D damage. You have M missiles enqueued that must be fired one at a time that have R (re)loading time. You can fire one missile to destroy and cancel one oncoming missile. All missiles are infinitely fast, spending ~0 time in the air. They can't circle oncoming missiles. For each of the N approaching missiles, print the letter "c" or "h" denoting whether the missile should be destroyed/cancelled or allowed to hit. If there are more than one answer, print the alphabetically first answer (i.e. cch before chc before hcc).
+Input:
+N M
+M*{
+  Ri
+}
+N*{
+  Ti Di
+}
+{repeats until N=0, where M will also be 0}
+Sample input:
+4 2
+2
+2
+0 1
+2 2
+2 2
+3 5
+0 0
+Sample output:
+hhhc
+Explanation:
+The missiles look like this: X.XX
+The first missile is unavoidable because it's already exploding. The next three are too close, so you can only reload once. Since the last missile is so destructive, it should be cancelled to minimize damage.

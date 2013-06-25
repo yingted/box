@@ -1,0 +1,27 @@
+Wheeling of the female kind. ###POINTS: 20***
+
+From new studies done, it is discovered that women judge men based on how short
+their code is. Each woman is different and only accept a man if their code is below
+a certain amount of lines. Given a list of women and a list of men, find an
+arrangement of pairings that will produce the most couples.
+
+Input:
+  user enters x y where x is number of women and y is the number of men followed
+by x + y lines. The first x lines lists the threshold of each woman in respects to
+the maximum amount of lines of code that she will accept. The next y lines list the
+minimum lines each guy needs to write to complete his code.
+Output:
+  Output the maximum pairings.
+  
+Input:
+3 4
+10
+20
+30
+40
+20
+10
+50
+
+Output
+2

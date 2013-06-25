@@ -1,0 +1,11 @@
+The problem for today is dynamic programming. Dynamic programming is a way to
+save on computation by using space to store intermediate results. The three
+programs worked until some code was removed or changed. They were only modified
+in the places where the comments tell you what to do to fix it.
+The problem is to make them work using dynamic programming. Make the programs
+work by writing a balanced subtree wherever indicated with the comments.
+If more than one line of code is needed, it will be indicated clearly.
+You may have to create another variable and only variables of type int will be
+missing. Feel free to modify the programs to add more tests, debug code, etc.,
+but your final solution will be a program identical to the problem except with
+code where code was missing.

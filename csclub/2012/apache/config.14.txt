@@ -1,0 +1,3 @@
+wait_mins=5
+wall_secs=25
+ulimit_args=("${ulimit_args[@]/-t*/-t20}")

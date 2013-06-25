@@ -1,0 +1,39 @@
+Parse and plot the values of expressions.
+Assume the expressions are well-formed.
+There is none of this nonsense: (2)(3), or x(4)3(2)
+The only variable is x.
+p refer to the constant π.
+The functions abs, sin, cos, tan, log, and exp are available by the first letters.
+Multiple finite values are in the range.
+Negative numbers are expressed as (0-42) instead of 42 to simplify parsing
+All input numbers are integers from -2³¹ to 2³¹-1 inclusive.
+Assume the input is valid, R,C≥0, Xhi≥Xlo.
+Order of operations:
+f(…) (function application)
+^ (powers)
+*/% (multiply/divide/modulo)
++- (add/subtract)
+Decimals are not allowed.
+Input:
+R C Xlo Xhi N
+{N lines, sample below}
+s(x)
+Output:
+graph, R rows by C columns, '#' for more than 9 times drawn to, 0-9 for 0-9 times drawn to
+
+Rendering algorithm:
+Let cells be numbered from the bottom-left.
+Depiction of a 3×5 screen:
+|||||
+|||||
+|||||
+Columns are points at the center, rows are intervals of equal size.
+The function is evaluated at C+2 equidistant points, with the second and penultimate point coinciding with the first and last columns.
+Indefinite forms or errors (NaN types) is not plotted (i.e. 1/x will be missing points at the x=0 line).
+For every column plotted, the current, previous, and next values are considered, and half the range is plotted, rounding down:
+Let lo=min(get_cell((prev+cur)/2),get_cell(cur),get_cell((next+cur)/2)),hi=max(get_cell((prev+cur)/2),get_cell(cur),get_cell((next+cur)/2))
+Then, plot all cells in [lo,max(lo+1,hi)). (makes it more visually appealing)
+Any of prev or next that is not plotted is excluded from the min/max.
+
+If you have sed, you can use this script to "render" your output files:
+y/0123456789@/ `-,~+*;%X#/

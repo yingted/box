@@ -1,0 +1,47 @@
+You are lost in a 2D underground colony.
+Due to the uselessness of vertical tunnels, all tunnels slant up at 60°.
+As a result, the map is a hexagonal grid of points:
+- The row lengths alternate between X (with a leading space) and X+1 for some X
+- The rows do not have trailing spaces
+- The number of points in each row alternates between X and X+1 for some X
+- The characters in each row alternates between spaces and points (non-spaces)
+- There are monsters, represented by the symbol @.
+You want to know where the monsters are at so you can avoid them.
+You have a map of all N levels.
+You have explored a region of M levels and want to know where you could be.
+1≤N,M≤200 and no input line contains more than 255 characters.
+There are no more than 100 test cases.
+Each of these are reduced by 90% to 10% for the small test case.
+The format for the region is the same as for the map.
+Output (see explanation) the possible points from highest to lowest level.
+If there is a tie, output lower points first.
+Input:
+N M
+{N lines, successive rows of the map}
+{M lines, successive explored rows}
+{repeat until N=M=0}
+Output:
+{K, the number of possible points for this input}
+level L point P
+{L=-1 for the first row, L=-2 for the second, etc.}
+{P=1 for the first point in the row, P=2 for the second, etc.}
+{repeat for each point}
+{repeat for each input}
+Sample input:
+4 3
+w w w w w w w
+ X X X X X X
+/ y @ V y V .
+ / @ @ / . r
+ X
+V .
+ r
+0 0
+Sample output:
+1
+level -2 point 6
+Explanation:
+The 1 means there is 1 point to follow for this input.
+The region is located at the bottom-right-most place in the map.
+The first shared level is -2, and the first shared point in level -2 is point 6.
+The 0 0 ends the input.

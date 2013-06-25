@@ -1,0 +1,27 @@
+Oh no! The forces of justice are selflessly doing good again! It is up to you to figure out where they could be. Your intelligence agents have gathered the following data:
+	- a list of where the heroes may be at t=0
+	- the heroes do not make u-turns
+	- the heroes do not stop in traffic
+	- a city map
+	- there are no one-way streets
+	- at each integer t, the heroes are at an intersection
+	- the heroes can only go up to one road per time unit
+	- the list will not have duplicate entries
+	- numbering is from 0
+	- heroes are allowed to retire (for example if they cannot find anything else to do)
+There are V intersections, E1 roads, and E2 non-busy intersections.
+Let E=E1+E2
+Let N be the number of intersections the heroes could be at at t=0
+Let M be the number of intersections the heroes could be at after T time units
+(V+E)*T≤9000²+1
+Time limit: about a second (for all except #20)? sure, why not… (see later)
+Input:
+V E N T
+{E1 lines of x y, where the road joins the intersections x and y, 0≤x,y<V}
+{E2 lines of x x, where intersection x is not busy}
+{N integers x, separated by spaces, which are the intersections the heroes could be at at t=0}
+Output:
+V M {M integers x, separated by spaces, which are the intersections the heroes could be at at t=T}
+Time:
+On a decent computer, you should get around 10 seconds for all the test cases, and about a second for #20.
+On a bad computer, you should get about 1 second average for #3 through #19, and about 5 seconds for #20.

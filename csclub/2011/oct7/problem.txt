@@ -1,0 +1,15 @@
+You have become a graphics designer with a company on a low budget for computers. Unfortunately for you, your boss has given you a list of (possibly self-intersecting) polygons and points to test. Write a program to determine the number of times each point is enclosed. If a point is enclosed once counter-clockwise, that counts as 1. If it is enclosed once clockwise, that counts as -1. If the point is in a hole, it is NOT enclosed by the polygon.
+Since your program will not support multiple colours, the polygons will be separate. Your boss has realized a clever way to make points on the boundary of two polygons (i.e. different test cases) belong to exactly one. If a point falls on a border, try to see if the point can be pushed to the right. If the point is still on a border, then push it up instead. In this scheme, about half the border points will belong to a polygon.
+Input format:
+N M
+x y
+{N lines like this in total}
+x y
+{M lines like this in total}
+The first line will contain two integers N and M. This is followed by N lines of two integers representing points (x,y) in order. Then, there will be M lines of two integers representing points P(x,y). Each point P should be tested and for each point, an integer representing the number of times it was enclosed should be printed on a single line.
+Input will be from a file called "input.txt" and output will be to a file called "output.txt". There is a program in "view.t" which shows the Turing rendition of the polygon and the data points. Feel free to modify the window size at the top. Press any key to move to the next polygon.
+Sample output explanation:
+Shape 1: Note that the sliver with no area didn't count because the points are always "pushed" off. However, some of the border points do count. You can see this is one place where Photoshop and other bitmap image editors go wrong - two blended rectangles bordering each other produce a sliver which has measurably non-zero width.
+Shape 2: This clockwise maple leaf negatively includes points - the numbers inside are all -1 because counter-clockwise is considered +1. Your boss intends to use this polygon to "block out" a section of a design.
+Shape 3: The area inside this figure is included twice. Some programs depict this using darker highlighting, but some Turing just alternates between two colours because there are only two colours provided to it.
+Shape 4: The center point is "pushed off" of the vertical border, only to be "pushed off" the horizontal borders right after.

@@ -1,0 +1,35 @@
+Lines of symmetry are lines that a figure can be reflected over without changing the figure. Print the number of lines of symmetry in each figure. If it's infinite, print "inf".
+Input:
+H W
+H*{
+  W characters ("*" or ".")
+}
+{repeats until H*W=0}
+Sample input:
+3 2
+..
+..
+..
+2 1
+*
+*
+4 5
+..*..
+.***.
+*****
+*...*
+3 3
+.*.
+***
+.*.
+4 4
+.*..
+...*
+*...
+..*.
+Sample output:
+inf
+2
+1
+4
+4

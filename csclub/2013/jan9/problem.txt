@@ -1,0 +1,15 @@
+You are using a program called XL, which allows you to save columns in files.
+Columns are numbered sequentially A, B, C, … Y, Z, AA, AB, … AZ, BA, … BZ, … CZ, … DZ, … YZ, … ZZ, AAA, ….
+In other words the last letter that can be advanced (i.e. it isn't Z) is advanced and all the letters after it become A.
+If all the letters are Z, instead of advancing a letter, an A is inserted at the start.
+You have several files and you want to merge them by placing the columns next to each other.
+Input:
+a single line of the last column's labels, separated by spaces
+Output:
+the label of the last column of the merged file
+Sample input:
+AA M M
+Sample output:
+BA
+Explanation:
+AA is right after Z, so it is column 27. M is column 13. BA is 26 columns later than AA.

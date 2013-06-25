@@ -1,0 +1,17 @@
+Alice and Bob are playing a game online. They have M ducks and N geese. They take turns saying any permutation of "duck" and "goose" without repeating and whoever can't say another permutation loses. Unfortunately, they are both cheating by using a computer to keep track of the unused permutation. For example: (N=M=1)
+Alice: duck goose
+Bob: goose duck
+Alice: I lose
+
+Input:
+M N where M+N<2^31
+{repeats until M=N=0}
+Sample input:
+1 1
+0 0
+Sample output:
+Bob wins
+
+Marking scheme:
+Perfect: 100 pts
+99950/100000 or more: 20 pts

@@ -1,0 +1,7 @@
+This is a problem to diagnose problems with judging.
+There is one test case to test the judge.
+The program must output 42. The input is a single line with 42.
+Input:
+42
+Output:
+42

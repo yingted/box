@@ -1,0 +1,38 @@
+You are writing a program for printing photos from image files. Many people like to do funny things with their photos. For example, films may have been scanned backwards, so they have to be flipped. Also, you may want to print more than one copy, so images must tile in some way. Images could have been taken on the side. Finally, it may be necessary to draw lines on the image.
+The program support several commands, sorted in to categories (up to colon, taking only integers, except for c, which can be any number, letter, or symbol):
+Glass operations:
+These operations can be performed with an image on a rectangular sheet of glass.
+	swap: swap axes, so that (r,c)=>(c,r)
+	fh: flip left and right so that 12345 becomes 54321
+	fv: flip upside-down
+	cw: rotate the photo clockwise 90°
+	ccw: rotate the photo counterclockwise 90°
+Paper operations:
+These operations correspond to operations on paper, which can be performed with paper.
+	ofs x y: offset by (x,y) so that old(r+x,c+y)=>new(r,c) for every pixel
+	res x y: increase the height by x and the width by y (possibly negative) from the bottom-right corner, guaranteeing a 1×1 square is in the image
+	lin x y dx dy l c: draw a (possibly dashed) line of characters c at (x+k*dx,y+k*dy), 0≤k<l for integer k; this ruins the original and cannot be restored (except by writing the original characters back over)
+Management operations:
+These operations are used to aid the management with testing. However, they have to be implemented anyways.
+	save: create a new save point
+	load: restore the image to the state at the last save point that hasn't been loaded yet (lines drawn with lin are permanent, so they are not reverted); if there is no save point, do nothing so that management can spam load to go to the oldest save
+	out: output the image
+You don't start with any save points. At least 30% of test cases don't contain load instructions.
+Coordinates are (row,column). Wrapping is very confusing and happens in all four directions:
+Image:
+012
+345
+678
+Wrapped to the right and down:
+012345
+345678
+678012
+012345
+345678
+Image data is only destroyed using the lin command. The size of the original image is never changed, but parts of it may be hidden. This means that drawing off screen will NOT show up if the current image is just a small portion of the original. Also, drawing will show up in multiple places if the current image is much larger.
+Input:
+There will be two integers 0<r,c<10000 representing the rows and columns in the image. The image follows, and may have *any* characters excluding newlines. After, there will be a number n<10000. The next n lines will have commands. You can assume there will be no more than 1000 un-load-ed save points. The test cases take an average of under a second on my netbook.
+r c
+{image}
+n
+{commands}

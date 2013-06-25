@@ -1,0 +1,33 @@
+You are working as a packager for object-oriented code in some language.
+An object-oriented program is composed of classes, each of which depend on other classes.
+Your job is to package each of N classes in to at most one "jar" (archive file).
+Classes are public if they have a download page on your website.
+On each download page, there will be a series of links of jars (archives) with a positive number of classes in each.
+You must minimize the number of classes downloaded (i.e. it must be possible to download any set of public classes with minimal total classes downloaded) without including a class in multiple files.
+Less importantly, you must minimize the number of archives.
+There will be no more than 20 public classes.
+There will be no more than 1000 classes.
+Example:
+1. (p)ublic class Game needs Physics
+2. (p)ublic class Calculator needs Math
+3. pri(v)ate class Physics needs Math
+4. pri(v)ate class Math
+5. pri(v)ate class Homework needs Math
+jar 1: Game Physics
+jar 2: Calculator
+jar 3: Math
+Input:
+N
+{number of requirements} {requirements}
+{N-1 more lines}
+Sample input:
+5
+p 1 3
+p 1 4
+v 1 4
+v 0
+v 1 4
+Sample output:
+3
+Explanation:
+This is the example from above. Indexes start at 1.

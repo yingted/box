@@ -1,0 +1,26 @@
+You are designing a machine that completes multiple choice tests. You know the answers and want to see the shortest distance to complete the test.
+All the bubbles are infinitely small and on a 1 cm grid. Output the distance in cm.
+Due to a limitation of the testing card technology, there is a strict limit of 50 questions per side (0<N≤50).
+Input:
+{N characters, each is A, B, C, D, or E}
+{repeats until -}
+Output:
+{distance in cm, rounded to 4 significant places}
+Sample input:
+AEA
+-
+Sample output:
+6.1231
+Explanation:
+A _ _ _ _
+_ _ _ _ E
+A _ _ _ _
+Re-order: A1, A3, E2
+Time:
+Times are given for Python reference solution and include interpreter startup time.
+small test case takes 10 to 65 seconds using the slowest solution
+medium test case takes 6 to 35 seconds using the second-slowest solution
+large test case takes 5 to 30 seconds using the intended solution
+xlarge test case takes 55 or more seconds using the intended solution
+Greedy algorithm:
+The naïve approximation algorithm should get more than 1, but less than half right on each test case.

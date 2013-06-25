@@ -1,0 +1,2 @@
+wall_secs=3
+ulimit_args=("${ulimit_args[@]/-t*/-t2}")

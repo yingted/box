@@ -1,0 +1,9 @@
+What is true of 3, 125, and 468, but false of 64, 1337, and 975? The digits are strictly increasing from left to right.
+The small test case has N=500 and X<=1000 while the large test case has N=10000 and X<=2³²−1.
+Input:
+N
+{N lines, each with a non-negative integer X}
+Output:
+{N lines, the smallest increasing number not less than X, or 0 if no such numbers exist}
+Time:
+1 second for all N cases

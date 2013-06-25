@@ -1,0 +1,24 @@
+You just learned scientific notation in school. You were taught that scientific
+is a clever way of representing very large or small numbers. Also, you learned
+in school that factorials get large quickly. 10! in scientific notation is
+3.6288e6, or approximately 4e6 if you only consider the first digit. Scientific
+notation here used the first digit (rounded), and the number of zeroes before
+that digit. You decide this is too simple. To make it more fun, you devised
+unscientific notation. 10! is 3628800, which is 36288e2. Unscientific notation
+uses the number of zeroes after the number and the last (non-zero) digit. This
+is not useful to any scientist, hence the name. To keep it distinct from
+scientific notation, we'll use the notation 8u2 to denote 3628800. The 8
+represents the last digit and the 2 represents the 2 zeroes. Write a program to
+find n! in unscientific notation. Exit when n! is undefined. The input will not
+contain more than 10000 lines.
+Sample input:
+1
+2
+3
+10
+-1
+Sample output:
+1u0
+2u0
+6u0
+8u2

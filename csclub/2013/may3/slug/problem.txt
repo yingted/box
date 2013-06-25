@@ -1,0 +1,24 @@
+A slug is an identifier used internally for publishing.
+There might be an article titled:
+Prime minister: $2 bn cut includes "defense spending reductions of 20%"
+Its slug could be:
+prime_minister_2_bn_cut_includes_defense_spending_reductions_of_20
+Rules:
+- Quotes are removed: `"'
+- Letters are lowercased
+- Digits are kept as-is
+- Other symbols, such as $, are replaced with _
+- Any _ before the first letter/digit are removed
+- Any _ after the last letter/digit are removed
+- Adjacent _ are combined
+- Duplicate slugs are allowed
+Input:
+N
+{N lines, one title per line}
+Output:
+{N slugs, one per line}
+Sample input:
+1
+Prime minister: $2 bn cut includes "defense spending reductions of 20%"
+Sample output:
+prime_minister_2_bn_cut_includes_defense_spending_reductions_of_20

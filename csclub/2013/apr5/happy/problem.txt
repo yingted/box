@@ -1,0 +1,31 @@
+Generational Happiness  ###POINTS: 100###
+
+  Each generation has a value of happiness among it's people. This
+  happpiness can be the result of many events. Most of these events
+  affect more then one generation, and all events give a different value
+  of happiness.
+
+  Time Limit: 5 Seconds per test case. 25 seconds In total per file.
+
+Input:
+  User will input x y z defining x amount of generations followed by y
+  lines. Each following line will be in the format a b v where 0 < a <=
+  b <= x and the range [a,b] is the range of generations affected by v
+  value of happiness where -1000 <= v <= 1000. 0 < x < 10000000 , 0  <
+  y < 100000. There will be 5 inputs in a row without spaces.
+  Note: be efficient in the way you store happiness. Traditional methods
+  might not be fast enough. And slow code makes me sad :(
+
+Output:
+  output the amount of happiness in the zth generation.
+
+Input:
+1000 1 500
+499 501 1234
+500 2 25
+1 400 70
+26 78 1000
+
+Output:
+1234
+70

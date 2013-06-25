@@ -1,0 +1,27 @@
+Someone is placing 164000 runes in a circle on an integer lattice.
+This is estimated to take 60 hours, each rune taking about 1.3 seconds.
+A magic circle requires at least 4 runes.
+The runes allow this person to cast dangerous fire-magic.
+These runes are laminated and need to be opened and wet to disable them.
+You have a list coordinates (x,y) of laminated signs which you got from
+your satellites and surveillence cameras, −1000≤x,y≤1000.
+For planning, you need to find the sizes of each magic circle candidate.
+You need to take a list of N signs and for each magic circle candidate,
+output the number of runes it passes through.
+No two signs coincide for any single input set.
+Since larger ones are more dangerous, output the sizes in descending order.
+Separate the counts C with spaces and output them on the same line.
+Your program needs to loop until N=0 to deal with the quickly-changing
+nature of the situation. Each input set must be processed in well under 1.3 s.
+In fact, all the input sets must be processed in about 6 seconds.
+There will be no more than 30 runes per input set.
+Input:
+N
+x y
+{repeats N−1 times, giving the other N−1 coordinates of signs}
+{repeats until N=0}
+Output:
+C₁ C₂ …
+{repeats for each set of signs}
+Time:
+The large input will be given extra time. The reference solution takes 2.3 s.

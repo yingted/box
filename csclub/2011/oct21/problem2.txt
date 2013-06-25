@@ -1,0 +1,2 @@
+In preparation for DWITE, we'll have another question. This is a form of the 8 queens puzzle, except we will work with N queens.
+There will be some lines of input, each with one non-negative number N. For each line, output the number of ways you can place N queens on an N by N chessboard if and only if the number fits inside a Turing int type variable. If it doesn't, exit without printing anything.

@@ -1,0 +1,23 @@
+Problem:
+You are an alchemist working in for the alchemist's society.
+You have an unlimited supply of free lead, which is compound 1.
+You have discovered N>0 compounds and M methods. These
+compounds have all market value H>=0, but with limited demand.
+You have decided to use the methods, which change a compound
+to another one for a certain cost. H stands for "high".
+Given the number of compounds, the number of methods, the
+market value, and the methods, calculate the profit for selling
+each compound. You are using the cheapest way to create each
+compound. Assume the alchemic processes cannot be reversed.
+If a compound cannot be produced, it can be purchased from
+the market, though you won't profit or lose. Note that your
+first profit is always H because you have *free* lead.
+Input:
+N M H
+{M lines like this:}
+reactant product cost
+Output:
+H
+{N-1 lines like this}
+profit
+

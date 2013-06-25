@@ -1,0 +1,14 @@
+50 100 0 1.444667861009766 10
+1
+x
+x^x
+x^x^x
+x^x^x^x
+x^x^x^x^x
+x^x^x^x^x^x
+x^x^x^x^x^x^x
+x^x^x^x^x^x^x^x
+x^x^x^x^x^x^x^x^x
+x^x^x^x^x^x^x^x^x^x
+x^x^x^x^x^x^x^x^x^x^x
+x^x^x^x^x^x^x^x^x^x^x^x

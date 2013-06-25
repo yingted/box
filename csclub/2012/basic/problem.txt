@@ -1,0 +1,11 @@
+You are programming in a language without mutable strings.
+You have to create a long string by joining strings using +.
+The run time of a+b is the length of the resultant string.
+What is the fastest way to join your strings?
+There are 10 inputs, and n is limited to 1000 on each
+Input:
+n s[0] s[1] … s[n-2] s[n-1]
+{9 lines like the one above}
+Output:
+{minimum run time, one per line=10 lines}
+Time: a minute for n=1000, a second for n<301

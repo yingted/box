@@ -1,0 +1,30 @@
+You are practicing your swordsmanship.
+You realize that the value of a special move is directly proportional to its length L.
+Moves are defined to continue as long as they doesn't deviate more than ½D from the intended trajectory.
+However, this definition makes it hard to record motion data:
+How can you know the intended trajectory until after the data is recorded?
+To optimize the value of your special moves, you want to run a simulation on motion data.
+You have lots of motion data with estimated deviations.
+Calculate the length of a longest contiguous slice with a range of values spanning at most D.
+Input:
+N D
+{N lines, 1 estimated displacement each}
+Output:
+L
+Sample input:
+10 5
+-1000
+0
+1000
+1002
+1000
+1001
+999
+998
+456
+-1000
+Sample output:
+6
+Explanation:
+There are 6 values ranging from 998 to 1002.
+The difference of 4 is not greater than 5.

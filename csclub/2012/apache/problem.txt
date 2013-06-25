@@ -1,0 +1,61 @@
+You have been hired to work as a server. A /web/ server!
+Unfortunately, because you don't have the latest hardware, you are very slow.
+To augment this, you have found some servers in other countries to serve requests.
+They can serve exactly one client at a time.
+In particular, servers cannot handle multiple clients in the same time unit.
+Users should be preferentially served by servers from the same country.
+You accidentally forgot to leave out some entries in the server logs: the responses!
+You have to forge the server logs. Server logs are written sequentially, which
+means the entries are sorted earliest to latest. The transcript should be complete
+(i.e. include all entries, even those after the last input entry).
+Country names and paths do not contain spaces. Times and delays are numerical.
+The earliest ready server serves the client if there is a discrepancy. Forged logs
+always come after non-forged logs.
+Times have no leading zeroes.
+Warning: inputs 14-20 are large
+Log entries (these form a single complete transcript):
+1. single server installation (these are available)
+	{time} up {country} {delay}
+	1347651000000 up Canada 50
+2. single client connection (these are available)
+	{time} get {country} {path}
+	1347651000001 get Mars /index.html
+	1347651000001 get Canada /index.html
+3. single request failed (these need to be forged)
+	{time} 503 {client-country} {path}
+	1347651000001 503 Canada /index.html
+4. single request served (these need to be forged)
+	{time} 200 {client-country} {path}
+	1347651000051 200 Mars /index.html
+Explanation:
+Right after the server was installed, two users connected from Mars and Canada respectively.
+The first user was served by the server in Canada. The second user could not connect.
+Input:
+1347651000000 get Canada /index.html
+1347651000000 up Canada 200
+1347651000000 up Canada 50
+1347651001000 get Canada /index.html?1
+1347651001000 get Iraq /favicon.ico
+1347651001050 get Canada /robots.txt
+1347651001100 get Canada /robots.txt
+Output:
+1347651000000 get Canada /index.html
+1347651000000 up Canada 200
+1347651000000 up Canada 50
+1347651001000 get Canada /index.html?1
+1347651001000 get Iraq /favicon.ico
+1347651001050 get Canada /robots.txt
+1347651001050 200 Iraq /favicon.ico
+1347651001050 503 Canada /robots.txt
+1347651001100 get Canada /robots.txt
+1347651001150 200 Canada /robots.txt
+1347651001200 200 Canada /index.html?1
+Explanation:
+No server can respond to the first client.
+The slow server responds to the second client at the end.
+THe fast server responds to the third client at 1347651001050,
+but cannot serve anyone else in that millisecond. The log is appended after
+the fourth client's request.
+The fourth client connects to the fast server and is given an error. This is logged.
+Later, another request gets to the fast server.
+The fast server serves the request. The slow server still isn't done.

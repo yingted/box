@@ -1,0 +1,26 @@
+POINTS: small = 10pt, large = 30pt
+
+You are given N lines of strings (the length of each line is less than 256) containing parentheses('()'), square brackets('[]'), braces('{}'), and chevrons ('<>'). Your program has to determine whether the line of brackets is balanced or not.
+
+Input:
+N
+{N lines of strings of brackets}
+
+Output:
+{N lines: 1 if the line is balanced, 0 otherwise}
+
+Sample Input:
+3
+(())<[{}]>
+({]
+(({))}
+
+Sample Output:
+1
+0
+0
+
+Limits:
+cpu time = 1s
+memory = 2048MB
+1≤N≤100

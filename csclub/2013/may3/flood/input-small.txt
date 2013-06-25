@@ -1,0 +1,98 @@
+6 12
+wwwbwbbbbwww
+wwwbbwwwbbwb
+bwbbwwbbbwbw
+wwbbbwwbwwwb
+bbbwwwbbbwwb
+wbwwwwbbbbwb
+2 15
+wwwwwbwbbwbbbwb
+wwbbbbwbwbwbwwb
+8 5
+bbbbb
+bbbwb
+wbbbw
+wwwww
+wwbwb
+bwbbb
+wwwwb
+wwbbb
+15 9
+bbbbbbbwb
+wwbbbbbwb
+wbwbbbbbb
+wbwwbwbwb
+bbwbwwbww
+bbwbwwbbb
+wwwbwbbww
+wbwwwbbbw
+wbwwbwwbw
+bwwbbbwwb
+wwbbbbbwb
+wwbbbwwww
+wbbbbwbbw
+wbbwwwwww
+bbwwwbwwb
+13 8
+bbwbwwbw
+bbwbwbww
+wwwbbwbw
+wwwbwwbw
+wbwbbwww
+wwbbwwbb
+wbbbbbwb
+bwbwwwbb
+bwbwbbwb
+bwbbbwww
+bwbbbwbb
+wwwwwwbw
+bwbwbwbw
+4 7
+bwbbbbw
+bbwbbww
+wwbwbbw
+bwwbbbb
+13 3
+www
+wwb
+wbb
+bbw
+bwb
+bbw
+bbw
+bbb
+www
+bbb
+bwb
+wbb
+bbb
+6 1
+w
+w
+w
+w
+w
+w
+8 14
+bbbwbwwbwwwwbb
+bwbbbbbwwwbbwb
+bwwwbbbbwwbwwb
+bbwbbbbwbbwbwb
+bbbwbbwbbwbwwb
+wbbwwwwbbwbbwb
+bwbbwbwbbwwbww
+wwbbwbbbwbwbbw
+10 5
+wwwbw
+wwbbw
+bbwbw
+wwwbw
+bwwbw
+wbwbb
+bbwww
+wwwwb
+bbbww
+bbbbw
+1 1
+b
+0 0
