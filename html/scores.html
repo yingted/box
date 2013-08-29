@@ -91,10 +91,10 @@
 				function(){return new ActiveXObject("Msxml3.XMLHTTP")},
 				function(){return new ActiveXObject("Microsoft.XMLHTTP")},
 			],input=$("input"),scores=$("scores"),infiles=input.getElementsByTagName("option"),rows=scores.children,tc="textContent"in scores?"textContent":"innerText",cls=$("class"),ip=$("ip");
-      function asnprintfn0nd(n,d){
-        for(var s=d+"";s.length<n;s="0"+s);
-        return s;
-      }
+			function asnprintfn0nd(n,d){
+				for(var s=d+"";s.length<n;s="0"+s);
+				return s;
+			}
 			(function poll(){
 				for(var x;!x&&xhr.length;)
 					try{
