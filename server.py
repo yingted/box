@@ -10,6 +10,7 @@ from os import listdir
 from shlex import split
 from traceback import print_exc
 from collections import defaultdict
+from time import sleep
 import re
 CT_PLAIN=("Content-type","text/plain;charset=UTF-8")
 binputb=re.compile(r"\binput\b")
@@ -20,6 +21,7 @@ def problem(x):
 	return slashall.sub("/problem.txt",x)
 def update(path,cb,nodelay=False):
 	nodelay=nodelay or call(("inotifywait","-qo/dev/null","-rt30",path)+stuff)==2
+	sleep(1e-3)#XXX fix lockup
 	try:
 		cb()
 	except:
@@ -79,7 +81,7 @@ def scorescb():
 			score_sub_s.append((map(int,read(x[:x.rindex("/")]+"/score").split("\n")[-2].split(" ")),x.split("/")))
 		except:
 			pass
-	ip_in_score_time_s=dict([((p[1],read("/".join(p[:3])+"/in").rstrip("\n")),(s,int(p[2])))for(s,p)in sorted(score_sub_s)]).items()
+	ip_in_score_time_s=dict([((p[1],read("/".join(p[:3])+"/in").rstrip("\n")),(s,int(p[2])))for(s,p)in sorted(score_sub_s,reverse=True)]).items()
 	ip_in_score_time_s.sort(key=lambda e:e[0][0])#for compare
 	ip_in_score_time_s.sort(key=lambda e:e[1][1])
 	ip_in_score_time_s.sort(key=lambda e:e[1][0],reverse=True)

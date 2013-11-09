@@ -676,6 +676,7 @@ int main(int argc,char*argv[]){
 			info("added ace bindings: ace ctrl-1→",link(loadcode,"load code from cookies"),"; ace ctrl-2→",link(custcmds.reannotateCode.exec,"re-annotate"),"; ace ctrl-3→",link(custcmds.resetAnnotateCache.exec,"reset annotations cache"));
 			$("#theme").append($(ace.config.themes).map(function(i,e){return $("<optgroup>").attr("label",e[0]).append($(e[1]).map(function(i,e){return $("<option>").attr("value",e).text(e)[0]}))[0]}))
 				.change(function(e){editor.setTheme("ace/theme/"+e.target.value)}).val("textmate");
+			session.setUseSoftTabs(false);
 			$.each("select-whole-line highlight-active-line show-invisibles display-indent-guides show-gutter show-print-margin highlight-selected-word h-scroll-bar-always-visible animated-scroll use-soft-tabs behaviours-enabled fade-fold-widgets".split(" "),function(i,e){
 				var f="set"+e.replace(/(?:-|^)([a-z])/g,function(_,e){
 					return e.toUpperCase();

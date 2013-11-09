@@ -22,20 +22,23 @@ do
 	done
 	echo testing "$file"
 	sudo find rootfs/tmp -mindepth 1 -delete
-	sln=("$file/solution."*)
-	sudo install -o99 "$sln" rootfs/tmp
-	sln="${sln##*/}"
-	IFS=$'\t' eval curwrap=(${wrap[${sln#*.}]})
-	curwrap=(sh -c 'mknod -m 644 /dev/random c 1 8 2>/dev/null; mknod -m 644 /dev/urandom c 1 9 2>/dev/null; exec "$0" "$@"')
 	test_path="$(cat "$file/in")"
-	sudo rm -f rootfs/data/in
-	sudo ln "$data_dir$test_path" rootfs/data/in
-	sudo chmod o+r-w rootfs/data/in #safe, assuming 99 is not in the user or group
-	cat config "$data_dir${test_path%/*}/config" "$data_dir$(sed 's/\(.*\)\binput\b/\1config/' <<< "$test_path")" > rootfs/tmp/config 2> /dev/null
-	sudo chown 99:99 rootfs/tmp/config
-	sudo lxc-execute -n box -- "${curwrap[@]}" /build/drop 99 /build/run.sh > "$file/out"
-	#sudo chroot rootfs "${curwrap[@]}" /build/drop 99 /build/run.sh "$(cat "$file/in")" > "$file/out"
-	{ cat rootfs/tmp/score 2>/dev/null && rootfs/build/score "$data_dir$(sed 's/\(.*\)\binput\b/\1output/' <<< "$test_path")" rootfs/tmp/stdout; } > "$file/score.part" && mv "$file/score.part" "$file/score" || { >> "$file/score"; rm -f "$file/score.part"; }
+	. ./config "$test_path" > rootfs/tmp/config
+	(
+		. rootfs/tmp/config
+		sln=("$file/solution."*)
+		sudo install -o99 "$sln" rootfs/tmp
+		sln="${sln##*/}"
+		IFS=$'\t' eval curwrap=(${wrap[${sln#*.}]})
+		sudo rm -f rootfs/data/{in,judge} #just in case
+		sudo ln "$data_dir$test_path" rootfs/data/in
+		sudo chmod o+r-w rootfs/data/in #safe, assuming 99 is not in the user or group
+		[ -n "$interactive" ] && sudo ln "$data_dir${test_path%/*}/$judge_file" rootfs/data/judge && sudo chmod o+rx-w rootfs/data/judge
+		sudo chown 99:99 rootfs/tmp/config
+		sudo lxc-execute -n box -- "${curwrap[@]}" /build/drop 99 /build/run.sh > "$file/out"
+		#sudo chroot rootfs "${curwrap[@]}" /build/drop 99 /build/run.sh "$(cat "$file/in")" > "$file/out"
+		{ cat rootfs/tmp/score 2>/dev/null && touch rootfs/tmp/stdout && "${score_cmd[@]}" "$data_dir$(sed 's/\(.*\)\binput\b/\1output/' <<< "$test_path")" rootfs/tmp/stdout; } > "$file/score.part" && mv "$file/score.part" "$file/score" || { >> "$file/score"; rm -f "$file/score.part"; }
+	)
 	rm -f rootfs/tmp/{stdout,score,solution.*} 2> /dev/null
 	sudo find rootfs/{tmp,data} -mindepth 1 -delete
 	tail -1 "$file/score"
