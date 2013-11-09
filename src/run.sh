@@ -56,8 +56,8 @@ case "${sol#*.}" in
 		#python2 -SOO -mpy_compile solution.py2
 		echo 'run=(python2 -SOO /build/pybox.py2o solution.py2)' > run_cmd;;
 	py3)
-		#python3.2 -SOOc 'import py_compile;py_compile.compile("solution.py3","solution.py3o")'
-		echo 'run=(python3.2 -SOO /build/pybox.py3o solution.py3)' > run_cmd;;
+		#python3 -SOOc 'import py_compile;py_compile.compile("solution.py3","solution.py3o")'
+		echo 'run=(python3 -SOO /build/pybox.py3o solution.py3)' > run_cmd;;
 esac
 )
 [ -n "$taskset" ] && taskset="taskset $taskset"
