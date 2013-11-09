@@ -1,6 +1,6 @@
 #!/bin/bash
 [ "$0" != "./grader.sh" ] && echo "usage: cd $(dirname "$0"); ./grader.sh" && exit 1
-. config || { echo "config error" >&2; exit 1; }
+. ./config || { echo "config error" >&2; exit 1; }
 shopt -s nullglob
 ip r s dev eth0 | sed -n 's/.*src \([^ ]*\).*/ip: \1 = /p' | tr -d \\n
 bc -l <<< $(ip r s dev eth0 | sed -n 's/.*src \([0-9]*\)\.\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\).*/((\1*256+\2)*256+\3)*256+\4/p')
@@ -35,9 +35,11 @@ do
 		sudo chmod o+r-w rootfs/data/in #safe, assuming 99 is not in the user or group
 		[ -n "$interactive" ] && sudo ln "$data_dir${test_path%/*}/$judge_file" rootfs/data/judge && sudo chmod o+rx-w rootfs/data/judge
 		sudo chown 99:99 rootfs/tmp/config
+		sudo mount / --make-rslave #work around kernel bug
 		sudo lxc-execute -n box -- "${curwrap[@]}" /build/drop 99 /build/run.sh > "$file/out"
+		sudo mount / --make-rshared #systemd uses shared
 		#sudo chroot rootfs "${curwrap[@]}" /build/drop 99 /build/run.sh "$(cat "$file/in")" > "$file/out"
-		{ cat rootfs/tmp/score 2>/dev/null && touch rootfs/tmp/stdout && "${score_cmd[@]}" "$data_dir$(sed 's/\(.*\)\binput\b/\1output/' <<< "$test_path")" rootfs/tmp/stdout; } > "$file/score.part" && mv "$file/score.part" "$file/score" || { >> "$file/score"; rm -f "$file/score.part"; }
+		{ cat rootfs/tmp/score 2>/dev/null && { [ -e rootfs/tmp/stdout ] || touch rootfs/tmp/stdout; } && "${score_cmd[@]}" "$data_dir$(sed 's/\(.*\)\binput\b/\1output/' <<< "$test_path")" rootfs/tmp/stdout; } > "$file/score.part" && mv "$file/score.part" "$file/score" || { >> "$file/score"; rm -f "$file/score.part"; }
 	)
 	rm -f rootfs/tmp/{stdout,score,solution.*} 2> /dev/null
 	sudo find rootfs/{tmp,data} -mindepth 1 -delete
