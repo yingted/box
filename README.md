@@ -5,7 +5,7 @@ You need everything you would need to manually judge problem solutions, but ther
 ### C/C++
 You need `libseccomp`. We patch the C runtime to support secure computing mode.
 ### Turing
-The compiler requires `xvfb` and `wine`. The VM requires `libseccomp`.
+The compiler and VM both require `libseccomp`.
 ## Compatibility
 ### IE 6
 Good luck. YMMV
